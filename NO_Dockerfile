@@ -1,0 +1,14 @@
+# Usa una imagen base con JRE instalado (más ligera que el JDK)
+FROM openjdk:21-jre-slim
+
+# Define un argumento para el nombre del archivo JAR (asumimos que se construye un JAR)
+ARG JAR_FILE=target/*.jar
+
+# Copia el archivo JAR de tu proyecto al contenedor
+COPY ${JAR_FILE} app.jar
+
+# Expone el puerto que tu aplicación usa (por ejemplo, 8080 para Spring Boot)
+EXPOSE 8080
+
+# Define el comando para ejecutar tu aplicación
+ENTRYPOINT ["java", "-jar", "/app.jar"]
