@@ -37,9 +37,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -140,6 +137,7 @@ public class SecurityConfig {
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .redirectUri("http://localhost:4200/callback")
+                .redirectUri("https://mic-auth-production.up.railway.app/callback")
                 //.redirectUri("https://oauthdebugger.com/debug")
                 .scope(OidcScopes.OPENID)
                 .clientSettings(ClientSettings.builder()
@@ -185,7 +183,8 @@ public class SecurityConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
-                .issuer("http://localhost:9001")
+                .issuer("https://mic-auth-production.up.railway.app")
+                //.issuer("http://localhost:9001")
                 .build();
     }
 
