@@ -62,7 +62,8 @@ public class SecurityConfig {
     private String issueUrl;
 
     private final String[] GET_PUBLIC_URLS = {
-            "/oauth2/token",
+            "/.well-known/**",
+            "/oauth2/token/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-ui.html",
