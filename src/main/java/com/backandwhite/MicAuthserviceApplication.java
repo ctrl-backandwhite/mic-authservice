@@ -7,7 +7,7 @@ import org.springframework.boot.SpringApplication;
 
 @EnabledCoreFinolApplication
 @OpenAPIDefinition(servers = {
-        @Server(url = "https://mic-auth-production.up.railway.app", description = "Production Server."),
+        @Server(url = "https://mic-authservice-production.up.railway.app", description = "Production Server."),
         @Server(url = "https://localhost:8443", description = "Local Server.")
 })
 public class MicAuthserviceApplication {
