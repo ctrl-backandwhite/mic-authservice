@@ -57,15 +57,14 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
+
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issueUrl;
 
     private final String[] GET_PUBLIC_URLS = {
-            "/logout",
-            "/error",
             "/oauth2/token",
             "/swagger-ui/**",
-            "/v3/api-docs/**",
+            "/v3/api-docs",
             "/swagger-ui.html",
             "/api/v1/**"};
 
@@ -80,7 +79,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher()))
                 .with(authorizationServerConfigurer, as -> as.oidc(withDefaults()))
                 .authorizeHttpRequests(auth -> auth
-                        //.requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
                         .requestMatchers(GET_PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
@@ -101,30 +99,14 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        //.requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
                         .requestMatchers(GET_PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/logout").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll);
-//                .logout(logout -> logout
-//                        .logoutUrl("/logout") // endpoint de logout
-//                        .logoutSuccessHandler((request, response, authentication) -> {
-//                            String redirectUri = request.getParameter("redirect_uri");
-//                            if (redirectUri != null && redirectUri.startsWith("http://localhost:4200")) {
-//                                response.sendRedirect(redirectUri);
-//                            } else {
-//                                response.sendRedirect("http://localhost:4200/login");
-//                            }
-//                        })
-//                        .invalidateHttpSession(true)
-//                        .deleteCookies("JSESSIONID")
-//                        .permitAll()
-//                );
             http.csrf(csrf -> csrf.ignoringRequestMatchers(GET_PUBLIC_URLS));
 
         return http.build();
@@ -141,7 +123,6 @@ public class SecurityConfig {
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .redirectUri("http://localhost:4200/callback")
                 .redirectUri("https://mic-auth-production.up.railway.app/callback")
-                //.redirectUri("https://oauthdebugger.com/debug")
                 .scope(OidcScopes.OPENID)
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(false)
