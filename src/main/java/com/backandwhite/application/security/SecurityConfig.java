@@ -6,6 +6,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -55,6 +56,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
+    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+    private String issueUrl;
 
     private final String[] GET_PUBLIC_URLS = {
             "/logout",
@@ -107,21 +110,21 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
-                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
-                .logout(logout -> logout
-                        .logoutUrl("/logout") // endpoint de logout
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            String redirectUri = request.getParameter("redirect_uri");
-                            if (redirectUri != null && redirectUri.startsWith("http://localhost:4200")) {
-                                response.sendRedirect(redirectUri);
-                            } else {
-                                response.sendRedirect("http://localhost:4200/login");
-                            }
-                        })
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll()
-                );
+                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll);
+//                .logout(logout -> logout
+//                        .logoutUrl("/logout") // endpoint de logout
+//                        .logoutSuccessHandler((request, response, authentication) -> {
+//                            String redirectUri = request.getParameter("redirect_uri");
+//                            if (redirectUri != null && redirectUri.startsWith("http://localhost:4200")) {
+//                                response.sendRedirect(redirectUri);
+//                            } else {
+//                                response.sendRedirect("http://localhost:4200/login");
+//                            }
+//                        })
+//                        .invalidateHttpSession(true)
+//                        .deleteCookies("JSESSIONID")
+//                        .permitAll()
+//                );
             http.csrf(csrf -> csrf.ignoringRequestMatchers(GET_PUBLIC_URLS));
 
         return http.build();
@@ -183,8 +186,7 @@ public class SecurityConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
-                .issuer("https://mic-auth-production.up.railway.app")
-                //.issuer("http://localhost:9001")
+                .issuer(issueUrl)
                 .build();
     }
 
