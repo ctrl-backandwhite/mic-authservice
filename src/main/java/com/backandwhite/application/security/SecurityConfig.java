@@ -149,8 +149,9 @@ public class SecurityConfig {
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .redirectUri("http://localhost:4200")
-                .redirectUri("https://webapp-production-68d2.up.railway.app")
+                .redirectUri("http://localhost:4200/admin")
+                .redirectUri("https://webapp-production-68d2.up.railway.app/admin")
+                .redirectUri("https://oauthdebugger.com/debug")
                 .scope(OidcScopes.OPENID)
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(false)
@@ -195,7 +196,7 @@ public class SecurityConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
-                .issuer("https://mic-authservice-production.up.railway.app")
+                .issuer(issueUrl)
                 .build();
     }
 

@@ -15,3 +15,11 @@ databaseChangeLog:
         - sqlFile:
             path: db.changelog-1.1.sql
             relativeToChangelogFile: "true"
+  - changeSet:
+      id: 3
+      author: Jesus.Finol
+      context: local,dev
+      changes:
+        - sqlFile:
+            path: db.changelog-1.2.sql
+            relativeToChangelogFile: "true"

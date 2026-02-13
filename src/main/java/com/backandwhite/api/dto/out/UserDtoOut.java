@@ -46,7 +46,7 @@ public class UserDtoOut {
         minLength = 3,
         maxLength = 50
     )
-    private String userName;
+    private String nickName;
 
     @Schema(
         description = "Dirección de correo electrónico del usuario",

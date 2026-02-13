@@ -42,7 +42,7 @@ public class UserDtoIn {
         minLength = 3,
         maxLength = 50
     )
-    private String userName;
+    private String nickName;
 
     @NotEmpty
     @Email

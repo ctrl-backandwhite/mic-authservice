@@ -27,8 +27,8 @@ public class UserEntity {
     @Column(name = "last_name", length = 60)
     private String lastName;
 
-    @Column(name = "user_name", length = 60, unique = true)
-    private String userName;
+    @Column(name = "nick_name", length = 60, unique = true)
+    private String nickName;
 
     @Column(name = "email", unique = true, length = 120)
     private String email;
@@ -79,7 +79,7 @@ public class UserEntity {
         return Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)
                 && Objects.equals(lastName, that.lastName)
-                && Objects.equals(userName, that.userName)
+                && Objects.equals(nickName, that.nickName)
                 && Objects.equals(email, that.email)
                 && Objects.equals(password, that.password)
                 && Objects.equals(enabled, that.enabled)
@@ -90,6 +90,6 @@ public class UserEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, lastName, userName, email, password, enabled, accountNonExpired, accountNonLocked, credentialsNonExpired);
+        return Objects.hash(id, name, lastName, nickName, email, password, enabled, accountNonExpired, accountNonLocked, credentialsNonExpired);
     }
 }

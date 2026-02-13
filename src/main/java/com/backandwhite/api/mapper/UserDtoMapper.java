@@ -26,6 +26,7 @@ public interface UserDtoMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
     @Mapping(target = "lastName", source = "lastName")
+    @Mapping(target = "nickName", source = "nickName")
     @Mapping(target = "email", source = "email")
     @Mapping(target = "password", source = "password")
     @Mapping(target = "enabled", source = "enabled")
@@ -37,6 +38,13 @@ public interface UserDtoMapper {
     @Mapping(target = "groups", source = "groups")
     UserDtoOut toDtoOut(User model);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "lastName", source = "lastName")
+    @Mapping(target = "nickName", source = "nickName")
+    @Mapping(target = "email", source = "email")
+    @Mapping(target = "password", source = "password")
+    @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "scopes", source = "scopeIds", qualifiedByName = "mapUserScopeIds")
     @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapUserRoleIds")
     @Mapping(target = "groups", source = "groupIds", qualifiedByName = "mapUserGroupIds")
