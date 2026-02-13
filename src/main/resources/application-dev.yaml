@@ -20,6 +20,13 @@ spring:
         jwt:
           issuer-uri: ${ISSUE_URL}
 
+springdoc:
+  swagger-ui:
+    url: /v3/api-docs
+    disable-swagger-default-url: true
+    try-it-out-enabled: true
+    server-url: https://mic-auth-production.up.railway.app
+
 logging:
   level:
     root: INFO
