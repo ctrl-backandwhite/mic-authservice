@@ -124,7 +124,8 @@ public class SecurityConfig {
         // Orígenes permitidos (sin barra diagonal al final)
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
-                "https://webapp-production-68d2.up.railway.app"
+                "https://webapp-production-68d2.up.railway.app",
+                "https://mic-authservice-production.up.railway.app"
         ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
