@@ -64,7 +64,7 @@ public class SecurityConfig {
     private final String[] GET_PUBLIC_URLS = {
             "/oauth2/token",
             "/swagger-ui/**",
-            "/v3/api-docs",
+            "/v3/api-docs/**",
             "/swagger-ui.html",
             "/api/v1/**"};
 
