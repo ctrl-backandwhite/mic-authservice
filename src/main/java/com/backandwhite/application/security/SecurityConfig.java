@@ -194,7 +194,7 @@ public class SecurityConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
-                .issuer(issueUrl)
+                .issuer("https://mic-authservice-production.up.railway.app")
                 .build();
     }
 
