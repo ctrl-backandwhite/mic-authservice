@@ -23,14 +23,8 @@ public class CorsRegistryConfiguration implements WebMvcConfigurer {
                         "http://localhost:4200",
                         "http://localhost:8080",
                         "https://mic-auth-production.up.railway.app")
-                .allowedMethods(HttpMethod.GET.name(),
-                        HttpMethod.POST.name(),
-                        HttpMethod.PUT.name(),
-                        HttpMethod.DELETE.name(),
-                        HttpMethod.PATCH.name(),
-                        HttpMethod.OPTIONS.name())
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
-                .allowedOriginPatterns("*")
                 .allowCredentials(true);
     }
 }
