@@ -19,6 +19,10 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${ISSUE_URL}
+server:
+  port: 8080
+  ssl:
+    enabled: false
 
 logging:
   level:
