@@ -18,11 +18,12 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${ISSUE_URL}
+          issuer-uri: https://mic-authservice-production.up.railway.app
 server:
   port: 8080
   ssl:
     enabled: false
+  forward-headers-strategy: framework
 
 logging:
   level:
