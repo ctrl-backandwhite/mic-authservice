@@ -21,6 +21,7 @@ public class CorsRegistryConfiguration implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:4200",
+                        "http://localhost:8080",
                         "https://mic-auth-production.up.railway.app")
                 .allowedMethods(HttpMethod.GET.name(),
                         HttpMethod.POST.name(),
@@ -29,6 +30,7 @@ public class CorsRegistryConfiguration implements WebMvcConfigurer {
                         HttpMethod.PATCH.name(),
                         HttpMethod.OPTIONS.name())
                 .allowedHeaders("*")
+                .allowedOriginPatterns("*")
                 .allowCredentials(true);
     }
 }
