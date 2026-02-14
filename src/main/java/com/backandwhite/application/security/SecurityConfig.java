@@ -6,7 +6,6 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -15,11 +14,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
-import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -52,20 +50,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
-    private String issueUrl;
-
     private final String[] GET_PUBLIC_URLS = {
+            "/login",
             "/.well-known/**",
             "/oauth2/token/**",
             "/swagger-ui/**",
@@ -75,45 +68,41 @@ public class SecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        var authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
+                new OAuth2AuthorizationServerConfigurer();
 
-        http
-                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+        http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher()))
-                .with(authorizationServerConfigurer, as -> as.oidc(withDefaults()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(GET_PUBLIC_URLS).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated()
+                .with(authorizationServerConfigurer, authorizationServer ->
+                        authorizationServer.oidc(Customizer.withDefaults())
                 )
-                .exceptionHandling(ex -> ex
+                .authorizeHttpRequests(authorize ->
+                        authorize
+                                .requestMatchers(GET_PUBLIC_URLS).permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptions -> exceptions
                         .defaultAuthenticationEntryPointFor(
                                 new LoginUrlAuthenticationEntryPoint("/login"),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
                         )
                 );
-
         return http.build();
     }
 
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(GET_PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                )
-                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll);
-            http.csrf(csrf -> csrf.ignoringRequestMatchers(GET_PUBLIC_URLS));
-
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(Customizer.withDefaults());
         return http.build();
     }
 
@@ -142,18 +131,23 @@ public class SecurityConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient oidcClient = RegisteredClient.withId("oidc-client-id-1")
+        RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("oidc-client")
-                //.clientSecret(passwordEncoder.encode("secret"))
+                .clientSecret( passwordEncoder.encode("secret"))
+//                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+//                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+//                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri("http://localhost:4200/auth/callback")
                 .redirectUri("https://webapp-production-68d2.up.railway.app/auth/callback")
+                .redirectUri("https://oauthdebugger.com/debug")
                 .scope(OidcScopes.OPENID)
+                .scope(OidcScopes.PROFILE)
                 .clientSettings(ClientSettings.builder()
-                        .requireAuthorizationConsent(false)
                         .requireProofKey(true)
+                        .requireAuthorizationConsent(false)
                         .build())
                 .build();
 
@@ -193,9 +187,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder()
-                .issuer(issueUrl)
-                .build();
+        return AuthorizationServerSettings.builder().build();
     }
 
     @Bean
@@ -223,4 +215,5 @@ public class SecurityConfig {
             return authorities;
         }
     }
+
 }
