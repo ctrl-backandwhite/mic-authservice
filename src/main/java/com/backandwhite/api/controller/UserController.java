@@ -4,12 +4,16 @@ import com.backandwhite.api.BaseApi;
 import com.backandwhite.api.dto.in.UserDtoIn;
 import com.backandwhite.api.dto.out.UserDtoOut;
 import com.backandwhite.api.mapper.UserDtoMapper;
+import com.backandwhite.api.validation.CreateValidation;
+import com.backandwhite.api.validation.UpdateValidation;
 import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.domain.model.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.groups.Default;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,14 +29,16 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
 
     @Override
     @PostMapping
-    public ResponseEntity<UserDtoOut> create(@RequestBody UserDtoIn dto) {
+    public ResponseEntity<UserDtoOut> create(
+            @Validated({ Default.class, CreateValidation.class }) @RequestBody UserDtoIn dto) {
         User entity = useCase.save(mapper.toDomain(dto));
         return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.CREATED);
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<UserDtoOut> update(@RequestBody UserDtoIn dto, @PathVariable Long id) {
+    public ResponseEntity<UserDtoOut> update(
+            @Validated({ Default.class, UpdateValidation.class }) @RequestBody UserDtoIn dto, @PathVariable Long id) {
         User entity = useCase.update(mapper.toDomain(dto), id);
         return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.OK);
     }

@@ -26,12 +26,11 @@ import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 @Log4j2
 @Service
 @AllArgsConstructor
-public class UserUseCaseImpl implements UserUseCase, UserDetailsService  {
+public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserCommandHandler userCommandHandler;
-
 
     @Override
     @Transactional
@@ -69,14 +68,14 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService  {
     public User update(User model, Long id) {
         log.debug("::> Updating user {}", model);
         User existing = this.getById(id);
-        BeanUtils.copyProperties(model, existing, "id");
+        BeanUtils.copyProperties(model, existing, "id", "password");
         userCommandHandler.validate(model);
         return userRepository.update(existing);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = {"user_all", "user"}, allEntries = true)
+    @CacheEvict(value = { "user_all", "user" }, allEntries = true)
     public void delete(Long id) {
         this.getById(id);
         log.debug("::> Deleting user with id {}", id);

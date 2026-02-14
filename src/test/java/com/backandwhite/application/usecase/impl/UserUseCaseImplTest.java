@@ -102,7 +102,7 @@ class UserUseCaseImplTest {
         verify(userRepository).update(any(User.class));
         assertThat(result)
                 .usingRecursiveComparison()
-                .isEqualTo(otherUser().withId(10L));
+                .isEqualTo(otherUser().withId(10L).withPassword("old-secret"));
     }
 
     @Test
