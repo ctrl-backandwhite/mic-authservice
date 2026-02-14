@@ -74,6 +74,7 @@ public class SecurityConfig {
 
         http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                //.csrf(csrf -> csrf.ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher()))
                 .with(authorizationServerConfigurer, authorizationServer ->
                         authorizationServer.oidc(Customizer.withDefaults())
                 )
@@ -101,7 +102,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.ignoringRequestMatchers(GET_PUBLIC_URLS))
                 .formLogin(Customizer.withDefaults());
         return http.build();
     }
@@ -109,23 +110,17 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // Orígenes permitidos (sin barra diagonal al final)
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
                 "https://webapp-production-68d2.up.railway.app",
                 "https://mic-authservice-production.up.railway.app"
         ));
-
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
         configuration.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // CORRECCIÓN: Pasamos 'configuration' en lugar de 'source'
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 
@@ -134,13 +129,12 @@ public class SecurityConfig {
         RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("oidc-client")
                 .clientSecret( passwordEncoder.encode("secret"))
-//                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-//                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-//                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .redirectUri("http://localhost:4200/admin")
                 .redirectUri("http://localhost:4200/auth/callback")
+                .redirectUri("https://webapp-production-68d2.up.railway.app/admin")
                 .redirectUri("https://webapp-production-68d2.up.railway.app/auth/callback")
                 .redirectUri("https://oauthdebugger.com/debug")
                 .scope(OidcScopes.OPENID)
@@ -215,5 +209,4 @@ public class SecurityConfig {
             return authorities;
         }
     }
-
 }
