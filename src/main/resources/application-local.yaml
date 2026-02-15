@@ -32,6 +32,10 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8443
+app:
+  security:
+    handler-url: http://localhost:4200
+
 logging:
   level:
     root: INFO
