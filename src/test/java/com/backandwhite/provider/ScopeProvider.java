@@ -1,5 +1,7 @@
 package com.backandwhite.provider;
 
+import com.backandwhite.api.dto.in.ScopeDtoIn;
+import com.backandwhite.api.dto.out.ScopeDtoOut;
 import com.backandwhite.domain.model.Scope;
 import com.backandwhite.infrastructure.db.postgres.entity.ScopeEntity;
 
@@ -46,12 +48,64 @@ public final class ScopeProvider {
     }
 
     public static ScopeEntity scopeEntity() {
+        return readScopeEntity();
+    }
+
+    public static ScopeEntity readScopeEntity() {
         return ScopeEntity.builder()
                 .id(READ_ID)
                 .name(READ_NAME)
                 .uniqueName(READ_UNIQUE_NAME)
                 .description(READ_DESCRIPTION)
                 .enabled(READ_ENABLED)
+                .build();
+    }
+
+    public static ScopeEntity writeScopeEntity() {
+        return ScopeEntity.builder()
+                .id(WRITE_ID)
+                .name(WRITE_NAME)
+                .uniqueName(WRITE_UNIQUE_NAME)
+                .description(WRITE_DESCRIPTION)
+                .enabled(WRITE_ENABLED)
+                .build();
+    }
+
+    public static ScopeDtoIn readScopeDtoIn() {
+        return ScopeDtoIn.builder()
+                .name(READ_NAME)
+                .uniqueName(READ_UNIQUE_NAME)
+                .description(READ_DESCRIPTION)
+                .enabled(READ_ENABLED)
+                .build();
+    }
+
+    public static ScopeDtoIn writeScopeDtoIn() {
+        return ScopeDtoIn.builder()
+                .name(WRITE_NAME)
+                .uniqueName(WRITE_UNIQUE_NAME)
+                .description(WRITE_DESCRIPTION)
+                .enabled(WRITE_ENABLED)
+                .build();
+    }
+
+    public static ScopeDtoOut readScopeDtoOut(Long id) {
+        return ScopeDtoOut.builder()
+                .id(id)
+                .name(READ_NAME)
+                .uniqueName(READ_UNIQUE_NAME)
+                .description(READ_DESCRIPTION)
+                .enabled(READ_ENABLED)
+                .build();
+    }
+
+    public static ScopeDtoOut writeScopeDtoOut(Long id) {
+        return ScopeDtoOut.builder()
+                .id(id)
+                .name(WRITE_NAME)
+                .uniqueName(WRITE_UNIQUE_NAME)
+                .description(WRITE_DESCRIPTION)
+                .enabled(WRITE_ENABLED)
                 .build();
     }
 }

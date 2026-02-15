@@ -1,5 +1,7 @@
 package com.backandwhite.provider;
 
+import com.backandwhite.api.dto.in.RedirectUriDtoIn;
+import com.backandwhite.api.dto.out.RedirectUriDtoOut;
 import com.backandwhite.domain.model.RedirectUri;
 import com.backandwhite.infrastructure.db.postgres.entity.RedirectUriEntity;
 
@@ -43,6 +45,49 @@ public final class RedirectUriProvider {
                 .name(REDIRECT_URI_NAME)
                 .value(REDIRECT_URI_VALUE)
                 .enabled(REDIRECT_URI_ENABLED)
+                .build();
+    }
+
+    public static RedirectUriEntity otherRedirectUriEntity() {
+        return RedirectUriEntity.builder()
+                .id(OTHER_REDIRECT_URI_ID)
+                .name(OTHER_REDIRECT_URI_NAME)
+                .value(OTHER_REDIRECT_URI_VALUE)
+                .enabled(OTHER_REDIRECT_URI_ENABLED)
+                .build();
+    }
+
+    public static RedirectUriDtoIn redirectUriDtoIn() {
+        return RedirectUriDtoIn.builder()
+                .name(REDIRECT_URI_NAME)
+                .value(REDIRECT_URI_VALUE)
+                .enabled(REDIRECT_URI_ENABLED)
+                .build();
+    }
+
+    public static RedirectUriDtoIn otherRedirectUriDtoIn() {
+        return RedirectUriDtoIn.builder()
+                .name(OTHER_REDIRECT_URI_NAME)
+                .value(OTHER_REDIRECT_URI_VALUE)
+                .enabled(OTHER_REDIRECT_URI_ENABLED)
+                .build();
+    }
+
+    public static RedirectUriDtoOut redirectUriDtoOut(Long id) {
+        return RedirectUriDtoOut.builder()
+                .id(id)
+                .name(REDIRECT_URI_NAME)
+                .value(REDIRECT_URI_VALUE)
+                .enabled(REDIRECT_URI_ENABLED)
+                .build();
+    }
+
+    public static RedirectUriDtoOut otherRedirectUriDtoOut(Long id) {
+        return RedirectUriDtoOut.builder()
+                .id(id)
+                .name(OTHER_REDIRECT_URI_NAME)
+                .value(OTHER_REDIRECT_URI_VALUE)
+                .enabled(OTHER_REDIRECT_URI_ENABLED)
                 .build();
     }
 }

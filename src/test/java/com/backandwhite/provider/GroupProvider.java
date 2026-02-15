@@ -1,9 +1,9 @@
 package com.backandwhite.provider;
 
+import com.backandwhite.api.dto.in.GroupDtoIn;
+import com.backandwhite.api.dto.out.GroupDtoOut;
 import com.backandwhite.domain.model.Group;
-import com.backandwhite.domain.model.Role;
 import com.backandwhite.infrastructure.db.postgres.entity.GroupEntity;
-import com.backandwhite.infrastructure.db.postgres.entity.RoleEntity;
 
 import java.util.List;
 
@@ -71,6 +71,70 @@ public final class GroupProvider {
                 .description(GROUP_DESCRIPTION)
                 .enabled(GROUP_ENABLED)
                 .roles(List.of(RoleProvider.roleEntity()))
+                .build();
+    }
+
+    public static GroupEntity adminGroupEntity() {
+        return GroupEntity.builder()
+                .id(ADMIN_ID)
+                .name(ADMIN_NAME)
+                .uniqueName(ADMIN_UNIQUE_NAME)
+                .description(ADMIN_DESCRIPTION)
+                .enabled(ADMIN_ENABLED)
+                .roles(List.of(RoleProvider.adminRoleEntity()))
+                .build();
+    }
+
+    public static GroupEntity userGroupEntity() {
+        return GroupEntity.builder()
+                .id(USER_ID)
+                .name(USER_NAME)
+                .uniqueName(USER_UNIQUE_NAME)
+                .description(USER_DESCRIPTION)
+                .enabled(USER_ENABLED)
+                .roles(List.of(RoleProvider.userRoleEntity()))
+                .build();
+    }
+
+    public static GroupDtoIn adminGroupDtoIn() {
+        return GroupDtoIn.builder()
+                .name(ADMIN_NAME)
+                .uniqueName(ADMIN_UNIQUE_NAME)
+                .description(ADMIN_DESCRIPTION)
+                .enabled(ADMIN_ENABLED)
+                .roleIds(List.of(RoleProvider.ADMIN_ID))
+                .build();
+    }
+
+    public static GroupDtoIn userGroupDtoIn() {
+        return GroupDtoIn.builder()
+                .name(USER_NAME)
+                .uniqueName(USER_UNIQUE_NAME)
+                .description(USER_DESCRIPTION)
+                .enabled(USER_ENABLED)
+                .roleIds(List.of(RoleProvider.USER_ID))
+                .build();
+    }
+
+    public static GroupDtoOut adminGroupDtoOut(Long id) {
+        return GroupDtoOut.builder()
+                .id(id)
+                .name(ADMIN_NAME)
+                .uniqueName(ADMIN_UNIQUE_NAME)
+                .description(ADMIN_DESCRIPTION)
+                .enabled(ADMIN_ENABLED)
+                .roles(List.of(RoleProvider.adminRoleDtoOut(null)))
+                .build();
+    }
+
+    public static GroupDtoOut userGroupDtoOut(Long id) {
+        return GroupDtoOut.builder()
+                .id(id)
+                .name(USER_NAME)
+                .uniqueName(USER_UNIQUE_NAME)
+                .description(USER_DESCRIPTION)
+                .enabled(USER_ENABLED)
+                .roles(List.of(RoleProvider.userRoleDtoOut(null)))
                 .build();
     }
 }

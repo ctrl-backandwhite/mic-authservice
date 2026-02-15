@@ -1,5 +1,7 @@
 package com.backandwhite.provider;
 
+import com.backandwhite.api.dto.in.OauthClientDtoIn;
+import com.backandwhite.api.dto.out.OauthClientDtoOut;
 import com.backandwhite.domain.model.OauthClient;
 import com.backandwhite.infrastructure.db.postgres.entity.OauthClientEntity;
 
@@ -49,6 +51,59 @@ public final class OauthClientProvider {
                 .scopes(List.of(ScopeProvider.scopeEntity()))
                 .redirectUris(List.of(RedirectUriProvider.redirectUriEntity()))
                 .grantTypes(List.of(GrantTypeProvider.grantTypeEntity()))
+                .build();
+    }
+
+    public static OauthClientEntity otherOauthClientEntity() {
+        return OauthClientEntity.builder()
+                .id(OTHER_CLIENT_ID)
+                .clientId(OTHER_CLIENT_CLIENT_ID)
+                .clientSecret(OTHER_CLIENT_SECRET)
+                .scopes(List.of(ScopeProvider.writeScopeEntity()))
+                .redirectUris(List.of(RedirectUriProvider.otherRedirectUriEntity()))
+                .grantTypes(List.of(GrantTypeProvider.otherGrantTypeEntity()))
+                .build();
+    }
+
+    public static OauthClientDtoIn oauthClientDtoIn() {
+        return OauthClientDtoIn.builder()
+                .clientId(CLIENT_CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
+                .scopeIds(List.of(ScopeProvider.READ_ID))
+                .redirectUriIds(List.of(RedirectUriProvider.REDIRECT_URI_ID))
+                .grantTypeIds(List.of(GrantTypeProvider.GRANT_TYPE_ID))
+                .build();
+    }
+
+    public static OauthClientDtoIn otherOauthClientDtoIn() {
+        return OauthClientDtoIn.builder()
+                .clientId(OTHER_CLIENT_CLIENT_ID)
+                .clientSecret(OTHER_CLIENT_SECRET)
+                .scopeIds(List.of(ScopeProvider.WRITE_ID))
+                .redirectUriIds(List.of(RedirectUriProvider.OTHER_REDIRECT_URI_ID))
+                .grantTypeIds(List.of(GrantTypeProvider.OTHER_GRANT_TYPE_ID))
+                .build();
+    }
+
+    public static OauthClientDtoOut oauthClientDtoOut(Long id) {
+        return OauthClientDtoOut.builder()
+                .id(id)
+                .clientId(CLIENT_CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
+                .scopes(List.of(ScopeProvider.readScopeDtoOut(null)))
+                .redirectUris(List.of(RedirectUriProvider.redirectUriDtoOut(null)))
+                .grantTypes(List.of(GrantTypeProvider.grantTypeDtoOut(null)))
+                .build();
+    }
+
+    public static OauthClientDtoOut otherOauthClientDtoOut(Long id) {
+        return OauthClientDtoOut.builder()
+                .id(id)
+                .clientId(OTHER_CLIENT_CLIENT_ID)
+                .clientSecret(OTHER_CLIENT_SECRET)
+                .scopes(List.of(ScopeProvider.writeScopeDtoOut(null)))
+                .redirectUris(List.of(RedirectUriProvider.otherRedirectUriDtoOut(null)))
+                .grantTypes(List.of(GrantTypeProvider.otherGrantTypeDtoOut(null)))
                 .build();
     }
 }
