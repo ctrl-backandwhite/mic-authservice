@@ -1,0 +1,5 @@
+test:
+  postgres:
+    username: test_user
+    password: test_password
+    database: test_db

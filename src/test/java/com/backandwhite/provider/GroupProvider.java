@@ -28,7 +28,6 @@ public final class GroupProvider {
     public static final Boolean GROUP_ENABLED = true;
 
     private GroupProvider() {
-        // Utility class.
     }
 
     public static Group adminGroup() {
