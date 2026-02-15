@@ -25,6 +25,10 @@ server:
     enabled: false
   forward-headers-strategy: framework
 
+app:
+  security:
+    handler-url: https://webapp-production-68d2.up.railway.app
+
 logging:
   level:
     root: INFO
