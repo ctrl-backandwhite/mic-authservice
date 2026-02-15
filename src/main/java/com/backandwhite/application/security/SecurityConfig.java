@@ -36,6 +36,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -56,160 +57,175 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final PasswordEncoder passwordEncoder;
+        private final PasswordEncoder passwordEncoder;
 
-    private final String[] GET_PUBLIC_URLS = {
-            "/login",
-            "/.well-known/**",
-            "/oauth2/token/**",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/swagger-ui.html",
-            "/api/v1/**"};
+        private final String[] GET_PUBLIC_URLS = {
+                        "/login",
+                        "/login.html",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/favicon.ico",
+                        "/.well-known/**",
+                        "/oauth2/token/**",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html",
+                        "/api/v1/**" };
 
+        @Bean
+        @Order(1)
+        public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
+                OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
-    @Bean
-    @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
-
-        http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // .csrf(csrf ->
-                // csrf.ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher()))
-                .with(authorizationServerConfigurer,
-                        authorizationServer -> authorizationServer
-                                .oidc(Customizer.withDefaults()))
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(GET_PUBLIC_URLS).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated())
-                .exceptionHandling(exceptions -> exceptions
-                        .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("/login"),
-                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
-        return http.build();
-    }
-
-    @Bean
-    @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(GET_PUBLIC_URLS).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated())
-                .csrf(csrf -> csrf.ignoringRequestMatchers(GET_PUBLIC_URLS)
-                        .ignoringRequestMatchers("/logout"))
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID")
-                    .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
-                .formLogin(Customizer.withDefaults());
-        return http.build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:4200",
-                "https://webapp-production-68d2.up.railway.app",
-                "https://mic-authservice-production.up.railway.app"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token"));
-        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-    @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("oidc-client")
-                .clientSecret(passwordEncoder.encode("secret"))
-                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://localhost:4200/admin")
-                .redirectUri("http://localhost:4200/auth/callback")
-                .redirectUri("https://webapp-production-68d2.up.railway.app/admin")
-                .redirectUri("https://webapp-production-68d2.up.railway.app/auth/callback")
-                .redirectUri("https://oauthdebugger.com/debug")
-                .scope(OidcScopes.OPENID)
-                .scope(OidcScopes.PROFILE)
-                .clientSettings(ClientSettings.builder()
-                        .requireProofKey(true)
-                        .requireAuthorizationConsent(false)
-                        .build())
-                .build();
-
-        return new InMemoryRegisteredClientRepository(oidcClient);
-    }
-
-    @Bean
-    public JWKSource<SecurityContext> jwkSource() {
-        KeyPair keyPair = generateRsaKey();
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-        RSAKey rsaKey = new RSAKey.Builder(publicKey)
-                .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
-                .build();
-        JWKSet jwkSet = new JWKSet(rsaKey);
-        return new ImmutableJWKSet<>(jwkSet);
-    }
-
-    private static KeyPair generateRsaKey() {
-        KeyPair keyPair;
-        try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
-            keyPair = keyPairGenerator.generateKeyPair();
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+                http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                                // .csrf(csrf ->
+                                // csrf.ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher()))
+                                .with(authorizationServerConfigurer,
+                                                authorizationServer -> authorizationServer
+                                                                .oidc(Customizer.withDefaults()))
+                                .authorizeHttpRequests(authorize -> authorize
+                                                .requestMatchers(GET_PUBLIC_URLS).permitAll()
+                                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                                .anyRequest().authenticated())
+                                .exceptionHandling(exceptions -> exceptions
+                                                .defaultAuthenticationEntryPointFor(
+                                                                new LoginUrlAuthenticationEntryPoint("/login"),
+                                                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
+                return http.build();
         }
-        return keyPair;
-    }
 
-    @Bean
-    public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
-        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
-    }
-
-    @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
-    }
-
-    @Bean
-    public Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(
-                new CustomJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter));
-        return jwtAuthenticationConverter;
-    }
-
-    private record CustomJwtGrantedAuthoritiesConverter(
-            JwtGrantedAuthoritiesConverter delegate)
-            implements Converter<Jwt, Collection<GrantedAuthority>> {
-
-        @Override
-        public Collection<GrantedAuthority> convert(Jwt jwt) {
-            Collection<GrantedAuthority> authorities = delegate.convert(jwt);
-
-            List<String> rolesFromClaim = (List<String>) jwt.getClaims().get("roles");
-            if (rolesFromClaim != null) {
-                rolesFromClaim.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .forEach(authorities::add);
-            }
-            return authorities;
+        @Bean
+        @Order(2)
+        public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
+                http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers(GET_PUBLIC_URLS).permitAll()
+                                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                                .anyRequest().authenticated())
+                                .csrf(csrf -> csrf.ignoringRequestMatchers(GET_PUBLIC_URLS)
+                                                .ignoringRequestMatchers("/logout"))
+                                .logout(logout -> logout
+                                                .logoutUrl("/logout")
+                                                .invalidateHttpSession(true)
+                                                .clearAuthentication(true)
+                                                .deleteCookies("JSESSIONID")
+                                                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(
+                                                                HttpStatus.NO_CONTENT)))
+                                .formLogin(form -> form
+                                                .loginPage("/login")
+                                                .successHandler(authenticationSuccessHandler())
+                                                .permitAll());
+                return http.build();
         }
-    }
+
+        @Bean
+        public SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler() {
+                SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
+                handler.setDefaultTargetUrl("http://localhost:4200");
+                return handler;
+        }
+
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(Arrays.asList(
+                                "http://localhost:4200",
+                                "https://webapp-production-68d2.up.railway.app",
+                                "https://mic-authservice-production.up.railway.app"));
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token"));
+                configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+                configuration.setAllowCredentials(true);
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
+
+        @Bean
+        public RegisteredClientRepository registeredClientRepository() {
+                RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
+                                .clientId("oidc-client")
+                                .clientSecret(passwordEncoder.encode("secret"))
+                                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+                                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                                .redirectUri("http://localhost:4200/admin")
+                                .redirectUri("http://localhost:4200/auth/callback")
+                                .redirectUri("https://webapp-production-68d2.up.railway.app/admin")
+                                .redirectUri("https://webapp-production-68d2.up.railway.app/auth/callback")
+                                .redirectUri("https://oauthdebugger.com/debug")
+                                .scope(OidcScopes.OPENID)
+                                .scope(OidcScopes.PROFILE)
+                                .clientSettings(ClientSettings.builder()
+                                                .requireProofKey(true)
+                                                .requireAuthorizationConsent(false)
+                                                .build())
+                                .build();
+
+                return new InMemoryRegisteredClientRepository(oidcClient);
+        }
+
+        @Bean
+        public JWKSource<SecurityContext> jwkSource() {
+                KeyPair keyPair = generateRsaKey();
+                RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+                RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+                RSAKey rsaKey = new RSAKey.Builder(publicKey)
+                                .privateKey(privateKey)
+                                .keyID(UUID.randomUUID().toString())
+                                .build();
+                JWKSet jwkSet = new JWKSet(rsaKey);
+                return new ImmutableJWKSet<>(jwkSet);
+        }
+
+        private static KeyPair generateRsaKey() {
+                KeyPair keyPair;
+                try {
+                        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+                        keyPairGenerator.initialize(2048);
+                        keyPair = keyPairGenerator.generateKeyPair();
+                } catch (Exception ex) {
+                        throw new IllegalStateException(ex);
+                }
+                return keyPair;
+        }
+
+        @Bean
+        public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
+                return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+        }
+
+        @Bean
+        public AuthorizationServerSettings authorizationServerSettings() {
+                return AuthorizationServerSettings.builder().build();
+        }
+
+        @Bean
+        public Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
+                JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+                JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+                jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(
+                                new CustomJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter));
+                return jwtAuthenticationConverter;
+        }
+
+        private record CustomJwtGrantedAuthoritiesConverter(
+                        JwtGrantedAuthoritiesConverter delegate)
+                        implements Converter<Jwt, Collection<GrantedAuthority>> {
+
+                @Override
+                public Collection<GrantedAuthority> convert(Jwt jwt) {
+                        Collection<GrantedAuthority> authorities = delegate.convert(jwt);
+
+                        List<String> rolesFromClaim = (List<String>) jwt.getClaims().get("roles");
+                        if (rolesFromClaim != null) {
+                                rolesFromClaim.stream()
+                                                .map(SimpleGrantedAuthority::new)
+                                                .forEach(authorities::add);
+                        }
+                        return authorities;
+                }
+        }
 }
