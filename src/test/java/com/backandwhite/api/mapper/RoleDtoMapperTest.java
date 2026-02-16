@@ -37,6 +37,7 @@ class RoleDtoMapperTest {
 
         assertThat(result)
                 .usingRecursiveComparison()
+                .ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
                 .isEqualTo(role().withId(null));
     }
 

@@ -2,10 +2,9 @@ package com.backandwhite.domain.model;
 
 import lombok.*;
 
-
+import java.time.Instant;
 import java.util.List;
 import java.util.ArrayList;
-
 
 @Data
 @With
@@ -15,6 +14,10 @@ import java.util.ArrayList;
 public class OauthClient {
 
     private Long id;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
     private String clientId;
     private String clientSecret;
     @Builder.Default

@@ -37,6 +37,7 @@ class GrantTypeDtoMapperTest {
 
         assertThat(result)
                 .usingRecursiveComparison()
+                .ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
                 .isEqualTo(grantType().withId(null));
     }
 

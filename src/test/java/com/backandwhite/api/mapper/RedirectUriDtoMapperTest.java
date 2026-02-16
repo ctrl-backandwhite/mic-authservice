@@ -37,6 +37,7 @@ class RedirectUriDtoMapperTest {
 
         assertThat(result)
                 .usingRecursiveComparison()
+                .ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
                 .isEqualTo(redirectUri().withId(null));
     }
 

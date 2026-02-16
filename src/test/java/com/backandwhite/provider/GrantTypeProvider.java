@@ -22,6 +22,10 @@ public final class GrantTypeProvider {
     public static GrantType grantType() {
         return GrantType.builder()
                 .id(GRANT_TYPE_ID)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .value(GRANT_TYPE_VALUE)
                 .enabled(GRANT_TYPE_ENABLED)
                 .build();
@@ -30,6 +34,10 @@ public final class GrantTypeProvider {
     public static GrantType otherGrantType() {
         return GrantType.builder()
                 .id(OTHER_GRANT_TYPE_ID)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .value(OTHER_GRANT_TYPE_VALUE)
                 .enabled(OTHER_GRANT_TYPE_ENABLED)
                 .build();
@@ -38,6 +46,10 @@ public final class GrantTypeProvider {
     public static GrantTypeEntity grantTypeEntity() {
         return GrantTypeEntity.builder()
                 .id(GRANT_TYPE_ID)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .value(GRANT_TYPE_VALUE)
                 .enabled(GRANT_TYPE_ENABLED)
                 .build();
@@ -46,6 +58,10 @@ public final class GrantTypeProvider {
     public static GrantTypeEntity otherGrantTypeEntity() {
         return GrantTypeEntity.builder()
                 .id(OTHER_GRANT_TYPE_ID)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .value(OTHER_GRANT_TYPE_VALUE)
                 .enabled(OTHER_GRANT_TYPE_ENABLED)
                 .build();
@@ -68,6 +84,10 @@ public final class GrantTypeProvider {
     public static GrantTypeDtoOut grantTypeDtoOut(Long id) {
         return GrantTypeDtoOut.builder()
                 .id(id)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .value(GRANT_TYPE_VALUE)
                 .enabled(GRANT_TYPE_ENABLED)
                 .build();
@@ -76,6 +96,10 @@ public final class GrantTypeProvider {
     public static GrantTypeDtoOut otherGrantTypeDtoOut(Long id) {
         return GrantTypeDtoOut.builder()
                 .id(id)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .value(OTHER_GRANT_TYPE_VALUE)
                 .enabled(OTHER_GRANT_TYPE_ENABLED)
                 .build();
