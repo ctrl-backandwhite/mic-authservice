@@ -5,6 +5,12 @@ server:
     key-store: classpath:keystore.p12
     key-store-password: password
     key-store-type: PKCS12
+  servlet:
+    session:
+      cookie:
+        same-site: none
+        secure: true
+        http-only: true
 
 spring:
   datasource:
