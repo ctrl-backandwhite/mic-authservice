@@ -90,9 +90,9 @@ public final class OauthClientProvider {
                 .id(id)
                 .clientId(CLIENT_CLIENT_ID)
                 .clientSecret(CLIENT_SECRET)
-                .scopes(List.of(ScopeProvider.readScopeDtoOut(null)))
-                .redirectUris(List.of(RedirectUriProvider.redirectUriDtoOut(null)))
-                .grantTypes(List.of(GrantTypeProvider.grantTypeDtoOut(null)))
+                .scopes(List.of(ScopeProvider.readScopeDtoOut(ScopeProvider.READ_ID)))
+                .redirectUris(List.of(RedirectUriProvider.redirectUriDtoOut(RedirectUriProvider.REDIRECT_URI_ID)))
+                .grantTypes(List.of(GrantTypeProvider.grantTypeDtoOut(GrantTypeProvider.GRANT_TYPE_ID)))
                 .build();
     }
 
@@ -101,9 +101,10 @@ public final class OauthClientProvider {
                 .id(id)
                 .clientId(OTHER_CLIENT_CLIENT_ID)
                 .clientSecret(OTHER_CLIENT_SECRET)
-                .scopes(List.of(ScopeProvider.writeScopeDtoOut(null)))
-                .redirectUris(List.of(RedirectUriProvider.otherRedirectUriDtoOut(null)))
-                .grantTypes(List.of(GrantTypeProvider.otherGrantTypeDtoOut(null)))
+                .scopes(List.of(ScopeProvider.writeScopeDtoOut(ScopeProvider.WRITE_ID)))
+                .redirectUris(
+                        List.of(RedirectUriProvider.otherRedirectUriDtoOut(RedirectUriProvider.OTHER_REDIRECT_URI_ID)))
+                .grantTypes(List.of(GrantTypeProvider.otherGrantTypeDtoOut(GrantTypeProvider.OTHER_GRANT_TYPE_ID)))
                 .build();
     }
 }

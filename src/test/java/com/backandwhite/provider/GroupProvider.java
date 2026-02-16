@@ -123,7 +123,7 @@ public final class GroupProvider {
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
-                .roles(List.of(RoleProvider.adminRoleDtoOut(null)))
+                .roles(List.of(RoleProvider.adminRoleDtoOut(RoleProvider.ADMIN_ID)))
                 .build();
     }
 
@@ -134,7 +134,7 @@ public final class GroupProvider {
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
-                .roles(List.of(RoleProvider.userRoleDtoOut(null)))
+                .roles(List.of(RoleProvider.userRoleDtoOut(RoleProvider.USER_ID)))
                 .build();
     }
 }
