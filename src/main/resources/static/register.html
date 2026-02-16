@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crear cuenta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/register.css?v=20260216" />
+</head>
+
+<body>
+    <main class="register-page">
+        <section class="register-card">
+            <div class="register-card__media" aria-hidden="true">
+                <div class="media__overlay"></div>
+                <div class="media__content">
+                    <span class="logo">Back &amp; White</span>
+                    <div class="media__quote">
+                        <p id="quote-text">Únete a nosotros y disfruta de todas las funcionalidades.</p>
+                    </div>
+                    <div class="media__dots" id="quote-dots">
+                        <span class="is-active"></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="register-card__content">
+                <header class="content__header">
+                    <div class="alert" id="alert" style="display: none;"></div>
+                </header>
+
+                <form id="registerForm" class="form" novalidate>
+                    <div class="form__row">
+                        <label class="field">
+                            <span>Nombre *</span>
+                            <input type="text" id="name" name="name" placeholder="Ingresa tu nombre" required
+                                minlength="2" maxlength="100" />
+                            <small class="error-message"></small>
+                        </label>
+                        <label class="field">
+                            <span>Apellido *</span>
+                            <input type="text" id="lastName" name="lastName" placeholder="Ingresa tu apellido" required
+                                minlength="2" maxlength="100" />
+                            <small class="error-message"></small>
+                        </label>
+                    </div>
+
+                    <label class="field">
+                        <span>Correo Electrónico *</span>
+                        <input type="email" id="email" name="email" autocomplete="email"
+                            placeholder="Ingresa tu correo electrónico" required />
+                        <small class="error-message"></small>
+                    </label>
+
+                    <label class="field">
+                        <span>Usuario</span>
+                        <input type="text" id="nickName" name="nickName" autocomplete="username"
+                            placeholder="Ingresa tu usuario (opcional)" minlength="3" maxlength="50" />
+                        <small class="error-message"></small>
+                    </label>
+
+                    <div class="form__row">
+                        <label class="field">
+                            <span>Contraseña *</span>
+                            <input type="password" id="password" name="password" autocomplete="new-password"
+                                placeholder="Ingresa tu contraseña" required minlength="8" />
+                            <small class="error-message"></small>
+                        </label>
+                        <label class="field">
+                            <span>Confirmar Contraseña *</span>
+                            <input type="password" id="confirmPassword" name="confirmPassword"
+                                autocomplete="new-password" placeholder="Confirma tu contraseña" required
+                                minlength="8" />
+                            <small class="error-message"></small>
+                        </label>
+                    </div>
+
+                    <div class="password-requirements">
+                        <p>La contraseña debe contener:</p>
+                        <ul>
+                            <li id="req-length">Al menos 8 caracteres</li>
+                            <li id="req-uppercase">Una letra mayúscula</li>
+                            <li id="req-lowercase">Una letra minúscula</li>
+                            <li id="req-number">Un número</li>
+                        </ul>
+                    </div>
+
+                    <label class="checkbox">
+                        <input type="checkbox" id="terms" name="terms" required />
+                        <span>Acepto los <a href="/terms.html" class="link" target="_blank">Términos y
+                                Condiciones</a></span>
+                    </label>
+
+                    <button type="submit" class="btn btn--primary">
+                        <span class="btn-text">Crear Cuenta</span>
+                        <span class="spinner" style="display: none;"></span>
+                    </button>
+                </form>
+
+                <p class="signin">¿Ya tienes cuenta? <a class="link" href="/login">Inicia sesión</a></p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Testimonial rotation
+        (function () {
+            const quotes = [
+                "Únete a nosotros y disfruta de todas las funcionalidades.",
+                "Gestiona tus proyectos de forma eficiente y segura.",
+                "Colabora con tu equipo en tiempo real.",
+                "Accede desde cualquier dispositivo, en cualquier momento."
+            ];
+            let index = 0;
+            const el = document.getElementById("quote-text");
+            const quoteBox = document.querySelector(".media__quote");
+            const dots = document.querySelectorAll("#quote-dots span");
+
+            if (el) {
+                setInterval(() => {
+                    if (quoteBox) quoteBox.classList.add("fade-out");
+                    if (dots.length) {
+                        dots.forEach(dot => dot.classList.add("fade-out"));
+                    }
+                    setTimeout(() => {
+                        index = (index + 1) % quotes.length;
+                        el.textContent = quotes[index];
+                        if (dots.length) {
+                            dots.forEach((dot, i) => {
+                                dot.classList.toggle("is-active", i === index % dots.length);
+                                dot.classList.remove("fade-out");
+                            });
+                        }
+                        if (quoteBox) quoteBox.classList.remove("fade-out");
+                    }, 200);
+                }, 3000);
+            }
+        })();
+
+        // Password validation
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+
+        passwordInput?.addEventListener('input', function () {
+            const password = this.value;
+
+            // Check length
+            const lengthValid = password.length >= 8;
+            toggleRequirement('req-length', lengthValid);
+
+            // Check uppercase
+            const uppercaseValid = /[A-Z]/.test(password);
+            toggleRequirement('req-uppercase', uppercaseValid);
+
+            // Check lowercase
+            const lowercaseValid = /[a-z]/.test(password);
+            toggleRequirement('req-lowercase', lowercaseValid);
+
+            // Check number
+            const numberValid = /[0-9]/.test(password);
+            toggleRequirement('req-number', numberValid);
+        });
+
+        function toggleRequirement(id, isValid) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.color = isValid ? '#10b981' : '#94a3b8';
+                element.style.fontWeight = isValid ? '500' : '300';
+            }
+        }
+
+        // Form submission
+        const form = document.getElementById('registerForm');
+        form?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Clear previous errors
+            clearErrors();
+
+            // Get form data
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                nickName: document.getElementById('nickName').value.trim() || null,
+                password: document.getElementById('password').value,
+                confirmPassword: document.getElementById('confirmPassword').value,
+                termsAccepted: document.getElementById('terms').checked,
+                enabled: true,
+                accountNonExpired: true,
+                accountNonLocked: true,
+                credentialsNonExpired: true,
+                scopeIds: [],
+                roleIds: [],
+                groupIds: []
+            };
+
+            // Validar que las contraseñas coincidan
+            if (formData.password !== formData.confirmPassword) {
+                showFieldError('confirmPassword', 'Las contraseñas no coinciden');
+                return;
+            }
+
+            // Validar términos
+            if (!document.getElementById('terms').checked) {
+                showAlert('Por favor acepta los Términos y Condiciones', 'error');
+                return;
+            }
+
+            // Mostrar cargando
+            const btn = form.querySelector('button[type="submit"]');
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner');
+            btn.disabled = true;
+            btnText.textContent = 'Creando cuenta...';
+            spinner.style.display = 'inline-block';
+
+            try {
+                const response = await fetch('/api/v1/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showAlert('¡Cuenta creada exitosamente! Redirigiendo a iniciar sesión...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    const error = await response.json();
+                    showAlert(error.message || 'No se pudo crear la cuenta. Por favor intenta de nuevo.', 'error');
+                }
+            } catch (error) {
+                console.error('Error de registro:', error);
+                showAlert('Ocurrió un error. Por favor intenta más tarde.', 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Crear Cuenta';
+                spinner.style.display = 'none';
+            }
+        });
+
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorEl = field?.parentElement.querySelector('.error-message');
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+                field.classList.add('error');
+            }
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.textContent = '';
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.field input').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert--${type}`;
+            alert.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
