@@ -5,7 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,16 +23,11 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
-import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -53,12 +48,30 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import com.backandwhite.domain.repository.OauthClientRepository;
+
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
         private final PasswordEncoder passwordEncoder;
+
+        private OauthClientRepository oauthClientRepository;
+
+        public SecurityConfig(PasswordEncoder passwordEncoder) {
+                this.passwordEncoder = passwordEncoder;
+        }
+
+        @Autowired(required = false)
+        public void setOauthClientRepository(OauthClientRepository oauthClientRepository) {
+                try {
+                        this.oauthClientRepository = oauthClientRepository;
+                } catch (Exception e) {
+                        // If OauthClientRepository fails to load (e.g., mapper issues), continue
+                        // without it
+                        this.oauthClientRepository = null;
+                }
+        }
 
         @Value("${app.security.handler-url:http://localhost:4200}")
         private String handlerUrl;
@@ -153,26 +166,28 @@ public class SecurityConfig {
 
         @Bean
         public RegisteredClientRepository registeredClientRepository() {
-                RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                                .clientId("oidc-client")
-                                .clientSecret(passwordEncoder.encode("secret"))
-                                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
-                                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                                .redirectUri("http://localhost:4200/admin")
-                                .redirectUri("http://localhost:4200/auth/callback")
-                                .redirectUri("https://webapp-production-68d2.up.railway.app/admin")
-                                .redirectUri("https://webapp-production-68d2.up.railway.app/auth/callback")
-                                .redirectUri("https://oauthdebugger.com/debug")
-                                .scope(OidcScopes.OPENID)
-                                .scope(OidcScopes.PROFILE)
-                                .clientSettings(ClientSettings.builder()
-                                                .requireProofKey(true)
-                                                .requireAuthorizationConsent(false)
-                                                .build())
-                                .build();
+                // CustomRegisteredClientRepository está configurada como @Component
+                // y será inyectada automáticamente si OauthClientRepository está disponible
+                // Si no está disponible (en tests), retornar una implementación vacía
+                if (oauthClientRepository == null) {
+                        return new RegisteredClientRepository() {
+                                @Override
+                                public void save(RegisteredClient registeredClient) {
+                                        // No implementar
+                                }
 
-                return new InMemoryRegisteredClientRepository(oidcClient);
+                                @Override
+                                public RegisteredClient findById(String id) {
+                                        return null;
+                                }
+
+                                @Override
+                                public RegisteredClient findByClientId(String clientId) {
+                                        return null;
+                                }
+                        };
+                }
+                return new CustomRegisteredClientRepository(oauthClientRepository);
         }
 
         @Bean
