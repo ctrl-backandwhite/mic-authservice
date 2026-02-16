@@ -66,7 +66,6 @@ public class SecurityConfig {
     private final String[] GET_PUBLIC_URLS = {
             "/login",
             "/login.html",
-            "/dashboard.html",
             "/css/**",
             "/js/**",
             "/images/**",
@@ -206,6 +205,11 @@ public class SecurityConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
+    }
+
+    @Bean
+    public org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService authorizationService() {
+        return new org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService();
     }
 
     @Bean
