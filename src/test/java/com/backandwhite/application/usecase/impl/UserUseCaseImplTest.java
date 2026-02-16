@@ -3,8 +3,11 @@ package com.backandwhite.application.usecase.impl;
 import com.backandwhite.application.handler.UserCommandHandler;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.User;
+import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.repository.UserRepository;
+import com.backandwhite.domain.repository.RoleRepository;
 import com.backandwhite.provider.UserProvider;
+import com.backandwhite.provider.RoleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +19,7 @@ import java.util.List;
 
 import static com.backandwhite.provider.UserProvider.otherUser;
 import static com.backandwhite.provider.UserProvider.user;
+import static com.backandwhite.provider.RoleProvider.guestRole;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,6 +36,9 @@ class UserUseCaseImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private RoleRepository roleRepository;
 
     @Mock
     private UserCommandHandler userCommandHandler;
@@ -54,6 +61,24 @@ class UserUseCaseImplTest {
         verify(passwordEncoder).encode(UserProvider.USER_PASSWORD);
         verify(userCommandHandler).validate(input);
         verify(userRepository).save(input);
+    }
+
+    @Test
+    void save_userWithoutRoles_assignsDefaultGuestRole() {
+        User input = user().withId(null).withRoles(List.of());
+        User saved = user().withPassword("encoded-secret").withRoles(List.of(guestRole()));
+
+        when(roleRepository.findAll()).thenReturn(List.of(guestRole()));
+        when(passwordEncoder.encode(UserProvider.USER_PASSWORD)).thenReturn("encoded-secret");
+        when(userRepository.save(any(User.class))).thenReturn(saved);
+
+        User result = userUseCase.save(input);
+
+        assertThat(result.getRoles()).isNotEmpty();
+        assertThat(result.getRoles()).containsExactly(guestRole());
+        verify(passwordEncoder).encode(UserProvider.USER_PASSWORD);
+        verify(userCommandHandler).validate(any(User.class));
+        verify(userRepository).save(any(User.class));
     }
 
     @Test

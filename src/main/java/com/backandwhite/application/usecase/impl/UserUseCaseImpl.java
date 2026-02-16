@@ -2,7 +2,9 @@ package com.backandwhite.application.usecase.impl;
 
 import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.domain.model.User;
+import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.repository.UserRepository;
+import com.backandwhite.domain.repository.RoleRepository;
 
 import com.backandwhite.application.handler.UserCommandHandler;
 
@@ -19,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
@@ -30,16 +33,39 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final UserCommandHandler userCommandHandler;
 
     @Override
     @Transactional
     @CacheEvict(value = "user_all", allEntries = true)
     public User save(User model) {
+        // Assign default GUEST role if user has no roles
+        if (model.getRoles() == null || model.getRoles().isEmpty()) {
+            Role guestRole = findGuestRole();
+            if (guestRole != null) {
+                model.setRoles(new ArrayList<>(List.of(guestRole)));
+                log.debug("::> Assigned default GUEST role to user {}", model.getEmail());
+            }
+        }
+
         model.setPassword(passwordEncoder.encode(model.getPassword()));
         log.debug("::> Creating user {}", model);
         userCommandHandler.validate(model);
         return userRepository.save(model);
+    }
+
+    private Role findGuestRole() {
+        try {
+            List<Role> allRoles = roleRepository.findAll();
+            return allRoles.stream()
+                    .filter(role -> "ROLE_GUEST".equals(role.getUniqueName()))
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception e) {
+            log.warn("::> Could not fetch GUEST role from repository", e);
+            return null;
+        }
     }
 
     @Override
