@@ -1,5 +1,6 @@
 package com.backandwhite.api.dto.out;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -46,12 +47,15 @@ public class UserDtoOut {
     @Schema(description = "Indica si las credenciales del usuario no han expirado", example = "true")
     private Boolean credentialsNonExpired;
 
+    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
     @ArraySchema(schema = @Schema(implementation = ScopeDtoOut.class), arraySchema = @Schema(description = "Scopes directos asignados al usuario"))
     private List<ScopeDtoOut> scopes = new ArrayList<>();
 
+    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
     @ArraySchema(schema = @Schema(implementation = RoleDtoOut.class), arraySchema = @Schema(description = "Roles directos asignados al usuario"))
     private List<RoleDtoOut> roles = new ArrayList<>();
 
+    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
     @ArraySchema(schema = @Schema(implementation = GroupDtoOut.class), arraySchema = @Schema(description = "Grupos a los que pertenece el usuario"))
     private List<GroupDtoOut> groups = new ArrayList<>();
 

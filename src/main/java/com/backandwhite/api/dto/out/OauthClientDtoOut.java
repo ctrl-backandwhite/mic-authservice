@@ -1,5 +1,6 @@
 package com.backandwhite.api.dto.out;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -25,12 +26,15 @@ public class OauthClientDtoOut {
     @Schema(description = "Secreto del cliente OAuth2. Debe mantenerse confidencial", example = "abc123xyz789secret", minLength = 8, maxLength = 255)
     private String clientSecret;
 
+    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
     @ArraySchema(schema = @Schema(implementation = ScopeDtoOut.class), arraySchema = @Schema(description = "Scopes que el cliente puede solicitar"))
     private List<ScopeDtoOut> scopes = new ArrayList<>();
 
+    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
     @ArraySchema(schema = @Schema(implementation = RedirectUriDtoOut.class), arraySchema = @Schema(description = "URIs de redirección autorizadas"))
     private List<RedirectUriDtoOut> redirectUris = new ArrayList<>();
 
+    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
     @ArraySchema(schema = @Schema(implementation = GrantTypeDtoOut.class), arraySchema = @Schema(description = "Tipos de concesión OAuth2 permitidos"))
     private List<GrantTypeDtoOut> grantTypes = new ArrayList<>();
 
