@@ -6,12 +6,13 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.Customizer;
@@ -36,6 +37,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -58,15 +60,24 @@ public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.security.handler-url:http://localhost:4200}")
+    private String handlerUrl;
+
     private final String[] GET_PUBLIC_URLS = {
             "/login",
+            "/login.html",
+            "/dashboard.html",
+            "/css/**",
+            "/js/**",
+            "/images/**",
+            "/favicon.ico",
             "/.well-known/**",
             "/oauth2/token/**",
+            "/logout",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-ui.html",
             "/api/v1/**"};
-
 
     @Bean
     @Order(1)
@@ -99,16 +110,27 @@ public class SecurityConfig {
                         .requestMatchers(GET_PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())
-                .csrf(csrf -> csrf.ignoringRequestMatchers(GET_PUBLIC_URLS)
-                        .ignoringRequestMatchers("/logout"))
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(GET_PUBLIC_URLS))
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
-                    .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
-                .formLogin(Customizer.withDefaults());
+                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(
+                                HttpStatus.NO_CONTENT)))
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .successHandler(authenticationSuccessHandler())
+                        .permitAll());
         return http.build();
+    }
+
+    @Bean
+    public SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler() {
+        SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
+        handler.setDefaultTargetUrl(handlerUrl);
+        return handler;
     }
 
     @Bean

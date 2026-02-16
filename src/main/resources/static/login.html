@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Iniciar sesión</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/login.css?v=20260215" />
+</head>
+
+<body>
+    <main class="login-page login">
+        <section class="login-card">
+            <div class="login-card__media" aria-hidden="true">
+                <div class="media__overlay"></div>
+                <div class="media__content">
+                    <span class="logo">Back &amp; White</span>
+                    <div class="media__quote">
+                        <p id="quote-text">El tema luce increíble y el soporte es excelente.</p>
+                    </div>
+                    <div class="media__dots" id="quote-dots">
+                        <span class="is-active"></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-card__content">
+                <header class="content__header">
+                    <h1>Welcome Back!</h1>
+                    <p>Sign in to continue.</p>
+                </header>
+
+                <form method="post" action="/login" class="form">
+                    <label class="field">
+                        <span>Username</span>
+                        <input type="text" name="username" autocomplete="username" placeholder="Enter username"
+                            required />
+                    </label>
+                    <label class="field">
+                        <span>Password</span>
+                        <input type="password" name="password" autocomplete="current-password"
+                            placeholder="Enter password" required />
+                    </label>
+
+                    <div class="form__meta">
+                        <label class="checkbox">
+                            <input type="checkbox" name="remember" />
+                            <span>Remember me</span>
+                        </label>
+                        <a class="link" href="#">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn--primary">Sign In</button>
+                </form>
+
+                <div class="divider">
+                    <span>Sign in with</span>
+                </div>
+
+                <div class="social">
+                    <button type="button" class="social__btn">F</button>
+                    <button type="button" class="social__btn">G</button>
+                    <button type="button" class="social__btn">GH</button>
+                    <button type="button" class="social__btn">X</button>
+                </div>
+
+                <p class="signup">Don't have an account? <a class="link" href="#">Signup</a></p>
+            </div>
+        </section>
+    </main>
+    <script>
+        (function () {
+            var quotes = [
+                "El tema luce increíble y el soporte es excelente.",
+                "Interfaz moderna, rápida y muy intuitiva.",
+                "La experiencia de usuario es impecable.",
+                "Soporte y documentación de primera."
+            ];
+            var index = 0;
+            var el = document.getElementById("quote-text");
+            var quoteBox = document.querySelector(".media__quote");
+            var dots = document.querySelectorAll("#quote-dots span");
+            if (!el) return;
+            setInterval(function () {
+                if (quoteBox) quoteBox.classList.add("fade-out");
+                if (dots.length) {
+                    dots.forEach(function (dot) {
+                        dot.classList.add("fade-out");
+                    });
+                }
+                setTimeout(function () {
+                    index = (index + 1) % quotes.length;
+                    el.textContent = quotes[index];
+                    if (dots.length) {
+                        dots.forEach(function (dot, i) {
+                            dot.classList.toggle("is-active", i === index % dots.length);
+                            dot.classList.remove("fade-out");
+                        });
+                    }
+                    if (quoteBox) quoteBox.classList.remove("fade-out");
+                }, 200);
+            }, 3000);
+        })();
+    </script>
+</body>
+
+</html>

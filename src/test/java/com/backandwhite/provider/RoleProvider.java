@@ -26,6 +26,12 @@ public final class RoleProvider {
     public static final String ROLE_DESCRIPTION = "Support role";
     public static final Boolean ROLE_ENABLED = true;
 
+    public static final Long GUEST_ID = 4L;
+    public static final String GUEST_NAME = "Guest";
+    public static final String GUEST_UNIQUE_NAME = "ROLE_GUEST";
+    public static final String GUEST_DESCRIPTION = "Guest role";
+    public static final Boolean GUEST_ENABLED = true;
+
     private RoleProvider() {
         // Utility class.
     }
@@ -142,6 +148,45 @@ public final class RoleProvider {
                 .uniqueName(ROLE_UNIQUE_NAME)
                 .description(ROLE_DESCRIPTION)
                 .enabled(ROLE_ENABLED)
+                .build();
+    }
+
+    public static Role guestRole() {
+        return Role.builder()
+                .id(GUEST_ID)
+                .name(GUEST_NAME)
+                .uniqueName(GUEST_UNIQUE_NAME)
+                .description(GUEST_DESCRIPTION)
+                .enabled(GUEST_ENABLED)
+                .build();
+    }
+
+    public static RoleEntity guestRoleEntity() {
+        return RoleEntity.builder()
+                .id(GUEST_ID)
+                .name(GUEST_NAME)
+                .uniqueName(GUEST_UNIQUE_NAME)
+                .description(GUEST_DESCRIPTION)
+                .enabled(GUEST_ENABLED)
+                .build();
+    }
+
+    public static RoleDtoOut guestRoleDtoOut(Long id) {
+        return RoleDtoOut.builder()
+                .id(id)
+                .name(GUEST_NAME)
+                .uniqueName(GUEST_UNIQUE_NAME)
+                .description(GUEST_DESCRIPTION)
+                .enabled(GUEST_ENABLED)
+                .build();
+    }
+
+    public static RoleDtoIn guestRoleDtoIn() {
+        return RoleDtoIn.builder()
+                .name(GUEST_NAME)
+                .uniqueName(GUEST_UNIQUE_NAME)
+                .description(GUEST_DESCRIPTION)
+                .enabled(GUEST_ENABLED)
                 .build();
     }
 }
