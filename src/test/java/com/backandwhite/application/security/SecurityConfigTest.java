@@ -23,75 +23,78 @@ import static org.mockito.Mockito.when;
 
 class SecurityConfigTest {
 
-    @Test
-    void corsConfigurationSource_includesExpectedOriginsAndMethods() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
+        @Test
+        void corsConfigurationSource_includesExpectedOriginsAndMethods() {
+                SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
 
-        CorsConfigurationSource source = config.corsConfigurationSource();
-        CorsConfiguration cors = source.getCorsConfiguration(new MockHttpServletRequest());
+                CorsConfigurationSource source = config.corsConfigurationSource();
+                CorsConfiguration cors = source.getCorsConfiguration(new MockHttpServletRequest());
 
-        assertThat(cors).isNotNull();
-        assertThat(cors.getAllowedOrigins()).contains(
-                "http://localhost:4200",
-                "https://webapp-production-68d2.up.railway.app",
-                "https://mic-authservice-production.up.railway.app");
-        assertThat(cors.getAllowedMethods()).contains("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
-        assertThat(cors.getAllowedHeaders()).contains("Authorization", "Content-Type", "x-auth-token");
-        assertThat(cors.getExposedHeaders()).contains("x-auth-token");
-        assertThat(cors.getAllowCredentials()).isTrue();
-    }
+                assertThat(cors).isNotNull();
+                assertThat(cors.getAllowedOrigins()).contains(
+                                "http://localhost:4200",
+                                "https://webapp-production-68d2.up.railway.app",
+                                "https://mic-authservice-production.up.railway.app");
+                assertThat(cors.getAllowedMethods()).contains("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
+                assertThat(cors.getAllowedHeaders()).contains("*"); // Permite todos los headers
+                assertThat(cors.getExposedHeaders()).contains("Set-Cookie", "x-auth-token");
+                assertThat(cors.getAllowCredentials()).isTrue();
+                assertThat(cors.getMaxAge()).isEqualTo(3600L);
+        }
 
-    @Test
-    void registeredClientRepository_createsExpectedClient() {
-        PasswordEncoder encoder = mock(PasswordEncoder.class);
-        when(encoder.encode("secret")).thenReturn("encoded-secret");
-        SecurityConfig config = new SecurityConfig(encoder);
+        @Test
+        void registeredClientRepository_createsExpectedClient() {
+                PasswordEncoder encoder = mock(PasswordEncoder.class);
+                when(encoder.encode("secret")).thenReturn("encoded-secret");
+                SecurityConfig config = new SecurityConfig(encoder);
 
-        RegisteredClientRepository repository = config.registeredClientRepository();
-        RegisteredClient client = repository.findByClientId("oidc-client");
+                RegisteredClientRepository repository = config.registeredClientRepository();
+                RegisteredClient client = repository.findByClientId("oidc-client");
 
-        assertThat(client).isNotNull();
-        assertThat(client.getClientId()).isEqualTo("oidc-client");
-        assertThat(client.getClientSecret()).isEqualTo("encoded-secret");
-        assertThat(client.getRedirectUris()).contains(
-                "http://localhost:4200/admin",
-                "http://localhost:4200/auth/callback",
-                "https://webapp-production-68d2.up.railway.app/admin",
-                "https://webapp-production-68d2.up.railway.app/auth/callback",
-                "https://oauthdebugger.com/debug");
-        assertThat(client.getScopes()).contains("openid", "profile");
-    }
+                assertThat(client).isNotNull();
+                assertThat(client.getClientId()).isEqualTo("oidc-client");
+                assertThat(client.getClientSecret()).isEqualTo("encoded-secret");
+                assertThat(client.getRedirectUris()).contains(
+                                "http://localhost:4200/admin",
+                                "http://localhost:4200/auth/callback",
+                                "https://webapp-production-68d2.up.railway.app/admin",
+                                "https://webapp-production-68d2.up.railway.app/auth/callback",
+                                "https://oauthdebugger.com/debug");
+                assertThat(client.getScopes()).contains("openid", "profile");
+        }
 
-    @Test
-    void jwkSource_providesRsaKeyWithPrivateKey() throws Exception {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
+        @Test
+        void jwkSource_providesRsaKeyWithPrivateKey() throws Exception {
+                SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
 
-        JWKSource<SecurityContext> source = config.jwkSource();
-        RSAKey rsaKey = (RSAKey) source
-                .get(new com.nimbusds.jose.jwk.JWKSelector(new com.nimbusds.jose.jwk.JWKMatcher.Builder().build()),
-                        null)
-                .get(0);
+                JWKSource<SecurityContext> source = config.jwkSource();
+                RSAKey rsaKey = (RSAKey) source
+                                .get(new com.nimbusds.jose.jwk.JWKSelector(
+                                                new com.nimbusds.jose.jwk.JWKMatcher.Builder().build()),
+                                                null)
+                                .get(0);
 
-        assertThat(rsaKey).isNotNull();
-        assertThat(rsaKey.toRSAPublicKey()).isNotNull();
-        assertThat(rsaKey.toRSAPrivateKey()).isNotNull();
-    }
+                assertThat(rsaKey).isNotNull();
+                assertThat(rsaKey.toRSAPublicKey()).isNotNull();
+                assertThat(rsaKey.toRSAPrivateKey()).isNotNull();
+        }
 
-    @Test
-    void jwtAuthenticationConverter_addsRolesFromClaim() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
+        @Test
+        void jwtAuthenticationConverter_addsRolesFromClaim() {
+                SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
 
-        Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "RS256")
-                .claim("roles", List.of("ROLE_ADMIN", "ROLE_USER"))
-                .issuedAt(Instant.now())
-                .expiresAt(Instant.now().plusSeconds(300))
-                .build();
+                Jwt jwt = Jwt.withTokenValue("token")
+                                .header("alg", "RS256")
+                                .claim("roles", List.of("ROLE_ADMIN", "ROLE_USER"))
+                                .issuedAt(Instant.now())
+                                .expiresAt(Instant.now().plusSeconds(300))
+                                .build();
 
-        Collection<GrantedAuthority> authorities = config.jwtAuthenticationConverter().convert(jwt).getAuthorities();
+                Collection<GrantedAuthority> authorities = config.jwtAuthenticationConverter().convert(jwt)
+                                .getAuthorities();
 
-        assertThat(authorities)
-                .extracting(GrantedAuthority::getAuthority)
-                .contains("ROLE_ADMIN", "ROLE_USER");
-    }
+                assertThat(authorities)
+                                .extracting(GrantedAuthority::getAuthority)
+                                .contains("ROLE_ADMIN", "ROLE_USER");
+        }
 }
