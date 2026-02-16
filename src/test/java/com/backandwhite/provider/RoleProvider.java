@@ -43,6 +43,10 @@ public final class RoleProvider {
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -53,6 +57,10 @@ public final class RoleProvider {
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -63,6 +71,10 @@ public final class RoleProvider {
                 .uniqueName(ROLE_UNIQUE_NAME)
                 .description(ROLE_DESCRIPTION)
                 .enabled(ROLE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -73,6 +85,10 @@ public final class RoleProvider {
                 .uniqueName(ROLE_UNIQUE_NAME)
                 .description(ROLE_DESCRIPTION)
                 .enabled(ROLE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -82,6 +98,10 @@ public final class RoleProvider {
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -91,6 +111,10 @@ public final class RoleProvider {
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -101,6 +125,10 @@ public final class RoleProvider {
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -111,6 +139,10 @@ public final class RoleProvider {
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -121,6 +153,10 @@ public final class RoleProvider {
                 .uniqueName(ROLE_UNIQUE_NAME)
                 .description(ROLE_DESCRIPTION)
                 .enabled(ROLE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -158,6 +194,10 @@ public final class RoleProvider {
                 .uniqueName(GUEST_UNIQUE_NAME)
                 .description(GUEST_DESCRIPTION)
                 .enabled(GUEST_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -168,6 +208,10 @@ public final class RoleProvider {
                 .uniqueName(GUEST_UNIQUE_NAME)
                 .description(GUEST_DESCRIPTION)
                 .enabled(GUEST_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -178,6 +222,10 @@ public final class RoleProvider {
                 .uniqueName(GUEST_UNIQUE_NAME)
                 .description(GUEST_DESCRIPTION)
                 .enabled(GUEST_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 

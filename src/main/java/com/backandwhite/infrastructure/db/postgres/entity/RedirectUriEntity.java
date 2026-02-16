@@ -2,21 +2,21 @@ package com.backandwhite.infrastructure.db.postgres.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
 @With
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "redirect_uris")
-public class RedirectUriEntity {
+public class RedirectUriEntity extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,8 @@ public class RedirectUriEntity {
 
     @Override
     public boolean equals(Object object) {
-        if (object == null || getClass() != object.getClass()) return false;
+        if (object == null || getClass() != object.getClass())
+            return false;
         RedirectUriEntity that = (RedirectUriEntity) object;
         return Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)

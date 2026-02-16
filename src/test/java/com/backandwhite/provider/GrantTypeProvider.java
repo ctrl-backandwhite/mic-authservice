@@ -24,6 +24,10 @@ public final class GrantTypeProvider {
                 .id(GRANT_TYPE_ID)
                 .value(GRANT_TYPE_VALUE)
                 .enabled(GRANT_TYPE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -32,6 +36,10 @@ public final class GrantTypeProvider {
                 .id(OTHER_GRANT_TYPE_ID)
                 .value(OTHER_GRANT_TYPE_VALUE)
                 .enabled(OTHER_GRANT_TYPE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -40,6 +48,10 @@ public final class GrantTypeProvider {
                 .id(GRANT_TYPE_ID)
                 .value(GRANT_TYPE_VALUE)
                 .enabled(GRANT_TYPE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -48,6 +60,10 @@ public final class GrantTypeProvider {
                 .id(OTHER_GRANT_TYPE_ID)
                 .value(OTHER_GRANT_TYPE_VALUE)
                 .enabled(OTHER_GRANT_TYPE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -70,6 +86,10 @@ public final class GrantTypeProvider {
                 .id(id)
                 .value(GRANT_TYPE_VALUE)
                 .enabled(GRANT_TYPE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -78,6 +98,10 @@ public final class GrantTypeProvider {
                 .id(id)
                 .value(OTHER_GRANT_TYPE_VALUE)
                 .enabled(OTHER_GRANT_TYPE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 }

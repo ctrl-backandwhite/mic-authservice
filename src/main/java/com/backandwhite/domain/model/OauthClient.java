@@ -2,10 +2,9 @@ package com.backandwhite.domain.model;
 
 import lombok.*;
 
-
+import java.time.Instant;
 import java.util.List;
 import java.util.ArrayList;
-
 
 @Data
 @With
@@ -23,6 +22,10 @@ public class OauthClient {
     private List<RedirectUri> redirectUris = new ArrayList<>();
     @Builder.Default
     private List<GrantType> grantTypes = new ArrayList<>();
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
 
     public void addScope(List<Scope> scopes) {
         this.scopes.addAll(scopes);

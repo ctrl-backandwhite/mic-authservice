@@ -27,6 +27,10 @@ public final class RedirectUriProvider {
                 .name(REDIRECT_URI_NAME)
                 .value(REDIRECT_URI_VALUE)
                 .enabled(REDIRECT_URI_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -36,6 +40,10 @@ public final class RedirectUriProvider {
                 .name(OTHER_REDIRECT_URI_NAME)
                 .value(OTHER_REDIRECT_URI_VALUE)
                 .enabled(OTHER_REDIRECT_URI_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -45,6 +53,10 @@ public final class RedirectUriProvider {
                 .name(REDIRECT_URI_NAME)
                 .value(REDIRECT_URI_VALUE)
                 .enabled(REDIRECT_URI_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -54,6 +66,10 @@ public final class RedirectUriProvider {
                 .name(OTHER_REDIRECT_URI_NAME)
                 .value(OTHER_REDIRECT_URI_VALUE)
                 .enabled(OTHER_REDIRECT_URI_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -79,6 +95,10 @@ public final class RedirectUriProvider {
                 .name(REDIRECT_URI_NAME)
                 .value(REDIRECT_URI_VALUE)
                 .enabled(REDIRECT_URI_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -88,6 +108,10 @@ public final class RedirectUriProvider {
                 .name(OTHER_REDIRECT_URI_NAME)
                 .value(OTHER_REDIRECT_URI_VALUE)
                 .enabled(OTHER_REDIRECT_URI_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 }

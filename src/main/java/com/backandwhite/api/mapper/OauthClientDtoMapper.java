@@ -24,6 +24,10 @@ import java.util.List;
 public interface OauthClientDtoMapper {
 
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "updatedAt", source = "updatedAt")
+    @Mapping(target = "createdBy", source = "createdBy")
+    @Mapping(target = "updatedBy", source = "updatedBy")
     @Mapping(target = "clientId", source = "clientId")
     @Mapping(target = "clientSecret", source = "clientSecret")
     @Mapping(target = "scopes", source = "scopes")
@@ -34,6 +38,10 @@ public interface OauthClientDtoMapper {
     @Mapping(target = "scopes", source = "scopeIds", qualifiedByName = "mapScopeIds")
     @Mapping(target = "redirectUris", source = "redirectUriIds", qualifiedByName = "mapRedirectUriIds")
     @Mapping(target = "grantTypes", source = "grantTypeIds", qualifiedByName = "mapGrantTypeIds")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     OauthClient toDomain(OauthClientDtoIn dtoIn);
 
     List<OauthClient> toDomainList(List<OauthClientDtoIn> dtos);
@@ -46,25 +54,27 @@ public interface OauthClientDtoMapper {
             return Collections.emptyList();
         }
         return scopeIds.stream()
-            .map(id -> Scope.builder().id(id).build())
-            .collect(Collectors.toList());
+                .map(id -> Scope.builder().id(id).build())
+                .collect(Collectors.toList());
     }
+
     @Named("mapRedirectUriIds")
     default List<RedirectUri> mapRedirectUriIds(List<Long> redirectUriIds) {
         if (redirectUriIds == null || redirectUriIds.isEmpty()) {
             return Collections.emptyList();
         }
         return redirectUriIds.stream()
-            .map(id -> RedirectUri.builder().id(id).build())
-            .collect(Collectors.toList());
+                .map(id -> RedirectUri.builder().id(id).build())
+                .collect(Collectors.toList());
     }
+
     @Named("mapGrantTypeIds")
     default List<GrantType> mapGrantTypeIds(List<Long> grantTypeIds) {
         if (grantTypeIds == null || grantTypeIds.isEmpty()) {
             return Collections.emptyList();
         }
         return grantTypeIds.stream()
-            .map(id -> GrantType.builder().id(id).build())
-            .collect(Collectors.toList());
+                .map(id -> GrantType.builder().id(id).build())
+                .collect(Collectors.toList());
     }
 }

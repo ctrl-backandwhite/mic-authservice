@@ -34,6 +34,7 @@ class RedirectUriEntityMapperTest {
 
         assertThat(result)
                 .usingRecursiveComparison()
+                .ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
                 .isEqualTo(redirectUriEntity());
     }
 
