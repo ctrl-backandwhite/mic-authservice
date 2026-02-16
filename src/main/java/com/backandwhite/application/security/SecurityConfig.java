@@ -5,7 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,8 +23,11 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
@@ -56,21 +59,8 @@ public class SecurityConfig {
 
         private final PasswordEncoder passwordEncoder;
 
-        private OauthClientRepository oauthClientRepository;
-
         public SecurityConfig(PasswordEncoder passwordEncoder) {
                 this.passwordEncoder = passwordEncoder;
-        }
-
-        @Autowired(required = false)
-        public void setOauthClientRepository(OauthClientRepository oauthClientRepository) {
-                try {
-                        this.oauthClientRepository = oauthClientRepository;
-                } catch (Exception e) {
-                        // If OauthClientRepository fails to load (e.g., mapper issues), continue
-                        // without it
-                        this.oauthClientRepository = null;
-                }
         }
 
         @Value("${app.security.handler-url:http://localhost:4200}")
@@ -79,6 +69,7 @@ public class SecurityConfig {
         private final String[] GET_PUBLIC_URLS = {
                         "/login",
                         "/login.html",
+                        "/forgot-password.html",
                         "/register.html",
                         "/terms.html",
                         "/css/**",
@@ -165,29 +156,23 @@ public class SecurityConfig {
         }
 
         @Bean
-        public RegisteredClientRepository registeredClientRepository() {
-                // CustomRegisteredClientRepository está configurada como @Component
-                // y será inyectada automáticamente si OauthClientRepository está disponible
-                // Si no está disponible (en tests), retornar una implementación vacía
+        public RegisteredClientRepository registeredClientRepository(
+                        ObjectProvider<OauthClientRepository> oauthClientRepositoryProvider) {
+                OauthClientRepository oauthClientRepository = oauthClientRepositoryProvider.getIfAvailable();
                 if (oauthClientRepository == null) {
-                        return new RegisteredClientRepository() {
-                                @Override
-                                public void save(RegisteredClient registeredClient) {
-                                        // No implementar
-                                }
-
-                                @Override
-                                public RegisteredClient findById(String id) {
-                                        return null;
-                                }
-
-                                @Override
-                                public RegisteredClient findByClientId(String clientId) {
-                                        return null;
-                                }
-                        };
+                        return new InMemoryRegisteredClientRepository(defaultRegisteredClient());
                 }
                 return new CustomRegisteredClientRepository(oauthClientRepository);
+        }
+
+        private RegisteredClient defaultRegisteredClient() {
+                return RegisteredClient.withId(UUID.randomUUID().toString())
+                                .clientId("default-client")
+                                .clientSecret(passwordEncoder.encode("secret"))
+                                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                                .scope("default")
+                                .build();
         }
 
         @Bean

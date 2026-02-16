@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Crear cuenta</title>
+    <title data-i18n="register.pageTitle">Crear cuenta</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -19,7 +19,8 @@
                 <div class="media__content">
                     <span class="logo">Back &amp; White</span>
                     <div class="media__quote">
-                        <p id="quote-text">Únete a nosotros y disfruta de todas las funcionalidades.</p>
+                        <p id="quote-text" data-i18n="register.quote">Únete a nosotros y disfruta de todas las
+                            funcionalidades.</p>
                     </div>
                     <div class="media__dots" id="quote-dots">
                         <span class="is-active"></span><span></span><span></span>
@@ -35,110 +36,235 @@
                 <form id="registerForm" class="form" novalidate>
                     <div class="form__row">
                         <label class="field">
-                            <span>Nombre *</span>
-                            <input type="text" id="name" name="name" placeholder="Ingresa tu nombre" required
-                                minlength="2" maxlength="100" />
+                            <span data-i18n="register.nameLabel">Nombre *</span>
+                            <input type="text" id="name" name="name" placeholder="Ingresa tu nombre"
+                                data-i18n-placeholder="register.namePlaceholder" required minlength="2"
+                                maxlength="100" />
                             <small class="error-message"></small>
                         </label>
                         <label class="field">
-                            <span>Apellido *</span>
-                            <input type="text" id="lastName" name="lastName" placeholder="Ingresa tu apellido" required
-                                minlength="2" maxlength="100" />
+                            <span data-i18n="register.lastNameLabel">Apellido *</span>
+                            <input type="text" id="lastName" name="lastName" placeholder="Ingresa tu apellido"
+                                data-i18n-placeholder="register.lastNamePlaceholder" required minlength="2"
+                                maxlength="100" />
                             <small class="error-message"></small>
                         </label>
                     </div>
 
                     <label class="field">
-                        <span>Correo Electrónico *</span>
+                        <span data-i18n="register.emailLabel">Correo Electrónico *</span>
                         <input type="email" id="email" name="email" autocomplete="email"
-                            placeholder="Ingresa tu correo electrónico" required />
+                            placeholder="Ingresa tu correo electrónico"
+                            data-i18n-placeholder="register.emailPlaceholder" required />
                         <small class="error-message"></small>
                     </label>
 
                     <label class="field">
-                        <span>Usuario</span>
+                        <span data-i18n="register.usernameLabel">Usuario</span>
                         <input type="text" id="nickName" name="nickName" autocomplete="username"
-                            placeholder="Ingresa tu usuario (opcional)" minlength="3" maxlength="50" />
+                            placeholder="Ingresa tu usuario (opcional)"
+                            data-i18n-placeholder="register.usernamePlaceholder" minlength="3" maxlength="50" />
                         <small class="error-message"></small>
                     </label>
 
                     <div class="form__row">
                         <label class="field">
-                            <span>Contraseña *</span>
+                            <span data-i18n="register.passwordLabel">Contraseña *</span>
                             <input type="password" id="password" name="password" autocomplete="new-password"
-                                placeholder="Ingresa tu contraseña" required minlength="8" />
+                                placeholder="Ingresa tu contraseña" data-i18n-placeholder="register.passwordPlaceholder"
+                                required minlength="8" />
                             <small class="error-message"></small>
                         </label>
                         <label class="field">
-                            <span>Confirmar Contraseña *</span>
+                            <span data-i18n="register.confirmPasswordLabel">Confirmar Contraseña *</span>
                             <input type="password" id="confirmPassword" name="confirmPassword"
-                                autocomplete="new-password" placeholder="Confirma tu contraseña" required
-                                minlength="8" />
+                                autocomplete="new-password" placeholder="Confirma tu contraseña"
+                                data-i18n-placeholder="register.confirmPasswordPlaceholder" required minlength="8" />
                             <small class="error-message"></small>
                         </label>
                     </div>
 
                     <div class="password-requirements">
-                        <p>La contraseña debe contener:</p>
+                        <p data-i18n="register.passwordRequirements">La contraseña debe contener:</p>
                         <ul>
-                            <li id="req-length">Al menos 8 caracteres</li>
-                            <li id="req-uppercase">Una letra mayúscula</li>
-                            <li id="req-lowercase">Una letra minúscula</li>
-                            <li id="req-number">Un número</li>
+                            <li id="req-length" data-i18n="register.reqLength">Al menos 8 caracteres</li>
+                            <li id="req-uppercase" data-i18n="register.reqUppercase">Una letra mayúscula</li>
+                            <li id="req-lowercase" data-i18n="register.reqLowercase">Una letra minúscula</li>
+                            <li id="req-number" data-i18n="register.reqNumber">Un número</li>
                         </ul>
                     </div>
 
                     <label class="checkbox">
                         <input type="checkbox" id="terms" name="terms" required />
-                        <span>Acepto los <a href="/terms.html" class="link" target="_blank">Términos y
+                        <span><span data-i18n="register.acceptTerms">Acepto los</span>
+                            <a href="/terms.html" class="link" target="_blank" data-i18n="register.termsLink">Términos y
                                 Condiciones</a></span>
                     </label>
 
                     <button type="submit" class="btn btn--primary">
-                        <span class="btn-text">Crear Cuenta</span>
+                        <span class="btn-text" data-i18n="register.submit">Crear Cuenta</span>
                         <span class="spinner" style="display: none;"></span>
                     </button>
                 </form>
 
-                <p class="signin">¿Ya tienes cuenta? <a class="link" href="/login">Inicia sesión</a></p>
+                <p class="signin"><span data-i18n="register.haveAccount">¿Ya tienes cuenta?</span>
+                    <a class="link" href="/login" data-i18n="register.loginLink">Inicia sesión</a>
+                </p>
             </div>
         </section>
     </main>
 
     <script>
-        // Testimonial rotation
-        (function () {
-            const quotes = [
-                "Únete a nosotros y disfruta de todas las funcionalidades.",
-                "Gestiona tus proyectos de forma eficiente y segura.",
-                "Colabora con tu equipo en tiempo real.",
-                "Accede desde cualquier dispositivo, en cualquier momento."
-            ];
+        const translations = {
+            es: {
+                "register.pageTitle": "Crear cuenta",
+                "register.quote": "Únete a nosotros y disfruta de todas las funcionalidades.",
+                "register.nameLabel": "Nombre *",
+                "register.namePlaceholder": "Ingresa tu nombre",
+                "register.lastNameLabel": "Apellido *",
+                "register.lastNamePlaceholder": "Ingresa tu apellido",
+                "register.emailLabel": "Correo Electrónico *",
+                "register.emailPlaceholder": "Ingresa tu correo electrónico",
+                "register.usernameLabel": "Usuario",
+                "register.usernamePlaceholder": "Ingresa tu usuario (opcional)",
+                "register.passwordLabel": "Contraseña *",
+                "register.passwordPlaceholder": "Ingresa tu contraseña",
+                "register.confirmPasswordLabel": "Confirmar Contraseña *",
+                "register.confirmPasswordPlaceholder": "Confirma tu contraseña",
+                "register.passwordRequirements": "La contraseña debe contener:",
+                "register.reqLength": "Al menos 8 caracteres",
+                "register.reqUppercase": "Una letra mayúscula",
+                "register.reqLowercase": "Una letra minúscula",
+                "register.reqNumber": "Un número",
+                "register.acceptTerms": "Acepto los",
+                "register.termsLink": "Términos y Condiciones",
+                "register.submit": "Crear Cuenta",
+                "register.haveAccount": "¿Ya tienes cuenta?",
+                "register.loginLink": "Inicia sesión",
+                "register.passwordMismatch": "Las contraseñas no coinciden",
+                "register.acceptTermsError": "Por favor acepta los Términos y Condiciones",
+                "register.creatingAccount": "Creando cuenta...",
+                "register.successMessage": "¡Cuenta creada exitosamente! Redirigiendo a iniciar sesión...",
+                "register.createError": "No se pudo crear la cuenta. Por favor intenta de nuevo.",
+                "register.genericError": "Ocurrió un error. Por favor intenta más tarde.",
+                quotes: [
+                    "Únete a nosotros y disfruta de todas las funcionalidades.",
+                    "Gestiona tus proyectos de forma eficiente y segura.",
+                    "Colabora con tu equipo en tiempo real.",
+                    "Accede desde cualquier dispositivo, en cualquier momento."
+                ]
+            },
+            en: {
+                "register.pageTitle": "Create account",
+                "register.quote": "Join us and enjoy all the features.",
+                "register.nameLabel": "First name *",
+                "register.namePlaceholder": "Enter your first name",
+                "register.lastNameLabel": "Last name *",
+                "register.lastNamePlaceholder": "Enter your last name",
+                "register.emailLabel": "Email *",
+                "register.emailPlaceholder": "Enter your email",
+                "register.usernameLabel": "Username",
+                "register.usernamePlaceholder": "Enter your username (optional)",
+                "register.passwordLabel": "Password *",
+                "register.passwordPlaceholder": "Enter your password",
+                "register.confirmPasswordLabel": "Confirm Password *",
+                "register.confirmPasswordPlaceholder": "Confirm your password",
+                "register.passwordRequirements": "Your password must contain:",
+                "register.reqLength": "At least 8 characters",
+                "register.reqUppercase": "One uppercase letter",
+                "register.reqLowercase": "One lowercase letter",
+                "register.reqNumber": "One number",
+                "register.acceptTerms": "I accept the",
+                "register.termsLink": "Terms and Conditions",
+                "register.submit": "Create Account",
+                "register.haveAccount": "Already have an account?",
+                "register.loginLink": "Sign in",
+                "register.passwordMismatch": "Passwords do not match",
+                "register.acceptTermsError": "Please accept the Terms and Conditions",
+                "register.creatingAccount": "Creating account...",
+                "register.successMessage": "Account created successfully! Redirecting to sign in...",
+                "register.createError": "Couldn't create the account. Please try again.",
+                "register.genericError": "Something went wrong. Please try again later.",
+                quotes: [
+                    "Join us and enjoy all the features.",
+                    "Manage your projects efficiently and securely.",
+                    "Collaborate with your team in real time.",
+                    "Access from any device, anytime."
+                ]
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'es';
+        let quoteInterval;
+
+        function t(key) {
+            const dict = translations[currentLang] || translations.es;
+            return dict[key] || key;
+        }
+
+        function applyTranslations(lang) {
+            const dict = translations[lang] || translations.es;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.textContent = dict[key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (dict[key]) {
+                    el.setAttribute('placeholder', dict[key]);
+                }
+            });
+        }
+
+        function startQuotes(lang) {
+            const dict = translations[lang] || translations.es;
+            const quotes = dict.quotes || [];
             let index = 0;
             const el = document.getElementById("quote-text");
             const quoteBox = document.querySelector(".media__quote");
             const dots = document.querySelectorAll("#quote-dots span");
 
-            if (el) {
-                setInterval(() => {
-                    if (quoteBox) quoteBox.classList.add("fade-out");
+            if (!el || !quotes.length) return;
+            el.textContent = quotes[0];
+
+            if (quoteInterval) clearInterval(quoteInterval);
+            quoteInterval = setInterval(() => {
+                if (quoteBox) quoteBox.classList.add("fade-out");
+                if (dots.length) {
+                    dots.forEach(dot => dot.classList.add("fade-out"));
+                }
+                setTimeout(() => {
+                    index = (index + 1) % quotes.length;
+                    el.textContent = quotes[index];
                     if (dots.length) {
-                        dots.forEach(dot => dot.classList.add("fade-out"));
+                        dots.forEach((dot, i) => {
+                            dot.classList.toggle("is-active", i === index % dots.length);
+                            dot.classList.remove("fade-out");
+                        });
                     }
-                    setTimeout(() => {
-                        index = (index + 1) % quotes.length;
-                        el.textContent = quotes[index];
-                        if (dots.length) {
-                            dots.forEach((dot, i) => {
-                                dot.classList.toggle("is-active", i === index % dots.length);
-                                dot.classList.remove("fade-out");
-                            });
-                        }
-                        if (quoteBox) quoteBox.classList.remove("fade-out");
-                    }, 200);
-                }, 3000);
-            }
-        })();
+                    if (quoteBox) quoteBox.classList.remove("fade-out");
+                }, 200);
+            }, 3000);
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.setAttribute('lang', lang);
+            localStorage.setItem('lang', lang);
+            applyTranslations(lang);
+            startQuotes(lang);
+            document.querySelectorAll('.lang-switch__btn').forEach(btn => {
+                btn.classList.toggle('is-active', btn.getAttribute('data-lang') === lang);
+            });
+        }
+
+        document.querySelectorAll('.lang-switch__btn').forEach(btn => {
+            btn.addEventListener('click', () => setLanguage(btn.getAttribute('data-lang')));
+        });
+
+        setLanguage(currentLang);
 
         // Password validation
         const passwordInput = document.getElementById('password');
@@ -200,13 +326,13 @@
 
             // Validar que las contraseñas coincidan
             if (formData.password !== formData.confirmPassword) {
-                showFieldError('confirmPassword', 'Las contraseñas no coinciden');
+                showFieldError('confirmPassword', t('register.passwordMismatch'));
                 return;
             }
 
             // Validar términos
             if (!document.getElementById('terms').checked) {
-                showAlert('Por favor acepta los Términos y Condiciones', 'error');
+                showAlert(t('register.acceptTermsError'), 'error');
                 return;
             }
 
@@ -215,7 +341,7 @@
             const btnText = btn.querySelector('.btn-text');
             const spinner = btn.querySelector('.spinner');
             btn.disabled = true;
-            btnText.textContent = 'Creando cuenta...';
+            btnText.textContent = t('register.creatingAccount');
             spinner.style.display = 'inline-block';
 
             try {
@@ -228,20 +354,20 @@
                 });
 
                 if (response.ok) {
-                    showAlert('¡Cuenta creada exitosamente! Redirigiendo a iniciar sesión...', 'success');
+                    showAlert(t('register.successMessage'), 'success');
                     setTimeout(() => {
                         window.location.href = '/login';
                     }, 2000);
                 } else {
                     const error = await response.json();
-                    showAlert(error.message || 'No se pudo crear la cuenta. Por favor intenta de nuevo.', 'error');
+                    showAlert(error.message || t('register.createError'), 'error');
                 }
             } catch (error) {
                 console.error('Error de registro:', error);
-                showAlert('Ocurrió un error. Por favor intenta más tarde.', 'error');
+                showAlert(t('register.genericError'), 'error');
             } finally {
                 btn.disabled = false;
-                btnText.textContent = 'Crear Cuenta';
+                btnText.textContent = t('register.submit');
                 spinner.style.display = 'none';
             }
         });

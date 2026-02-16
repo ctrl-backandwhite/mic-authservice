@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Iniciar sesión</title>
+    <title data-i18n="login.pageTitle">Iniciar sesión</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -19,7 +19,7 @@
                 <div class="media__content">
                     <span class="logo">Back &amp; White</span>
                     <div class="media__quote">
-                        <p id="quote-text">El tema luce increíble y el soporte es excelente.</p>
+                        <p id="quote-text" data-i18n="login.quote">El tema luce increíble y el soporte es excelente.</p>
                     </div>
                     <div class="media__dots" id="quote-dots">
                         <span class="is-active"></span><span></span><span></span>
@@ -29,35 +29,42 @@
 
             <div class="login-card__content">
                 <header class="content__header">
-                    <h1>¡Bienvenido!</h1>
-                    <p>Inicia sesión para continuar.</p>
+                    <h1 data-i18n="login.title">¡Bienvenido!</h1>
+                    <p data-i18n="login.subtitle">Inicia sesión para continuar.</p>
+                    <div class="lang-switch" role="group" aria-label="Selector de idioma">
+                        <button type="button" class="lang-switch__btn" data-lang="es">ES</button>
+                        <span aria-hidden="true">|</span>
+                        <button type="button" class="lang-switch__btn" data-lang="en">EN</button>
+                    </div>
                 </header>
 
                 <form method="post" action="/login" class="form">
                     <label class="field">
-                        <span>Usuario</span>
+                        <span data-i18n="login.usernameLabel">Usuario</span>
                         <input type="text" name="username" autocomplete="username" placeholder="Ingresa tu usuario"
-                            required />
+                            data-i18n-placeholder="login.usernamePlaceholder" required />
                     </label>
                     <label class="field">
-                        <span>Contraseña</span>
+                        <span data-i18n="login.passwordLabel">Contraseña</span>
                         <input type="password" name="password" autocomplete="current-password"
-                            placeholder="Ingresa tu contraseña" required />
+                            placeholder="Ingresa tu contraseña" data-i18n-placeholder="login.passwordPlaceholder"
+                            required />
                     </label>
 
                     <div class="form__meta">
                         <label class="checkbox">
                             <input type="checkbox" name="remember" />
-                            <span>Recuérdame</span>
+                            <span data-i18n="login.remember">Recuérdame</span>
                         </label>
-                        <a class="link" href="#">¿Olvidaste tu contraseña?</a>
+                        <a class="link" href="/forgot-password.html" data-i18n="login.forgot">¿Olvidaste tu
+                            contraseña?</a>
                     </div>
 
-                    <button type="submit" class="btn btn--primary">Iniciar Sesión</button>
+                    <button type="submit" class="btn btn--primary" data-i18n="login.submit">Iniciar Sesión</button>
                 </form>
 
                 <div class="divider">
-                    <span>Inicia sesión con</span>
+                    <span data-i18n="login.divider">Inicia sesión con</span>
                 </div>
 
                 <div class="social">
@@ -67,42 +74,127 @@
                     <button type="button" class="social__btn">X</button>
                 </div>
 
-                <p class="signup">¿No tienes cuenta? <a class="link" href="/register.html">Crear cuenta</a></p>
+                <p class="signup"><span data-i18n="login.noAccount">¿No tienes cuenta?</span>
+                    <a class="link" href="/register.html" data-i18n="login.createAccount">Crear cuenta</a>
+                </p>
             </div>
         </section>
     </main>
     <script>
         (function () {
-            var quotes = [
-                "El tema luce increíble y el soporte es excelente.",
-                "Interfaz moderna, rápida y muy intuitiva.",
-                "La experiencia de usuario es impecable.",
-                "Soporte y documentación de primera."
-            ];
-            var index = 0;
-            var el = document.getElementById("quote-text");
-            var quoteBox = document.querySelector(".media__quote");
-            var dots = document.querySelectorAll("#quote-dots span");
-            if (!el) return;
-            setInterval(function () {
-                if (quoteBox) quoteBox.classList.add("fade-out");
-                if (dots.length) {
-                    dots.forEach(function (dot) {
-                        dot.classList.add("fade-out");
-                    });
+            var translations = {
+                es: {
+                    "login.pageTitle": "Iniciar sesión",
+                    "login.title": "¡Bienvenido!",
+                    "login.subtitle": "Inicia sesión para continuar.",
+                    "login.usernameLabel": "Usuario",
+                    "login.usernamePlaceholder": "Ingresa tu usuario",
+                    "login.passwordLabel": "Contraseña",
+                    "login.passwordPlaceholder": "Ingresa tu contraseña",
+                    "login.remember": "Recuérdame",
+                    "login.forgot": "¿Olvidaste tu contraseña?",
+                    "login.submit": "Iniciar Sesión",
+                    "login.divider": "Inicia sesión con",
+                    "login.noAccount": "¿No tienes cuenta?",
+                    "login.createAccount": "Crear cuenta",
+                    quotes: [
+                        "El tema luce increíble y el soporte es excelente.",
+                        "Interfaz moderna, rápida y muy intuitiva.",
+                        "La experiencia de usuario es impecable.",
+                        "Soporte y documentación de primera."
+                    ]
+                },
+                en: {
+                    "login.pageTitle": "Sign in",
+                    "login.title": "Welcome!",
+                    "login.subtitle": "Sign in to continue.",
+                    "login.usernameLabel": "Username",
+                    "login.usernamePlaceholder": "Enter your username",
+                    "login.passwordLabel": "Password",
+                    "login.passwordPlaceholder": "Enter your password",
+                    "login.remember": "Remember me",
+                    "login.forgot": "Forgot your password?",
+                    "login.submit": "Sign In",
+                    "login.divider": "Sign in with",
+                    "login.noAccount": "Don't have an account?",
+                    "login.createAccount": "Create account",
+                    quotes: [
+                        "The theme looks great and the support is excellent.",
+                        "Modern, fast, and very intuitive interface.",
+                        "The user experience is flawless.",
+                        "Top-notch support and documentation."
+                    ]
                 }
-                setTimeout(function () {
-                    index = (index + 1) % quotes.length;
-                    el.textContent = quotes[index];
+            };
+
+            var currentLang = localStorage.getItem("lang") || "es";
+            var quoteInterval;
+
+            function applyTranslations(lang) {
+                var dict = translations[lang] || translations.es;
+                document.querySelectorAll("[data-i18n]").forEach(function (el) {
+                    var key = el.getAttribute("data-i18n");
+                    if (dict[key]) {
+                        el.textContent = dict[key];
+                    }
+                });
+                document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+                    var key = el.getAttribute("data-i18n-placeholder");
+                    if (dict[key]) {
+                        el.setAttribute("placeholder", dict[key]);
+                    }
+                });
+            }
+
+            function startQuotes(lang) {
+                var dict = translations[lang] || translations.es;
+                var quotes = dict.quotes || [];
+                var index = 0;
+                var el = document.getElementById("quote-text");
+                var quoteBox = document.querySelector(".media__quote");
+                var dots = document.querySelectorAll("#quote-dots span");
+                if (!el || !quotes.length) return;
+                el.textContent = quotes[0];
+                if (quoteInterval) clearInterval(quoteInterval);
+                quoteInterval = setInterval(function () {
+                    if (quoteBox) quoteBox.classList.add("fade-out");
                     if (dots.length) {
-                        dots.forEach(function (dot, i) {
-                            dot.classList.toggle("is-active", i === index % dots.length);
-                            dot.classList.remove("fade-out");
+                        dots.forEach(function (dot) {
+                            dot.classList.add("fade-out");
                         });
                     }
-                    if (quoteBox) quoteBox.classList.remove("fade-out");
-                }, 200);
-            }, 3000);
+                    setTimeout(function () {
+                        index = (index + 1) % quotes.length;
+                        el.textContent = quotes[index];
+                        if (dots.length) {
+                            dots.forEach(function (dot, i) {
+                                dot.classList.toggle("is-active", i === index % dots.length);
+                                dot.classList.remove("fade-out");
+                            });
+                        }
+                        if (quoteBox) quoteBox.classList.remove("fade-out");
+                    }, 200);
+                }, 3000);
+            }
+
+            function setLanguage(lang) {
+                currentLang = lang;
+                document.documentElement.setAttribute("lang", lang);
+                localStorage.setItem("lang", lang);
+                applyTranslations(lang);
+                startQuotes(lang);
+                document.querySelectorAll(".lang-switch__btn").forEach(function (btn) {
+                    btn.classList.toggle("is-active", btn.getAttribute("data-lang") === lang);
+                });
+            }
+
+            document.querySelectorAll(".lang-switch__btn").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    setLanguage(btn.getAttribute("data-lang"));
+                });
+            });
+
+            setLanguage(currentLang);
         })();
     </script>
 </body>
