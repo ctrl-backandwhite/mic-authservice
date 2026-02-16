@@ -23,6 +23,7 @@ import org.springframework.security.config.annotation.web.configuration.OAuth2Au
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -106,7 +107,7 @@ public class SecurityConfig {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(GET_PUBLIC_URLS).permitAll()
@@ -118,9 +119,15 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID")
+                        .deleteCookies("JSESSIONID", "remember-me")
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(
                                 HttpStatus.NO_CONTENT)))
+                .rememberMe(remember -> remember
+                        .key("uniqueAndSecretRememberMeKey")
+                        .tokenValiditySeconds(86400 * 7) // 7 días
+                        .rememberMeParameter("remember")
+                        .rememberMeCookieName("remember-me")
+                        .userDetailsService(userDetailsService))
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(authenticationSuccessHandler())

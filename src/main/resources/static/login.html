@@ -194,6 +194,34 @@
             });
 
             setLanguage(currentLang);
+
+            // Remember Me functionality
+            var form = document.querySelector("form");
+            var usernameInput = document.querySelector("input[name='username']");
+            var rememberCheckbox = document.querySelector("input[name='remember']");
+
+            // Load saved username on page load
+            var savedUsername = localStorage.getItem("rememberedUsername");
+            if (savedUsername) {
+                usernameInput.value = savedUsername;
+                rememberCheckbox.checked = true;
+            }
+
+            // Save username when form is submitted if remember is checked
+            form.addEventListener("submit", function () {
+                if (rememberCheckbox.checked) {
+                    localStorage.setItem("rememberedUsername", usernameInput.value);
+                } else {
+                    localStorage.removeItem("rememberedUsername");
+                }
+            });
+
+            // Clear saved username if remember is unchecked
+            rememberCheckbox.addEventListener("change", function () {
+                if (!this.checked) {
+                    localStorage.removeItem("rememberedUsername");
+                }
+            });
         })();
     </script>
 </body>
