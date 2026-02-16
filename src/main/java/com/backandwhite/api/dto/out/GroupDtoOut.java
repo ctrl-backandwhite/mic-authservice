@@ -1,5 +1,6 @@
 package com.backandwhite.api.dto.out;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -31,6 +32,7 @@ public class GroupDtoOut {
     @Schema(description = "Indica si el grupo está activo", example = "true")
     private Boolean enabled;
 
+    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
     @ArraySchema(schema = @Schema(implementation = RoleDtoOut.class), arraySchema = @Schema(description = "Roles asociados a este grupo"))
     private List<RoleDtoOut> roles = new ArrayList<>();
 
