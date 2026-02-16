@@ -24,6 +24,10 @@ import java.util.List;
 public interface UserDtoMapper {
 
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "updatedAt", source = "updatedAt")
+    @Mapping(target = "createdBy", source = "createdBy")
+    @Mapping(target = "updatedBy", source = "updatedBy")
     @Mapping(target = "name", source = "name")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "nickName", source = "nickName")
@@ -39,6 +43,10 @@ public interface UserDtoMapper {
     UserDtoOut toDtoOut(User model);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "name", source = "name")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "nickName", source = "nickName")
@@ -60,8 +68,8 @@ public interface UserDtoMapper {
             return Collections.emptyList();
         }
         return scopeIds.stream()
-            .map(id -> Scope.builder().id(id).build())
-            .collect(Collectors.toList());
+                .map(id -> Scope.builder().id(id).build())
+                .collect(Collectors.toList());
     }
 
     @Named("mapUserRoleIds")
@@ -70,8 +78,8 @@ public interface UserDtoMapper {
             return Collections.emptyList();
         }
         return roleIds.stream()
-            .map(id -> Role.builder().id(id).build())
-            .collect(Collectors.toList());
+                .map(id -> Role.builder().id(id).build())
+                .collect(Collectors.toList());
     }
 
     @Named("mapUserGroupIds")
@@ -80,7 +88,7 @@ public interface UserDtoMapper {
             return Collections.emptyList();
         }
         return groupIds.stream()
-            .map(id -> Group.builder().id(id).build())
-            .collect(Collectors.toList());
+                .map(id -> Group.builder().id(id).build())
+                .collect(Collectors.toList());
     }
 }

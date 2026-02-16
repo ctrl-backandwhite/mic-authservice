@@ -20,6 +20,10 @@ import java.util.List;
 public interface GroupDtoMapper {
 
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "updatedAt", source = "updatedAt")
+    @Mapping(target = "createdBy", source = "createdBy")
+    @Mapping(target = "updatedBy", source = "updatedBy")
     @Mapping(target = "name", source = "name")
     @Mapping(target = "uniqueName", source = "uniqueName")
     @Mapping(target = "description", source = "description")
@@ -28,6 +32,10 @@ public interface GroupDtoMapper {
     GroupDtoOut toDtoOut(Group model);
 
     @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapRoleIds")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     Group toDomain(GroupDtoIn dtoIn);
 
     List<Group> toDomainList(List<GroupDtoIn> dtos);
@@ -40,7 +48,7 @@ public interface GroupDtoMapper {
             return Collections.emptyList();
         }
         return roleIds.stream()
-            .map(id -> Role.builder().id(id).build())
-            .collect(Collectors.toList());
+                .map(id -> Role.builder().id(id).build())
+                .collect(Collectors.toList());
     }
 }

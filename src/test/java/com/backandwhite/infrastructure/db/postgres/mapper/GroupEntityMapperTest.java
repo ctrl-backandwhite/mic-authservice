@@ -43,6 +43,7 @@ class GroupEntityMapperTest {
 
         assertThat(result)
                 .usingRecursiveComparison()
+                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
                 .isEqualTo(groupEntity());
     }
 

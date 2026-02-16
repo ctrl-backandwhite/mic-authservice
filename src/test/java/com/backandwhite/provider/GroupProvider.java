@@ -38,6 +38,10 @@ public final class GroupProvider {
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
                 .roles(List.of(RoleProvider.adminRole()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -49,12 +53,20 @@ public final class GroupProvider {
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
                 .roles(List.of(RoleProvider.userRole()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static Group group() {
         return Group.builder()
                 .id(GROUP_ID)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(GROUP_NAME)
                 .uniqueName(GROUP_UNIQUE_NAME)
                 .description(GROUP_DESCRIPTION)
@@ -66,6 +78,10 @@ public final class GroupProvider {
     public static GroupEntity groupEntity() {
         return GroupEntity.builder()
                 .id(GROUP_ID)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(GROUP_NAME)
                 .uniqueName(GROUP_UNIQUE_NAME)
                 .description(GROUP_DESCRIPTION)
@@ -82,6 +98,10 @@ public final class GroupProvider {
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
                 .roles(List.of(RoleProvider.adminRoleEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -93,6 +113,10 @@ public final class GroupProvider {
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
                 .roles(List.of(RoleProvider.userRoleEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -123,7 +147,11 @@ public final class GroupProvider {
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
-                .roles(List.of(RoleProvider.adminRoleDtoOut(null)))
+                .roles(List.of(RoleProvider.adminRoleDtoOut(RoleProvider.ADMIN_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -134,7 +162,11 @@ public final class GroupProvider {
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
-                .roles(List.of(RoleProvider.userRoleDtoOut(null)))
+                .roles(List.of(RoleProvider.userRoleDtoOut(RoleProvider.USER_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 }

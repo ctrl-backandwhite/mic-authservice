@@ -2,6 +2,7 @@ package com.backandwhite.infrastructure.db.postgres.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +12,11 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "scopes")
-public class ScopeEntity {
+public class ScopeEntity extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +43,8 @@ public class ScopeEntity {
 
     @Override
     public boolean equals(Object object) {
-        if (object == null || getClass() != object.getClass()) return false;
+        if (object == null || getClass() != object.getClass())
+            return false;
         ScopeEntity that = (ScopeEntity) object;
         return Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)
@@ -56,4 +58,3 @@ public class ScopeEntity {
         return Objects.hash(id, name, uniqueName, description, enabled);
     }
 }
-

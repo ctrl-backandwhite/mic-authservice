@@ -30,6 +30,10 @@ public final class ScopeProvider {
                 .uniqueName(READ_UNIQUE_NAME)
                 .description(READ_DESCRIPTION)
                 .enabled(READ_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -40,6 +44,10 @@ public final class ScopeProvider {
                 .uniqueName(WRITE_UNIQUE_NAME)
                 .description(WRITE_DESCRIPTION)
                 .enabled(WRITE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -58,6 +66,10 @@ public final class ScopeProvider {
                 .uniqueName(READ_UNIQUE_NAME)
                 .description(READ_DESCRIPTION)
                 .enabled(READ_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -68,6 +80,10 @@ public final class ScopeProvider {
                 .uniqueName(WRITE_UNIQUE_NAME)
                 .description(WRITE_DESCRIPTION)
                 .enabled(WRITE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -96,6 +112,10 @@ public final class ScopeProvider {
                 .uniqueName(READ_UNIQUE_NAME)
                 .description(READ_DESCRIPTION)
                 .enabled(READ_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -106,6 +126,10 @@ public final class ScopeProvider {
                 .uniqueName(WRITE_UNIQUE_NAME)
                 .description(WRITE_DESCRIPTION)
                 .enabled(WRITE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 }

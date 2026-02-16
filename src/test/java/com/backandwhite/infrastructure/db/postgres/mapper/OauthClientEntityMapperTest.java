@@ -48,6 +48,7 @@ class OauthClientEntityMapperTest {
 
         assertThat(result)
                 .usingRecursiveComparison()
+                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
                 .isEqualTo(oauthClientEntity());
     }
 

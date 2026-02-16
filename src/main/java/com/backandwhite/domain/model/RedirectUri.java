@@ -2,8 +2,7 @@ package com.backandwhite.domain.model;
 
 import lombok.*;
 
-
-
+import java.time.Instant;
 
 @Data
 @With
@@ -16,5 +15,9 @@ public class RedirectUri {
     private String name;
     private String value;
     private Boolean enabled;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
 
 }

@@ -41,6 +41,8 @@ class RoleControllerIT extends BaseIntegration {
 
                 assertThat(response)
                                 .usingRecursiveComparison()
+                                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy",
+                                                ".*updatedBy")
                                 .ignoringFields("id")
                                 .isEqualTo(adminRoleDtoOut(null));
         }
@@ -64,6 +66,8 @@ class RoleControllerIT extends BaseIntegration {
 
                 assertThat(response)
                                 .usingRecursiveComparison()
+                                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy",
+                                                ".*updatedBy")
                                 .ignoringFields("id")
                                 .isEqualTo(List.of(
                                                 adminRoleDtoOut(null),
@@ -88,6 +92,8 @@ class RoleControllerIT extends BaseIntegration {
 
                 assertThat(response)
                                 .usingRecursiveComparison()
+                                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy",
+                                                ".*updatedBy")
                                 .isEqualTo(supportRoleDtoOut(saved.getId()));
         }
 
@@ -112,6 +118,8 @@ class RoleControllerIT extends BaseIntegration {
 
                 assertThat(response)
                                 .usingRecursiveComparison()
+                                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy",
+                                                ".*updatedBy")
                                 .isEqualTo(supportRoleDtoOut(saved.getId()));
         }
 

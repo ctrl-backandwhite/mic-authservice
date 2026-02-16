@@ -34,6 +34,7 @@ class ScopeEntityMapperTest {
 
         assertThat(result)
                 .usingRecursiveComparison()
+                .ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
                 .isEqualTo(scopeEntity());
     }
 

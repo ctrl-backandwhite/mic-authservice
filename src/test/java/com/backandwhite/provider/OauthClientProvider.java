@@ -29,6 +29,10 @@ public final class OauthClientProvider {
                 .scopes(List.of(ScopeProvider.readScope()))
                 .redirectUris(List.of(RedirectUriProvider.redirectUri()))
                 .grantTypes(List.of(GrantTypeProvider.grantType()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -40,6 +44,10 @@ public final class OauthClientProvider {
                 .scopes(List.of(ScopeProvider.writeScope()))
                 .redirectUris(List.of(RedirectUriProvider.otherRedirectUri()))
                 .grantTypes(List.of(GrantTypeProvider.otherGrantType()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -51,6 +59,10 @@ public final class OauthClientProvider {
                 .scopes(List.of(ScopeProvider.scopeEntity()))
                 .redirectUris(List.of(RedirectUriProvider.redirectUriEntity()))
                 .grantTypes(List.of(GrantTypeProvider.grantTypeEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -62,6 +74,10 @@ public final class OauthClientProvider {
                 .scopes(List.of(ScopeProvider.writeScopeEntity()))
                 .redirectUris(List.of(RedirectUriProvider.otherRedirectUriEntity()))
                 .grantTypes(List.of(GrantTypeProvider.otherGrantTypeEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -90,9 +106,13 @@ public final class OauthClientProvider {
                 .id(id)
                 .clientId(CLIENT_CLIENT_ID)
                 .clientSecret(CLIENT_SECRET)
-                .scopes(List.of(ScopeProvider.readScopeDtoOut(null)))
-                .redirectUris(List.of(RedirectUriProvider.redirectUriDtoOut(null)))
-                .grantTypes(List.of(GrantTypeProvider.grantTypeDtoOut(null)))
+                .scopes(List.of(ScopeProvider.readScopeDtoOut(ScopeProvider.READ_ID)))
+                .redirectUris(List.of(RedirectUriProvider.redirectUriDtoOut(RedirectUriProvider.REDIRECT_URI_ID)))
+                .grantTypes(List.of(GrantTypeProvider.grantTypeDtoOut(GrantTypeProvider.GRANT_TYPE_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -101,9 +121,14 @@ public final class OauthClientProvider {
                 .id(id)
                 .clientId(OTHER_CLIENT_CLIENT_ID)
                 .clientSecret(OTHER_CLIENT_SECRET)
-                .scopes(List.of(ScopeProvider.writeScopeDtoOut(null)))
-                .redirectUris(List.of(RedirectUriProvider.otherRedirectUriDtoOut(null)))
-                .grantTypes(List.of(GrantTypeProvider.otherGrantTypeDtoOut(null)))
+                .scopes(List.of(ScopeProvider.writeScopeDtoOut(ScopeProvider.WRITE_ID)))
+                .redirectUris(
+                        List.of(RedirectUriProvider.otherRedirectUriDtoOut(RedirectUriProvider.OTHER_REDIRECT_URI_ID)))
+                .grantTypes(List.of(GrantTypeProvider.otherGrantTypeDtoOut(GrantTypeProvider.OTHER_GRANT_TYPE_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 }

@@ -2,6 +2,7 @@ package com.backandwhite.infrastructure.db.postgres.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +12,11 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "groups")
-public class GroupEntity {
+public class GroupEntity extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,11 +35,7 @@ public class GroupEntity {
     private Boolean enabled;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "group_roles",
-        joinColumns = @JoinColumn(name = "group_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "group_roles", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<RoleEntity> roles = new ArrayList<>();
 
     @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER)
@@ -46,7 +43,8 @@ public class GroupEntity {
 
     @Override
     public boolean equals(Object object) {
-        if (object == null || getClass() != object.getClass()) return false;
+        if (object == null || getClass() != object.getClass())
+            return false;
         GroupEntity that = (GroupEntity) object;
         return Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)

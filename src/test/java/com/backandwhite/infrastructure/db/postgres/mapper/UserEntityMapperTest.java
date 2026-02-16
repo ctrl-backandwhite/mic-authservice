@@ -26,6 +26,10 @@ import static com.backandwhite.provider.UserProvider.USER_NAME;
 import static com.backandwhite.provider.UserProvider.USER_NICK_NAME;
 import static com.backandwhite.provider.UserProvider.USER_PASSWORD;
 import static com.backandwhite.provider.UserProvider.userEntity;
+import static com.backandwhite.provider.AuditProvider.CREATED_AT;
+import static com.backandwhite.provider.AuditProvider.CREATED_BY;
+import static com.backandwhite.provider.AuditProvider.UPDATED_AT;
+import static com.backandwhite.provider.AuditProvider.UPDATED_BY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UserEntityMapperTest {
@@ -52,6 +56,10 @@ class UserEntityMapperTest {
         User result = mapper.toDomain(entity);
 
         assertThat(result.getId()).isEqualTo(USER_ID);
+        assertThat(result.getCreatedAt()).isEqualTo(CREATED_AT);
+        assertThat(result.getUpdatedAt()).isEqualTo(UPDATED_AT);
+        assertThat(result.getCreatedBy()).isEqualTo(CREATED_BY);
+        assertThat(result.getUpdatedBy()).isEqualTo(UPDATED_BY);
         assertThat(result.getName()).isEqualTo(USER_NAME);
         assertThat(result.getLastName()).isEqualTo(USER_LAST_NAME);
         assertThat(result.getNickName()).isEqualTo(USER_NICK_NAME);
@@ -96,6 +104,10 @@ class UserEntityMapperTest {
         UserEntity result = mapper.toEntity(model);
 
         assertThat(result.getId()).isEqualTo(USER_ID);
+        assertThat(result.getCreatedAt()).isNull();
+        assertThat(result.getUpdatedAt()).isNull();
+        assertThat(result.getCreatedBy()).isNull();
+        assertThat(result.getUpdatedBy()).isNull();
         assertThat(result.getName()).isEqualTo(USER_NAME);
         assertThat(result.getLastName()).isEqualTo(USER_LAST_NAME);
         assertThat(result.getNickName()).isEqualTo(USER_NICK_NAME);
@@ -108,14 +120,17 @@ class UserEntityMapperTest {
         assertThat(result.getScopes()).hasSize(1);
         assertThat(result.getScopes().get(0))
                 .usingRecursiveComparison()
+                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
                 .isEqualTo(scopeEntity());
         assertThat(result.getRoles()).hasSize(1);
         assertThat(result.getRoles().get(0))
                 .usingRecursiveComparison()
+                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
                 .isEqualTo(roleEntity());
         assertThat(result.getGroups()).hasSize(1);
         assertThat(result.getGroups().get(0))
                 .usingRecursiveComparison()
+                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
                 .isEqualTo(groupEntity());
     }
 

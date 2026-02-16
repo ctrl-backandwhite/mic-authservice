@@ -50,6 +50,10 @@ public final class UserProvider {
                 .scopes(List.of(ScopeProvider.readScope()))
                 .roles(List.of(RoleProvider.adminRole()))
                 .groups(List.of(GroupProvider.adminGroup()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -68,6 +72,10 @@ public final class UserProvider {
                 .scopes(List.of(ScopeProvider.writeScope()))
                 .roles(List.of(RoleProvider.userRole()))
                 .groups(List.of(GroupProvider.userGroup()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -86,6 +94,10 @@ public final class UserProvider {
                 .scopes(List.of(ScopeProvider.scopeEntity()))
                 .roles(List.of(RoleProvider.roleEntity()))
                 .groups(List.of(GroupProvider.groupEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -104,6 +116,10 @@ public final class UserProvider {
                 .scopes(List.of(ScopeProvider.writeScopeEntity()))
                 .roles(List.of(RoleProvider.userRoleEntity()))
                 .groups(List.of(GroupProvider.userGroupEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -155,9 +171,13 @@ public final class UserProvider {
                 .accountNonExpired(USER_ACCOUNT_NON_EXPIRED)
                 .accountNonLocked(USER_ACCOUNT_NON_LOCKED)
                 .credentialsNonExpired(USER_CREDENTIALS_NON_EXPIRED)
-                .scopes(List.of(ScopeProvider.readScopeDtoOut(null)))
-                .roles(List.of(RoleProvider.adminRoleDtoOut(null)))
-                .groups(List.of(GroupProvider.adminGroupDtoOut(null)))
+                .scopes(List.of(ScopeProvider.readScopeDtoOut(ScopeProvider.READ_ID)))
+                .roles(List.of(RoleProvider.adminRoleDtoOut(RoleProvider.ADMIN_ID)))
+                .groups(List.of(GroupProvider.adminGroupDtoOut(GroupProvider.ADMIN_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -173,9 +193,13 @@ public final class UserProvider {
                 .accountNonExpired(OTHER_USER_ACCOUNT_NON_EXPIRED)
                 .accountNonLocked(OTHER_USER_ACCOUNT_NON_LOCKED)
                 .credentialsNonExpired(OTHER_USER_CREDENTIALS_NON_EXPIRED)
-                .scopes(List.of(ScopeProvider.writeScopeDtoOut(null)))
-                .roles(List.of(RoleProvider.userRoleDtoOut(null)))
-                .groups(List.of(GroupProvider.userGroupDtoOut(null)))
+                .scopes(List.of(ScopeProvider.writeScopeDtoOut(ScopeProvider.WRITE_ID)))
+                .roles(List.of(RoleProvider.userRoleDtoOut(RoleProvider.USER_ID)))
+                .groups(List.of(GroupProvider.userGroupDtoOut(GroupProvider.USER_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 }

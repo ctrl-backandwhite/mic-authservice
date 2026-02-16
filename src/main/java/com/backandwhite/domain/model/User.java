@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.time.Instant;
 
 @Data
 @With
@@ -29,7 +30,10 @@ public class User implements UserDetails {
     private List<Scope> scopes;
     private List<Role> roles;
     private List<Group> groups;
-
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
 
     @JsonIgnore
     @Override
