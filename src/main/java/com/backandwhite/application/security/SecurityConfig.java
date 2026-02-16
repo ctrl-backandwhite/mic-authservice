@@ -66,6 +66,8 @@ public class SecurityConfig {
         private final String[] GET_PUBLIC_URLS = {
                         "/login",
                         "/login.html",
+                        "/register.html",
+                        "/terms.html",
                         "/css/**",
                         "/js/**",
                         "/images/**",

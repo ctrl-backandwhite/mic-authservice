@@ -158,17 +158,22 @@ body {
 }
 
 .field input {
-  padding: 12px 14px;
-  border-radius: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
   border: 1px solid var(--border);
   outline: none;
-  font-size: 14px;
+  font-size: 12px;
   background: #fff;
+  height: 32px;
 }
 
 .field input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(25, 179, 164, 0.18);
+}
+
+.field input::placeholder {
+  color: #cbd5e1;
 }
 
 .form__meta {
@@ -247,10 +252,17 @@ body {
   text-align: center;
 }
 
+@media (max-width: 1024px) {
+  .login-card {
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 900px) {
   .login-card {
     grid-template-columns: 1fr;
     min-height: auto;
+    max-width: 100%;
   }
 
   .login-card__media {
@@ -267,23 +279,60 @@ body {
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .login-page,
   .login {
-    padding: 16px;
+    padding: 2rem 1rem;
   }
 
   .login-card {
-    border-radius: 12px;
+    max-width: 100%;
+    min-height: auto;
   }
 
   .login-card__media {
     min-height: 200px;
+    padding: 20px;
   }
 
   .login-card__content {
-    padding: 24px;
-    gap: 18px;
+    padding: 24px 24px 28px;
+    gap: 16px;
+  }
+
+  .content__header h1 {
+    font-size: 24px;
+  }
+
+  .content__header p {
+    font-size: 13px;
+  }
+
+  .field input {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .login-page,
+  .login {
+    padding: 1.5rem 1rem;
+  }
+
+  .login-card {
+    border-radius: 12px;
+    max-width: 100%;
+    min-height: auto;
+  }
+
+  .login-card__media {
+    min-height: 180px;
+    padding: 16px;
+  }
+
+  .login-card__content {
+    padding: 20px 20px 24px;
+    gap: 14px;
   }
 
   .content__header h1 {
@@ -295,7 +344,9 @@ body {
   }
 
   .field input {
-    font-size: 13px;
+    font-size: 12px;
+    padding: 7px 10px;
+    height: 32px;
   }
 
   .btn--primary {
@@ -312,19 +363,108 @@ body {
     flex-wrap: wrap;
     justify-content: center;
   }
-}
 
-@media (max-width: 420px) {
   .media__quote {
     width: 100%;
-    min-height: 120px;
+    min-height: 110px;
+    padding: 16px;
   }
 
   .media__quote p {
     font-size: 13px;
+    min-height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page,
+  .login {
+    padding: 1rem 0.5rem;
+  }
+
+  .login-card {
+    border-radius: 8px;
+    max-width: 100%;
+  }
+
+  .login-card__media {
+    min-height: 150px;
+    padding: 12px;
   }
 
   .login-card__content {
-    padding: 20px;
+    padding: 16px 16px 20px;
+    gap: 12px;
+  }
+
+  .content__header h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .content__header p {
+    font-size: 12px;
+  }
+
+  .field {
+    gap: 6px;
+  }
+
+  .field input {
+    font-size: 11px;
+    padding: 6px 8px;
+    height: 30px;
+  }
+
+  .form__meta {
+    font-size: 11px;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .checkbox {
+    gap: 6px;
+  }
+
+  .checkbox input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+  }
+
+  .btn {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  .btn--primary {
+    width: 100%;
+  }
+
+  .media__quote {
+    width: 100%;
+    min-height: 90px;
+    padding: 12px;
+  }
+
+  .media__quote p {
+    font-size: 12px;
+    min-height: 40px;
+  }
+
+  .media__dots {
+    gap: 6px;
+  }
+
+  .media__dots span {
+    width: 20px;
+    height: 3px;
+  }
+
+  .logo {
+    font-size: 16px;
+  }
+
+  .quote-mark {
+    font-size: 24px;
   }
 }
