@@ -49,4 +49,13 @@ public class OauthClientRepositoryImpl implements OauthClientRepository {
         ENTITY_NOT_FOUND.toEntityNotFound("OauthClient", id);
         return oauthClientEntityMapper.toDomain(entity);
     }
+
+    @Override
+    public OauthClient findByClientId(String clientId) {
+        OauthClientEntity entity = oauthClientJpaRepositoryAdapter.findByClientId(clientId);
+        if (entity == null) {
+            return null;
+        }
+        return oauthClientEntityMapper.toDomain(entity);
+    }
 }
