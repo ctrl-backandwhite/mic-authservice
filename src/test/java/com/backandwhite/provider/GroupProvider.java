@@ -33,30 +33,30 @@ public final class GroupProvider {
     public static Group adminGroup() {
         return Group.builder()
                 .id(ADMIN_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(ADMIN_NAME)
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
                 .roles(List.of(RoleProvider.adminRole()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static Group userGroup() {
         return Group.builder()
                 .id(USER_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(USER_NAME)
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
                 .roles(List.of(RoleProvider.userRole()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -93,30 +93,30 @@ public final class GroupProvider {
     public static GroupEntity adminGroupEntity() {
         return GroupEntity.builder()
                 .id(ADMIN_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(ADMIN_NAME)
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
                 .roles(List.of(RoleProvider.adminRoleEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static GroupEntity userGroupEntity() {
         return GroupEntity.builder()
                 .id(USER_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(USER_NAME)
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
                 .roles(List.of(RoleProvider.userRoleEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -143,30 +143,30 @@ public final class GroupProvider {
     public static GroupDtoOut adminGroupDtoOut(Long id) {
         return GroupDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(ADMIN_NAME)
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
                 .roles(List.of(RoleProvider.adminRoleDtoOut(RoleProvider.ADMIN_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static GroupDtoOut userGroupDtoOut(Long id) {
         return GroupDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(USER_NAME)
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
                 .roles(List.of(RoleProvider.userRoleDtoOut(RoleProvider.USER_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 }

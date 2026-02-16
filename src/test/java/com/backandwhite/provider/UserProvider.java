@@ -38,10 +38,6 @@ public final class UserProvider {
     public static User user() {
         return User.builder()
                 .id(USER_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(USER_NAME)
                 .lastName(USER_LAST_NAME)
                 .nickName(USER_NICK_NAME)
@@ -54,16 +50,16 @@ public final class UserProvider {
                 .scopes(List.of(ScopeProvider.readScope()))
                 .roles(List.of(RoleProvider.adminRole()))
                 .groups(List.of(GroupProvider.adminGroup()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static User otherUser() {
         return User.builder()
                 .id(OTHER_USER_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(OTHER_USER_NAME)
                 .lastName(OTHER_USER_LAST_NAME)
                 .nickName(OTHER_USER_NICK_NAME)
@@ -76,16 +72,16 @@ public final class UserProvider {
                 .scopes(List.of(ScopeProvider.writeScope()))
                 .roles(List.of(RoleProvider.userRole()))
                 .groups(List.of(GroupProvider.userGroup()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static UserEntity userEntity() {
         return UserEntity.builder()
                 .id(USER_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(USER_NAME)
                 .lastName(USER_LAST_NAME)
                 .nickName(USER_NICK_NAME)
@@ -98,16 +94,16 @@ public final class UserProvider {
                 .scopes(List.of(ScopeProvider.scopeEntity()))
                 .roles(List.of(RoleProvider.roleEntity()))
                 .groups(List.of(GroupProvider.groupEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static UserEntity otherUserEntity() {
         return UserEntity.builder()
                 .id(OTHER_USER_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(OTHER_USER_NAME)
                 .lastName(OTHER_USER_LAST_NAME)
                 .nickName(OTHER_USER_NICK_NAME)
@@ -120,6 +116,10 @@ public final class UserProvider {
                 .scopes(List.of(ScopeProvider.writeScopeEntity()))
                 .roles(List.of(RoleProvider.userRoleEntity()))
                 .groups(List.of(GroupProvider.userGroupEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -162,10 +162,6 @@ public final class UserProvider {
     public static UserDtoOut userDtoOut(Long id) {
         return UserDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(USER_NAME)
                 .lastName(USER_LAST_NAME)
                 .nickName(USER_NICK_NAME)
@@ -178,16 +174,16 @@ public final class UserProvider {
                 .scopes(List.of(ScopeProvider.readScopeDtoOut(ScopeProvider.READ_ID)))
                 .roles(List.of(RoleProvider.adminRoleDtoOut(RoleProvider.ADMIN_ID)))
                 .groups(List.of(GroupProvider.adminGroupDtoOut(GroupProvider.ADMIN_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static UserDtoOut otherUserDtoOut(Long id) {
         return UserDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(OTHER_USER_NAME)
                 .lastName(OTHER_USER_LAST_NAME)
                 .nickName(OTHER_USER_NICK_NAME)
@@ -200,6 +196,10 @@ public final class UserProvider {
                 .scopes(List.of(ScopeProvider.writeScopeDtoOut(ScopeProvider.WRITE_ID)))
                 .roles(List.of(RoleProvider.userRoleDtoOut(RoleProvider.USER_ID)))
                 .groups(List.of(GroupProvider.userGroupDtoOut(GroupProvider.USER_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 }

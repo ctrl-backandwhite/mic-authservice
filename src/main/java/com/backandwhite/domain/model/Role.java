@@ -14,14 +14,14 @@ import java.time.Instant;
 public class Role implements GrantedAuthority {
 
     private Long id;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private String createdBy;
-    private String updatedBy;
     private String name;
     private String uniqueName;
     private String description;
     private Boolean enabled;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
 
     @Override
     public @Nullable String getAuthority() {

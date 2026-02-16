@@ -12,11 +12,11 @@ import java.time.Instant;
 public class GrantType {
 
     private Long id;
+    private String value;
+    private Boolean enabled;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
-    private String value;
-    private Boolean enabled;
 
 }

@@ -16,6 +16,15 @@ public class RedirectUriDtoOut {
     @Schema(description = "Identificador único del URI de redirección", example = "1", minimum = "1")
     private Long id;
 
+    @Schema(description = "Nombre descriptivo del URI de redirección", example = "Redirect URI Producción", maxLength = 100)
+    private String name;
+
+    @Schema(description = "URI completa de redirección autorizada por OAuth2", example = "https://miapp.ejemplo.com/oauth/callback", maxLength = 500)
+    private String value;
+
+    @Schema(description = "Indica si este URI de redirección está habilitado", example = "true")
+    private Boolean enabled;
+
     @Schema(description = "Fecha de creación del registro", example = "2026-02-16T10:15:30Z")
     private Instant createdAt;
 
@@ -27,13 +36,4 @@ public class RedirectUriDtoOut {
 
     @Schema(description = "Usuario que realizó la última actualización", example = "usuario@dominio.com")
     private String updatedBy;
-
-    @Schema(description = "Nombre descriptivo del URI de redirección", example = "Redirect URI Producción", maxLength = 100)
-    private String name;
-
-    @Schema(description = "URI completa de redirección autorizada por OAuth2", example = "https://miapp.ejemplo.com/oauth/callback", maxLength = 500)
-    private String value;
-
-    @Schema(description = "Indica si este URI de redirección está habilitado", example = "true")
-    private Boolean enabled;
 }

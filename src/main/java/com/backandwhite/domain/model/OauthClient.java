@@ -14,10 +14,6 @@ import java.util.ArrayList;
 public class OauthClient {
 
     private Long id;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private String createdBy;
-    private String updatedBy;
     private String clientId;
     private String clientSecret;
     @Builder.Default
@@ -26,6 +22,10 @@ public class OauthClient {
     private List<RedirectUri> redirectUris = new ArrayList<>();
     @Builder.Default
     private List<GrantType> grantTypes = new ArrayList<>();
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
 
     public void addScope(List<Scope> scopes) {
         this.scopes.addAll(scopes);

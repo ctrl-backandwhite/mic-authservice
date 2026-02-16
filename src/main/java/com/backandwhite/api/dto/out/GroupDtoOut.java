@@ -19,18 +19,6 @@ public class GroupDtoOut {
     @Schema(description = "Identificador único del grupo", example = "1", minimum = "1")
     private Long id;
 
-    @Schema(description = "Fecha de creación del registro", example = "2026-02-16T10:15:30Z")
-    private Instant createdAt;
-
-    @Schema(description = "Fecha de última actualización del registro", example = "2026-02-16T11:05:00Z")
-    private Instant updatedAt;
-
-    @Schema(description = "Usuario que creó el registro", example = "admin@dominio.com")
-    private String createdBy;
-
-    @Schema(description = "Usuario que realizó la última actualización", example = "usuario@dominio.com")
-    private String updatedBy;
-
     @Schema(description = "Nombre del grupo", example = "Gerentes de Ventas", minLength = 3, maxLength = 100)
     private String name;
 
@@ -45,4 +33,16 @@ public class GroupDtoOut {
 
     @ArraySchema(schema = @Schema(implementation = RoleDtoOut.class), arraySchema = @Schema(description = "Roles asociados a este grupo"))
     private List<RoleDtoOut> roles = new ArrayList<>();
+
+    @Schema(description = "Fecha de creación del registro", example = "2026-02-16T10:15:30Z")
+    private Instant createdAt;
+
+    @Schema(description = "Fecha de última actualización del registro", example = "2026-02-16T11:05:00Z")
+    private Instant updatedAt;
+
+    @Schema(description = "Usuario que creó el registro", example = "admin@dominio.com")
+    private String createdBy;
+
+    @Schema(description = "Usuario que realizó la última actualización", example = "usuario@dominio.com")
+    private String updatedBy;
 }

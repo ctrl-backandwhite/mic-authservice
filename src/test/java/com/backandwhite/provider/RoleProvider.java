@@ -39,124 +39,124 @@ public final class RoleProvider {
     public static Role adminRole() {
         return Role.builder()
                 .id(ADMIN_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(ADMIN_NAME)
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static Role userRole() {
         return Role.builder()
                 .id(USER_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(USER_NAME)
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static Role role() {
         return Role.builder()
                 .id(ROLE_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(ROLE_NAME)
                 .uniqueName(ROLE_UNIQUE_NAME)
                 .description(ROLE_DESCRIPTION)
                 .enabled(ROLE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static RoleEntity roleEntity() {
         return RoleEntity.builder()
                 .id(ROLE_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(ROLE_NAME)
                 .uniqueName(ROLE_UNIQUE_NAME)
                 .description(ROLE_DESCRIPTION)
                 .enabled(ROLE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static RoleEntity adminRoleEntity() {
         return RoleEntity.builder()
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(ADMIN_NAME)
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static RoleEntity userRoleEntity() {
         return RoleEntity.builder()
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(USER_NAME)
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static RoleDtoOut adminRoleDtoOut(Long id) {
         return RoleDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(ADMIN_NAME)
                 .uniqueName(ADMIN_UNIQUE_NAME)
                 .description(ADMIN_DESCRIPTION)
                 .enabled(ADMIN_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static RoleDtoOut userRoleDtoOut(Long id) {
         return RoleDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(USER_NAME)
                 .uniqueName(USER_UNIQUE_NAME)
                 .description(USER_DESCRIPTION)
                 .enabled(USER_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static RoleDtoOut supportRoleDtoOut(Long id) {
         return RoleDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(ROLE_NAME)
                 .uniqueName(ROLE_UNIQUE_NAME)
                 .description(ROLE_DESCRIPTION)
                 .enabled(ROLE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -190,42 +190,42 @@ public final class RoleProvider {
     public static Role guestRole() {
         return Role.builder()
                 .id(GUEST_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(GUEST_NAME)
                 .uniqueName(GUEST_UNIQUE_NAME)
                 .description(GUEST_DESCRIPTION)
                 .enabled(GUEST_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static RoleEntity guestRoleEntity() {
         return RoleEntity.builder()
                 .id(GUEST_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(GUEST_NAME)
                 .uniqueName(GUEST_UNIQUE_NAME)
                 .description(GUEST_DESCRIPTION)
                 .enabled(GUEST_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static RoleDtoOut guestRoleDtoOut(Long id) {
         return RoleDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(GUEST_NAME)
                 .uniqueName(GUEST_UNIQUE_NAME)
                 .description(GUEST_DESCRIPTION)
                 .enabled(GUEST_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 

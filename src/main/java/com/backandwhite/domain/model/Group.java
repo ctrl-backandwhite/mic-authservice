@@ -14,16 +14,16 @@ import java.util.ArrayList;
 public class Group {
 
     private Long id;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private String createdBy;
-    private String updatedBy;
     private String name;
     private String uniqueName;
     private String description;
     private Boolean enabled;
     @Builder.Default
     private List<Role> roles = new ArrayList<>();
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
 
     public void addRole(List<Role> roles) {
         this.roles.addAll(roles);

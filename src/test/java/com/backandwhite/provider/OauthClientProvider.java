@@ -24,60 +24,60 @@ public final class OauthClientProvider {
     public static OauthClient oauthClient() {
         return OauthClient.builder()
                 .id(CLIENT_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .clientId(CLIENT_CLIENT_ID)
                 .clientSecret(CLIENT_SECRET)
                 .scopes(List.of(ScopeProvider.readScope()))
                 .redirectUris(List.of(RedirectUriProvider.redirectUri()))
                 .grantTypes(List.of(GrantTypeProvider.grantType()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static OauthClient otherOauthClient() {
         return OauthClient.builder()
                 .id(OTHER_CLIENT_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .clientId(OTHER_CLIENT_CLIENT_ID)
                 .clientSecret(OTHER_CLIENT_SECRET)
                 .scopes(List.of(ScopeProvider.writeScope()))
                 .redirectUris(List.of(RedirectUriProvider.otherRedirectUri()))
                 .grantTypes(List.of(GrantTypeProvider.otherGrantType()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static OauthClientEntity oauthClientEntity() {
         return OauthClientEntity.builder()
                 .id(CLIENT_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .clientId(CLIENT_CLIENT_ID)
                 .clientSecret(CLIENT_SECRET)
                 .scopes(List.of(ScopeProvider.scopeEntity()))
                 .redirectUris(List.of(RedirectUriProvider.redirectUriEntity()))
                 .grantTypes(List.of(GrantTypeProvider.grantTypeEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static OauthClientEntity otherOauthClientEntity() {
         return OauthClientEntity.builder()
                 .id(OTHER_CLIENT_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .clientId(OTHER_CLIENT_CLIENT_ID)
                 .clientSecret(OTHER_CLIENT_SECRET)
                 .scopes(List.of(ScopeProvider.writeScopeEntity()))
                 .redirectUris(List.of(RedirectUriProvider.otherRedirectUriEntity()))
                 .grantTypes(List.of(GrantTypeProvider.otherGrantTypeEntity()))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -104,31 +104,31 @@ public final class OauthClientProvider {
     public static OauthClientDtoOut oauthClientDtoOut(Long id) {
         return OauthClientDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .clientId(CLIENT_CLIENT_ID)
                 .clientSecret(CLIENT_SECRET)
                 .scopes(List.of(ScopeProvider.readScopeDtoOut(ScopeProvider.READ_ID)))
                 .redirectUris(List.of(RedirectUriProvider.redirectUriDtoOut(RedirectUriProvider.REDIRECT_URI_ID)))
                 .grantTypes(List.of(GrantTypeProvider.grantTypeDtoOut(GrantTypeProvider.GRANT_TYPE_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static OauthClientDtoOut otherOauthClientDtoOut(Long id) {
         return OauthClientDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .clientId(OTHER_CLIENT_CLIENT_ID)
                 .clientSecret(OTHER_CLIENT_SECRET)
                 .scopes(List.of(ScopeProvider.writeScopeDtoOut(ScopeProvider.WRITE_ID)))
                 .redirectUris(
                         List.of(RedirectUriProvider.otherRedirectUriDtoOut(RedirectUriProvider.OTHER_REDIRECT_URI_ID)))
                 .grantTypes(List.of(GrantTypeProvider.otherGrantTypeDtoOut(GrantTypeProvider.OTHER_GRANT_TYPE_ID)))
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 }

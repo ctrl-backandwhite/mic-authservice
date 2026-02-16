@@ -26,28 +26,28 @@ public final class ScopeProvider {
     public static Scope readScope() {
         return Scope.builder()
                 .id(READ_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(READ_NAME)
                 .uniqueName(READ_UNIQUE_NAME)
                 .description(READ_DESCRIPTION)
                 .enabled(READ_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static Scope writeScope() {
         return Scope.builder()
                 .id(WRITE_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(WRITE_NAME)
                 .uniqueName(WRITE_UNIQUE_NAME)
                 .description(WRITE_DESCRIPTION)
                 .enabled(WRITE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -62,28 +62,28 @@ public final class ScopeProvider {
     public static ScopeEntity readScopeEntity() {
         return ScopeEntity.builder()
                 .id(READ_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(READ_NAME)
                 .uniqueName(READ_UNIQUE_NAME)
                 .description(READ_DESCRIPTION)
                 .enabled(READ_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static ScopeEntity writeScopeEntity() {
         return ScopeEntity.builder()
                 .id(WRITE_ID)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(WRITE_NAME)
                 .uniqueName(WRITE_UNIQUE_NAME)
                 .description(WRITE_DESCRIPTION)
                 .enabled(WRITE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
@@ -108,28 +108,28 @@ public final class ScopeProvider {
     public static ScopeDtoOut readScopeDtoOut(Long id) {
         return ScopeDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(READ_NAME)
                 .uniqueName(READ_UNIQUE_NAME)
                 .description(READ_DESCRIPTION)
                 .enabled(READ_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 
     public static ScopeDtoOut writeScopeDtoOut(Long id) {
         return ScopeDtoOut.builder()
                 .id(id)
-                .createdAt(AuditProvider.CREATED_AT)
-                .updatedAt(AuditProvider.UPDATED_AT)
-                .createdBy(AuditProvider.CREATED_BY)
-                .updatedBy(AuditProvider.UPDATED_BY)
                 .name(WRITE_NAME)
                 .uniqueName(WRITE_UNIQUE_NAME)
                 .description(WRITE_DESCRIPTION)
                 .enabled(WRITE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
                 .build();
     }
 }

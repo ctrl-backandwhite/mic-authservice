@@ -18,10 +18,6 @@ import java.time.Instant;
 public class User implements UserDetails {
 
     private Long id;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private String createdBy;
-    private String updatedBy;
     private String name;
     private String lastName;
     private String nickName;
@@ -34,6 +30,10 @@ public class User implements UserDetails {
     private List<Scope> scopes;
     private List<Role> roles;
     private List<Group> groups;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
 
     @JsonIgnore
     @Override
