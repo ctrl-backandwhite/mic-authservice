@@ -117,7 +117,7 @@ public class SecurityConfig {
                                                 .anyRequest().authenticated())
                                 .csrf(csrf -> csrf
                                                 .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
-                                                .ignoringRequestMatchers("/api/**", "/oauth2/**", "/logout"))
+                                                .ignoringRequestMatchers("/api/**", "/oauth2/**", "/logout", "/login"))
                                 .sessionManagement(session -> session
                                                 .sessionFixation().migrateSession()
                                                 .maximumSessions(2)

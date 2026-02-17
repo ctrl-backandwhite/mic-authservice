@@ -87,8 +87,7 @@
     </main>
     <script>
         (function () {
-            // Fetch CSRF token on page load
-            asyGet CSRF token from cookie and add to form before submit
+            // Get CSRF token from cookie and add to form before submit
             function getCookie(name) {
                 const value = `; ${document.cookie}`;
                 const parts = value.split(`; ${name}=`);
@@ -109,6 +108,9 @@
                             form.appendChild(csrfInput);
                         }
                         csrfInput.value = csrfToken;
+                        console.log('CSRF token added:', csrfToken);
+                    } else {
+                        console.warn('No XSRF-TOKEN cookie found');
                     }
                 });
             }
