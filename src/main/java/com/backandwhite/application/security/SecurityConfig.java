@@ -109,27 +109,32 @@ public class SecurityConfig {
 
         @Bean
         @Order(2)
-        public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
+        public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
                 http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(GET_PUBLIC_URLS).permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .anyRequest().authenticated())
                                 .csrf(csrf -> csrf
-                                                .ignoringRequestMatchers(GET_PUBLIC_URLS))
+                                                .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
+                                                .ignoringRequestMatchers("/api/**", "/oauth2/**", "/logout"))
                                 .sessionManagement(session -> session
-                                                .sessionFixation().newSession()
-                                                .maximumSessions(1)
-                                                .maxSessionsPreventsLogin(false))
+                                                .sessionFixation().migrateSession()
+                                                .maximumSessions(2)
+                                                .maxSessionsPreventsLogin(false)
+                                                .expiredUrl("/login?expired"))
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
                                                 .invalidateHttpSession(true)
                                                 .clearAuthentication(true)
-                                                .deleteCookies("JSESSIONID")
+                                                .deleteCookies("JSESSIONID", "XSRF-TOKEN")
                                                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(
                                                                 HttpStatus.NO_CONTENT)))
                                 .formLogin(form -> form
                                                 .loginPage("/login")
+                                                .loginProcessingUrl("/login")
+                                                .usernameParameter("username")
+                                                .passwordParameter("password")
                                                 .successHandler(authenticationSuccessHandler())
                                                 .failureHandler(authenticationFailureHandler)
                                                 .permitAll());
