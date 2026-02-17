@@ -109,12 +109,17 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable(value = "user", key = "#username")
     public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
+        log.debug("::> Loading user by username: {}", username);
         User user = userRepository.findUserByEmail(username);
         if (Objects.isNull(user)) {
+            log.warn("::> User not found: {}", username);
             throw ENTITY_NOT_FOUND.toEntityNotFound("User", username);
         }
-        return userRepository.findUserByEmail(username);
+        log.debug("::> User loaded successfully: {} with {} roles", username, 
+                  user.getRoles() != null ? user.getRoles().size() : 0);
+        return user;
     }
 }

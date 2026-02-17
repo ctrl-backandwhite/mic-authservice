@@ -57,9 +57,12 @@ import java.util.UUID;
 public class SecurityConfig {
 
         private final PasswordEncoder passwordEncoder;
+        private final CustomAuthenticationFailureHandler authenticationFailureHandler;
 
-        public SecurityConfig(PasswordEncoder passwordEncoder) {
+        public SecurityConfig(PasswordEncoder passwordEncoder,
+                            CustomAuthenticationFailureHandler authenticationFailureHandler) {
                 this.passwordEncoder = passwordEncoder;
+                this.authenticationFailureHandler = authenticationFailureHandler;
         }
 
         @Value("${app.security.handler-url:http://localhost:4200}")
@@ -114,6 +117,10 @@ public class SecurityConfig {
                                                 .anyRequest().authenticated())
                                 .csrf(csrf -> csrf
                                                 .ignoringRequestMatchers(GET_PUBLIC_URLS))
+                                .sessionManagement(session -> session
+                                                .sessionFixation().newSession()
+                                                .maximumSessions(1)
+                                                .maxSessionsPreventsLogin(false))
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
                                                 .invalidateHttpSession(true)
@@ -124,6 +131,7 @@ public class SecurityConfig {
                                 .formLogin(form -> form
                                                 .loginPage("/login")
                                                 .successHandler(authenticationSuccessHandler())
+                                                .failureHandler(authenticationFailureHandler)
                                                 .permitAll());
                 return http.build();
         }
