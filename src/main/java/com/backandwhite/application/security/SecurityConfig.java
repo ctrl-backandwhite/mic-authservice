@@ -57,12 +57,9 @@ import java.util.UUID;
 public class SecurityConfig {
 
         private final PasswordEncoder passwordEncoder;
-        private final CustomAuthenticationFailureHandler authenticationFailureHandler;
 
-        public SecurityConfig(PasswordEncoder passwordEncoder,
-                            CustomAuthenticationFailureHandler authenticationFailureHandler) {
+        public SecurityConfig(PasswordEncoder passwordEncoder) {
                 this.passwordEncoder = passwordEncoder;
-                this.authenticationFailureHandler = authenticationFailureHandler;
         }
 
         @Value("${app.security.handler-url:http://localhost:4200}")
@@ -78,6 +75,7 @@ public class SecurityConfig {
                         "/js/**",
                         "/images/**",
                         "/favicon.ico",
+                        "/error",
                         "/.well-known/**",
                         "/oauth2/token/**",
                         "/logout",
@@ -109,29 +107,22 @@ public class SecurityConfig {
 
         @Bean
         @Order(2)
-        public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
+        public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
                 http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(GET_PUBLIC_URLS).permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .anyRequest().authenticated())
-                                .csrf(csrf -> csrf
-                                                .ignoringRequestMatchers(GET_PUBLIC_URLS))
-                                .sessionManagement(session -> session
-                                                .sessionFixation().newSession()
-                                                .maximumSessions(1)
-                                                .maxSessionsPreventsLogin(false))
+                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/oauth2/**", "/login", "/logout"))
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
                                                 .invalidateHttpSession(true)
                                                 .clearAuthentication(true)
                                                 .deleteCookies("JSESSIONID")
-                                                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(
-                                                                HttpStatus.NO_CONTENT)))
+                                                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
                                 .formLogin(form -> form
                                                 .loginPage("/login")
                                                 .successHandler(authenticationSuccessHandler())
-                                                .failureHandler(authenticationFailureHandler)
                                                 .permitAll());
                 return http.build();
         }
@@ -140,6 +131,7 @@ public class SecurityConfig {
         public SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler() {
                 SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
                 handler.setDefaultTargetUrl(handlerUrl);
+                handler.setAlwaysUseDefaultTargetUrl(true);
                 return handler;
         }
 
