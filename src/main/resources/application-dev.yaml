@@ -46,7 +46,6 @@ logging:
   level:
     root: INFO
     org.springframework.security: DEBUG
-
 #logging:
 #  level:
 #    root: INFO
