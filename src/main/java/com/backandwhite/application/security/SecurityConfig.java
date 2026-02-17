@@ -113,7 +113,7 @@ public class SecurityConfig {
                                                 .requestMatchers(GET_PUBLIC_URLS).permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .anyRequest().authenticated())
-                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/oauth2/**"))
+                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/oauth2/**", "/login", "/logout"))
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
                                                 .invalidateHttpSession(true)
