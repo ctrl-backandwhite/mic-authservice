@@ -113,13 +113,15 @@ public class SecurityConfig {
                                                 .requestMatchers(GET_PUBLIC_URLS).permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .anyRequest().authenticated())
-                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/oauth2/**", "/login", "/logout"))
+                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/oauth2/**", "/login",
+                                                "/logout"))
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
                                                 .invalidateHttpSession(true)
                                                 .clearAuthentication(true)
                                                 .deleteCookies("JSESSIONID")
-                                                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
+                                                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(
+                                                                HttpStatus.NO_CONTENT)))
                                 .formLogin(form -> form
                                                 .loginPage("/login")
                                                 .successHandler(authenticationSuccessHandler())
