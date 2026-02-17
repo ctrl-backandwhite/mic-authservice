@@ -32,6 +32,12 @@
                 <header class="content__header">
                     <h1 data-i18n="login.title">¡Bienvenido!</h1>
                     <p data-i18n="login.subtitle">Inicia sesión para continuar.</p>
+                    
+                    <!-- Error message display -->
+                    <div id="error-message" class="error-alert" style="display: none; background-color: #fee; border: 1px solid #fcc; padding: 10px; border-radius: 4px; margin: 10px 0; color: #c33;">
+                        <span id="error-text"></span>
+                    </div>
+                    
                     <div class="lang-switch" role="group" aria-label="Selector de idioma">
                         <button type="button" class="lang-switch__btn" data-lang="es">ES</button>
                         <span aria-hidden="true">|</span>
@@ -96,6 +102,12 @@
                     "login.divider": "Inicia sesión con",
                     "login.noAccount": "¿No tienes cuenta?",
                     "login.createAccount": "Crear cuenta",
+                    "error.BAD_CREDENTIALS": "Usuario o contraseña incorrectos",
+                    "error.USER_NOT_FOUND": "Usuario no encontrado",
+                    "error.ACCOUNT_DISABLED": "La cuenta está deshabilitada",
+                    "error.ACCOUNT_LOCKED": "La cuenta está bloqueada",
+                    "error.AUTH_ERROR": "Error de autenticación. Por favor, intenta de nuevo.",
+                    "error.GENERIC": "Ocurrió un error. Por favor, intenta de nuevo.",
                     quotes: [
                         "Sistemas inteligentes para una experiencia fluida.",
                         "Flujos digitales optimizados para el mañana.",
@@ -117,6 +129,12 @@
                     "login.divider": "Sign in with",
                     "login.noAccount": "Don't have an account?",
                     "login.createAccount": "Create account",
+                    "error.BAD_CREDENTIALS": "Invalid username or password",
+                    "error.USER_NOT_FOUND": "User not found",
+                    "error.ACCOUNT_DISABLED": "Account is disabled",
+                    "error.ACCOUNT_LOCKED": "Account is locked",
+                    "error.AUTH_ERROR": "Authentication error. Please try again.",
+                    "error.GENERIC": "An error occurred. Please try again.",
                     quotes: [
                         "Intelligent systems for a seamless experience.",
                         "Optimized digital flows for tomorrow.",
@@ -183,7 +201,31 @@
                 applyTranslations(lang);
                 startQuotes(lang);
                 document.querySelectorAll(".lang-switch__btn").forEach(function (btn) {
-                    btn.classList.toggle("is-active", btn.getAttribute("data-lang") === lang);
+               Handle error messages from URL parameters
+            function showErrorMessage() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var error = urlParams.get('error');
+                var message = urlParams.get('message');
+                
+                if (error === 'true' && message) {
+                    var errorDiv = document.getElementById('error-message');
+                    var errorText = document.getElementById('error-text');
+                    var dict = translations[currentLang] || translations.es;
+                    var errorKey = 'error.' + message;
+                    
+                    errorText.textContent = dict[errorKey] || dict['error.GENERIC'];
+                    errorDiv.style.display = 'block';
+                    
+                    // Hide error after 5 seconds
+                    setTimeout(function() {
+                        errorDiv.style.display = 'none';
+                    }, 5000);
+                }
+            }
+            
+            showErrorMessage();
+
+            //      btn.classList.toggle("is-active", btn.getAttribute("data-lang") === lang);
                 });
             }
 
