@@ -148,7 +148,7 @@ class UserUseCaseImplTest {
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(model);
 
         assertSame(model, userUseCase.loadUserByUsername(UserProvider.USER_EMAIL));
-        verify(userRepository, times(2)).findUserByEmail(UserProvider.USER_EMAIL);
+        verify(userRepository).findUserByEmail(UserProvider.USER_EMAIL);
     }
 
     @Test
