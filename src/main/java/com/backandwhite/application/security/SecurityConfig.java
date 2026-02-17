@@ -57,12 +57,9 @@ import java.util.UUID;
 public class SecurityConfig {
 
         private final PasswordEncoder passwordEncoder;
-        private final CustomAuthenticationFailureHandler authenticationFailureHandler;
 
-        public SecurityConfig(PasswordEncoder passwordEncoder,
-                            CustomAuthenticationFailureHandler authenticationFailureHandler) {
+        public SecurityConfig(PasswordEncoder passwordEncoder) {
                 this.passwordEncoder = passwordEncoder;
-                this.authenticationFailureHandler = authenticationFailureHandler;
         }
 
         @Value("${app.security.handler-url:http://localhost:4200}")
@@ -78,6 +75,7 @@ public class SecurityConfig {
                         "/js/**",
                         "/images/**",
                         "/favicon.ico",
+                        "/error",
                         "/.well-known/**",
                         "/oauth2/token/**",
                         "/logout",
@@ -115,28 +113,16 @@ public class SecurityConfig {
                                                 .requestMatchers(GET_PUBLIC_URLS).permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .anyRequest().authenticated())
-                                .csrf(csrf -> csrf
-                                                .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
-                                                .ignoringRequestMatchers("/api/**", "/oauth2/**", "/logout", "/login"))
-                                .sessionManagement(session -> session
-                                                .sessionFixation().migrateSession()
-                                                .maximumSessions(2)
-                                                .maxSessionsPreventsLogin(false)
-                                                .expiredUrl("/login?expired"))
+                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/oauth2/**"))
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
                                                 .invalidateHttpSession(true)
                                                 .clearAuthentication(true)
-                                                .deleteCookies("JSESSIONID", "XSRF-TOKEN")
-                                                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(
-                                                                HttpStatus.NO_CONTENT)))
+                                                .deleteCookies("JSESSIONID")
+                                                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
                                 .formLogin(form -> form
                                                 .loginPage("/login")
-                                                .loginProcessingUrl("/login")
-                                                .usernameParameter("username")
-                                                .passwordParameter("password")
                                                 .successHandler(authenticationSuccessHandler())
-                                                .failureHandler(authenticationFailureHandler)
                                                 .permitAll());
                 return http.build();
         }
@@ -145,6 +131,7 @@ public class SecurityConfig {
         public SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler() {
                 SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
                 handler.setDefaultTargetUrl(handlerUrl);
+                handler.setAlwaysUseDefaultTargetUrl(true);
                 return handler;
         }
 
