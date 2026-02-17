@@ -26,7 +26,7 @@ class SecurityConfigTest {
 
     @Test
     void corsConfigurationSource_includesExpectedOriginsAndMethods() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class), mock(CustomAuthenticationFailureHandler.class));
+        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
 
         CorsConfigurationSource source = config.corsConfigurationSource();
         CorsConfiguration cors = source.getCorsConfiguration(new MockHttpServletRequest());
@@ -45,7 +45,7 @@ class SecurityConfigTest {
 
     @Test
     void registeredClientRepository_returnsInMemoryWhenNoOauthClientRepository() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class), mock(CustomAuthenticationFailureHandler.class));
+        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
 
         ObjectProvider<OauthClientRepository> provider = mock(ObjectProvider.class);
         when(provider.getIfAvailable()).thenReturn(null);
@@ -58,7 +58,7 @@ class SecurityConfigTest {
 
     @Test
     void registeredClientRepository_returnsCustomWhenOauthClientRepositoryAvailable() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class), mock(CustomAuthenticationFailureHandler.class));
+        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
 
         OauthClientRepository mockRepository = mock(OauthClientRepository.class);
         ObjectProvider<OauthClientRepository> provider = mock(ObjectProvider.class);
@@ -72,7 +72,7 @@ class SecurityConfigTest {
 
     @Test
     void jwkSource_providesRsaKeyWithPrivateKey() throws Exception {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class), mock(CustomAuthenticationFailureHandler.class));
+        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
 
         JWKSource<SecurityContext> source = config.jwkSource();
         RSAKey rsaKey = (RSAKey) source
@@ -88,7 +88,7 @@ class SecurityConfigTest {
 
     @Test
     void jwtAuthenticationConverter_addsRolesFromClaim() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class), mock(CustomAuthenticationFailureHandler.class));
+        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
 
         Jwt jwt = Jwt.withTokenValue("token")
                 .header("alg", "RS256")
