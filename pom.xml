@@ -43,10 +43,12 @@
         <dependency>
             <groupId>com.backandwhite.core</groupId>
             <artifactId>app-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.backandwhite.core</groupId>
             <artifactId>app-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
