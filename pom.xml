@@ -39,6 +39,10 @@
         </repository>
     </repositories>
 
+    <properties>
+        <sonar.organization>ctrl-backandwhite</sonar.organization>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.backandwhite.core</groupId>
