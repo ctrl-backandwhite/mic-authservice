@@ -34,10 +34,14 @@ jobs:
         run: |
           mkdir -p ~/.m2
           printf "%s" "${{ secrets.MAVEN_SETTINGS_XML }}" > ~/.m2/settings.xml
-      - name: Build and analyze
+      - name: Build
+        run: mvn -s ~/.m2/settings.xml -B verify
+      - name: Analyze with SonarCloud
+        uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn -s ~/.m2/settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=ctrl-backandwhite_auth-backandwhite \
+        with:
+          args: >
+            -Dsonar.projectKey=ctrl-backandwhite_auth-backandwhite
             -Dsonar.organization=ctrl-backandwhite
+            -Dsonar.java.binaries=target/classes
