@@ -44,7 +44,7 @@ server:
 
 app:
   security:
-    handler-url: https://webapp-production-68d2.up.railway.app
+    handler-url: https://backandwhite.com
 
 logging:
   level:
