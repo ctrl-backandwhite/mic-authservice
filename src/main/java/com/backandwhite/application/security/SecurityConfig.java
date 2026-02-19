@@ -7,11 +7,13 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,16 +49,16 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private Environment env;
 
     public SecurityConfig(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -132,6 +134,11 @@ public class SecurityConfig {
     @Bean
     public SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler() {
         SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
+        if (Objects.nonNull(env.getProperty("active.profil")) && Objects.equals(env.getProperty("active.profil"), "pro")) {
+            handlerUrl = env.getProperty("app.security.handler-url-1");
+        } else {
+            handlerUrl = env.getProperty("app.security.handler-url-2");
+        }
         handler.setDefaultTargetUrl(handlerUrl);
         handler.setAlwaysUseDefaultTargetUrl(true);
         return handler;
