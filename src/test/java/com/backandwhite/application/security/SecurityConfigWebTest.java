@@ -11,11 +11,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {SecurityConfig.class, CorsRegistryConfiguration.class})
+@SpringBootTest(classes = { SecurityConfig.class, CorsRegistryConfiguration.class })
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
-    "app.security.handler-url-1=http://localhost:4200",
-    "app.security.handler-url-2=http://localhost:4200"
+        "app.security.handler-url-1=http://localhost:4200",
+        "app.security.handler-url-2=http://localhost:4200"
 })
 class SecurityConfigWebTest {
 
