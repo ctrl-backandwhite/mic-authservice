@@ -55,6 +55,8 @@ import java.util.*;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private static final String LOGIN_PATH = "/login";
+
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -68,7 +70,7 @@ public class SecurityConfig {
     private String handlerUrl;
 
     private final String[] GET_PUBLIC_URLS = {
-            "/login",
+            LOGIN_PATH,
             "/login.html",
             "/forgot-password.html",
             "/register.html",
@@ -102,7 +104,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions
                         .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("/login"),
+                                new LoginUrlAuthenticationEntryPoint(LOGIN_PATH),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
         return http.build();
     }
@@ -115,7 +117,7 @@ public class SecurityConfig {
                         .requestMatchers(GET_PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/oauth2/**", "/login",
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/oauth2/**", LOGIN_PATH,
                         "/logout"))
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -125,7 +127,7 @@ public class SecurityConfig {
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(
                                 HttpStatus.NO_CONTENT)))
                 .formLogin(form -> form
-                        .loginPage("/login")
+                        .loginPage(LOGIN_PATH)
                         .successHandler(authenticationSuccessHandler())
                         .permitAll());
         return http.build();

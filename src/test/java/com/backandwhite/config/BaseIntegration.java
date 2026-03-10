@@ -31,7 +31,7 @@ public abstract class BaseIntegration {
 
     public static final String PREFIX = "hibernate_";
     private static final Pattern VALID_TABLE_NAME_PATTERN = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*$");
-    private static final Set<String> EXCLUDED_TABLE_PREFIXES = Set.of("hibernate_", "flyway_", "liquibase_");
+    private static final Set<String> EXCLUDED_TABLE_PREFIXES = Set.of(PREFIX, "flyway_", "liquibase_");
 
     @Autowired
     private JwtTestUtil jwtTestUtil;

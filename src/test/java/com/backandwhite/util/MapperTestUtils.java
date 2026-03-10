@@ -1,12 +1,12 @@
 package com.backandwhite.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.lang.reflect.Field;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public final class MapperTestUtils {
-
-    private MapperTestUtils() {
-        // Utility class.
-    }
 
     public static void setField(Object target, String fieldName, Object value) {
         try {
