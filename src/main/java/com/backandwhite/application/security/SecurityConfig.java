@@ -134,12 +134,12 @@ public class SecurityConfig {
     @Bean
     public SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler() {
         SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
-        if (Objects.nonNull(env.getProperty("spring.profiles.active")) && Objects.equals(env.getProperty("spring.profiles.active"), "pro")) {
-            handlerUrl = env.getProperty("app.security.handler-url-1");
+        String activeProfile = env.getProperty("spring.profiles.active");
+        if (Objects.equals(activeProfile, "pro")) {
+            handlerUrl = env.getProperty("app.security.handler-url-1", handlerUrl);
         } else {
-            handlerUrl = env.getProperty("app.security.handler-url-2");
+            handlerUrl = env.getProperty("app.security.handler-url-2", handlerUrl);
         }
-        assert handlerUrl != null;
         handler.setDefaultTargetUrl(handlerUrl);
         handler.setAlwaysUseDefaultTargetUrl(true);
         return handler;
