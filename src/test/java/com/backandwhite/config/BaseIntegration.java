@@ -61,7 +61,7 @@ public abstract class BaseIntegration {
                     .baseUrl("http://localhost:" + port)
                     .build();
         }
-        log.info("Iniciando limpieza de todas las tablas y reiniciando IDs...");
+        log.debug("Iniciando limpieza de todas las tablas y reiniciando IDs...");
 
         List<String> tableNames;
         try {
@@ -95,12 +95,12 @@ public abstract class BaseIntegration {
         for (String tableName : tablesToTruncate) {
             try {
                 String truncateSql = "TRUNCATE TABLE ".concat(tableName).concat(" RESTART IDENTITY CASCADE");
-                log.info("Ejecutando: {}", truncateSql);
+                log.debug("Ejecutando: {}", truncateSql);
                 jdbcTemplate.execute(truncateSql);
             } catch (Exception e) {
                 log.error("Error al truncar la tabla '{}': {}", tableName, e.getMessage());
             }
         }
-        log.info("Limpieza de tablas finalizada.");
+        log.debug("Limpieza de tablas finalizada.");
     }
 }
