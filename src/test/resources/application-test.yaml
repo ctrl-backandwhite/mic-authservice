@@ -3,3 +3,8 @@ test:
     username: test_user
     password: test_password
     database: test_db
+
+logging:
+  level:
+    com.backandwhite.common.exception.Message: ERROR
+    com.backandwhite.api.exception.GlobalExceptionHandler: ERROR

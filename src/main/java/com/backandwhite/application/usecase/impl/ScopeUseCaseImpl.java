@@ -23,9 +23,8 @@ import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 @AllArgsConstructor
 public class ScopeUseCaseImpl implements ScopeUseCase {
 
-private final ScopeRepository scopeRepository;
-private final ScopeCommandHandler scopeCommandHandler;
-
+    private final ScopeRepository scopeRepository;
+    private final ScopeCommandHandler scopeCommandHandler;
 
     @Override
     @Transactional
@@ -68,9 +67,12 @@ private final ScopeCommandHandler scopeCommandHandler;
 
     @Override
     @Transactional
-    @CacheEvict(value = {"scope_all", "scope"}, allEntries = true)
+    @CacheEvict(value = { "scope_all", "scope" }, allEntries = true)
     public void delete(Long id) {
-        this.getById(id);
+        Scope model = scopeRepository.getById(id);
+        if (Objects.isNull(model)) {
+            throw ENTITY_NOT_FOUND.toEntityNotFound("Scope", id);
+        }
         log.debug("::> Deleting scope with id {}", id);
         scopeRepository.delete(id);
     }

@@ -31,7 +31,7 @@ public abstract class BaseIntegration {
 
     public static final String PREFIX = "hibernate_";
     private static final Pattern VALID_TABLE_NAME_PATTERN = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*$");
-    private static final Set<String> EXCLUDED_TABLE_PREFIXES = Set.of("hibernate_", "flyway_", "liquibase_");
+    private static final Set<String> EXCLUDED_TABLE_PREFIXES = Set.of(PREFIX, "flyway_", "liquibase_");
 
     @Autowired
     private JwtTestUtil jwtTestUtil;
@@ -61,7 +61,7 @@ public abstract class BaseIntegration {
                     .baseUrl("http://localhost:" + port)
                     .build();
         }
-        log.info("Iniciando limpieza de todas las tablas y reiniciando IDs...");
+        log.debug("Iniciando limpieza de todas las tablas y reiniciando IDs...");
 
         List<String> tableNames;
         try {
@@ -95,12 +95,12 @@ public abstract class BaseIntegration {
         for (String tableName : tablesToTruncate) {
             try {
                 String truncateSql = "TRUNCATE TABLE ".concat(tableName).concat(" RESTART IDENTITY CASCADE");
-                log.info("Ejecutando: {}", truncateSql);
+                log.debug("Ejecutando: {}", truncateSql);
                 jdbcTemplate.execute(truncateSql);
             } catch (Exception e) {
                 log.error("Error al truncar la tabla '{}': {}", tableName, e.getMessage());
             }
         }
-        log.info("Limpieza de tablas finalizada.");
+        log.debug("Limpieza de tablas finalizada.");
     }
 }
