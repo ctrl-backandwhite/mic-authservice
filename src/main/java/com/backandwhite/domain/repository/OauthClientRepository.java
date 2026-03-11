@@ -1,5 +1,6 @@
 package com.backandwhite.domain.repository;
 
+import com.backandwhite.common.domain.repository.BaseRepository;
 import com.backandwhite.domain.model.OauthClient;
 import org.springframework.stereotype.Repository;
 
