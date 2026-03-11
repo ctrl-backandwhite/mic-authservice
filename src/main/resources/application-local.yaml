@@ -1,22 +1,22 @@
 server:
-  port: 8443
+  port: ${SERVER_PORT:8443}
   ssl:
-    enabled: true
-    key-store: classpath:keystore.p12
-    key-store-password: password
-    key-store-type: PKCS12
+    enabled: ${SSL_ENABLED:true}
+    key-store: ${SSL_KEY_STORE:classpath:keystore.p12}
+    key-store-password: ${SSL_KEY_STORE_PASSWORD:password}
+    key-store-type: ${SSL_KEY_STORE_TYPE:PKCS12}
   servlet:
     session:
       cookie:
-        same-site: none
-        secure: true
+        same-site: ${SERVER_COOKIE_SAME_SITE:none}
+        secure: ${SERVER_COOKIE_SECURE:true}
         http-only: true
 
 spring:
   datasource:
-    url: ${POSTGRES_URL}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5401/db01}
+    username: ${POSTGRES_USER:user01}
+    password: ${POSTGRES_PASSWORD:pass01}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -29,21 +29,21 @@ spring:
     enabled: true
   data:
     redis:
-      host: localhost
-      port: 6379
-      timeout: 60000
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: ${REDIS_TIMEOUT:60000}
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8443
+          issuer-uri: ${ISSUER_URI:http://localhost:8443}
 app:
   security:
-    handler-url: http://localhost:4200
+    handler-url: ${HANDLER_URL:http://localhost:4200}
 
 logging:
   level:
     root: INFO
-    org.springframework.security.oauth2: TRACE
-    org.springframework.security.web: DEBUG
+    "[org.springframework.security.oauth2]": TRACE
+    "[org.springframework.security.web]": DEBUG
