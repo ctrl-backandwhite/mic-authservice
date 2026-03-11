@@ -8,3 +8,9 @@ logging:
   level:
     com.backandwhite.common.exception.Message: ERROR
     com.backandwhite.api.exception.GlobalExceptionHandler: ERROR
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
