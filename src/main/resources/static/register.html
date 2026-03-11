@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/register.css?v=20260216" />
+    <link rel="stylesheet" href="/css/register.css?v=20260312" />
 </head>
 
 <body>
@@ -29,11 +29,12 @@
             </div>
 
             <div class="register-card__content">
-                <header class="content__header">
-                    <div class="alert" id="alert" style="display: none;"></div>
-                </header>
 
                 <form id="registerForm" class="form" novalidate>
+                    <div class="form__alerts register-form__alerts" aria-live="polite" aria-atomic="true">
+                        <div class="alert" id="alert" hidden></div>
+                    </div>
+
                     <div class="form__row">
                         <label class="field">
                             <span data-i18n="register.nameLabel">Nombre *</span>
@@ -70,16 +71,55 @@
                     <div class="form__row">
                         <label class="field">
                             <span data-i18n="register.passwordLabel">Contraseña *</span>
-                            <input type="password" id="password" name="password" autocomplete="new-password"
-                                placeholder="Ingresa tu contraseña" data-i18n-placeholder="register.passwordPlaceholder"
-                                required minlength="8" />
+                            <div class="field__password">
+                                <input type="password" id="password" name="password" autocomplete="new-password"
+                                    placeholder="Ingresa tu contraseña"
+                                    data-i18n-placeholder="register.passwordPlaceholder" required minlength="8" />
+                                <button type="button" class="field__toggle" id="toggle-password"
+                                    data-i18n-aria-label="register.toggleShowAria" aria-label="Mostrar contraseña"
+                                    aria-pressed="false">
+                                    <svg class="field__toggle-icon field__toggle-icon--show" viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg class="field__toggle-icon field__toggle-icon--hide" viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <path d="M3 3l18 18"></path>
+                                        <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                                        <path d="M9.9 5.1A11.4 11.4 0 0 1 12 5c7 0 11 7 11 7a20.2 20.2 0 0 1-4.2 4.8">
+                                        </path>
+                                        <path d="M6.1 6.1A20.8 20.8 0 0 0 1 12s4 7 11 7c1.6 0 3-.3 4.3-.9"></path>
+                                    </svg>
+                                </button>
+                            </div>
                             <small class="error-message"></small>
                         </label>
                         <label class="field">
                             <span data-i18n="register.confirmPasswordLabel">Confirmar Contraseña *</span>
-                            <input type="password" id="confirmPassword" name="confirmPassword"
-                                autocomplete="new-password" placeholder="Confirma tu contraseña"
-                                data-i18n-placeholder="register.confirmPasswordPlaceholder" required minlength="8" />
+                            <div class="field__password">
+                                <input type="password" id="confirmPassword" name="confirmPassword"
+                                    autocomplete="new-password" placeholder="Confirma tu contraseña"
+                                    data-i18n-placeholder="register.confirmPasswordPlaceholder" required
+                                    minlength="8" />
+                                <button type="button" class="field__toggle" id="toggle-confirm-password"
+                                    data-i18n-aria-label="register.toggleShowAria" aria-label="Mostrar contraseña"
+                                    aria-pressed="false">
+                                    <svg class="field__toggle-icon field__toggle-icon--show" viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg class="field__toggle-icon field__toggle-icon--hide" viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <path d="M3 3l18 18"></path>
+                                        <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                                        <path d="M9.9 5.1A11.4 11.4 0 0 1 12 5c7 0 11 7 11 7a20.2 20.2 0 0 1-4.2 4.8">
+                                        </path>
+                                        <path d="M6.1 6.1A20.8 20.8 0 0 0 1 12s4 7 11 7c1.6 0 3-.3 4.3-.9"></path>
+                                    </svg>
+                                </button>
+                            </div>
                             <small class="error-message"></small>
                         </label>
                     </div>
@@ -231,6 +271,8 @@
                 "register.passwordPlaceholder": "Ingresa tu contraseña",
                 "register.confirmPasswordLabel": "Confirmar Contraseña *",
                 "register.confirmPasswordPlaceholder": "Confirma tu contraseña",
+                "register.toggleShowAria": "Mostrar contraseña",
+                "register.toggleHideAria": "Ocultar contraseña",
                 "register.passwordRequirements": "La contraseña debe contener:",
                 "register.reqLength": "Al menos 8 caracteres",
                 "register.reqUppercase": "Una letra mayúscula",
@@ -242,6 +284,12 @@
                 "register.haveAccount": "¿Ya tienes cuenta?",
                 "register.loginLink": "Inicia sesión",
                 "register.passwordMismatch": "Las contraseñas no coinciden",
+                "register.passwordWeak": "La contraseña no cumple los requisitos de seguridad",
+                "register.emailExists": "El correo electrónico ya está registrado",
+                "register.usernameExists": "El nombre de usuario ya está registrado",
+                "Email already exists.": "El correo electrónico ya está registrado",
+                "Username already exists.": "El nombre de usuario ya está registrado",
+                "A record with the same unique value already exists.": "Ya existe un registro con ese valor único",
                 "register.acceptTermsError": "Por favor acepta los Términos y Condiciones",
                 "register.creatingAccount": "Creando cuenta...",
                 "register.successMessage": "¡Cuenta creada exitosamente! Redirigiendo a iniciar sesión...",
@@ -299,6 +347,8 @@
                 "register.passwordPlaceholder": "Enter your password",
                 "register.confirmPasswordLabel": "Confirm Password *",
                 "register.confirmPasswordPlaceholder": "Confirm your password",
+                "register.toggleShowAria": "Show password",
+                "register.toggleHideAria": "Hide password",
                 "register.passwordRequirements": "Your password must contain:",
                 "register.reqLength": "At least 8 characters",
                 "register.reqUppercase": "One uppercase letter",
@@ -310,6 +360,12 @@
                 "register.haveAccount": "Already have an account?",
                 "register.loginLink": "Sign in",
                 "register.passwordMismatch": "Passwords do not match",
+                "register.passwordWeak": "Password does not meet the security requirements",
+                "register.emailExists": "Email is already registered",
+                "register.usernameExists": "Username is already registered",
+                "Email already exists.": "Email is already registered",
+                "Username already exists.": "Username is already registered",
+                "A record with the same unique value already exists.": "A record with the same unique value already exists.",
                 "register.acceptTermsError": "Please accept the Terms and Conditions",
                 "register.creatingAccount": "Creating account...",
                 "register.successMessage": "Account created successfully! Redirecting to sign in...",
@@ -356,10 +412,18 @@
 
         let currentLang = localStorage.getItem('lang') || 'es';
         let quoteInterval;
+        const passwordToggleRenderers = [];
 
         function t(key) {
             const dict = translations[currentLang] || translations.es;
             return dict[key] || key;
+        }
+
+        function translateServerMessage(message) {
+            const text = typeof message === 'string' ? message.trim() : '';
+            if (!text) return text;
+            const dict = translations[currentLang] || translations.es;
+            return dict[text] || text;
         }
 
         function applyTranslations(lang) {
@@ -374,6 +438,12 @@
                 const key = el.getAttribute('data-i18n-placeholder');
                 if (dict[key]) {
                     el.setAttribute('placeholder', dict[key]);
+                }
+            });
+            document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+                const key = el.getAttribute('data-i18n-aria-label');
+                if (dict[key]) {
+                    el.setAttribute('aria-label', dict[key]);
                 }
             });
         }
@@ -415,6 +485,7 @@
             localStorage.setItem('lang', lang);
             applyTranslations(lang);
             startQuotes(lang);
+            refreshPasswordToggleAria();
             document.querySelectorAll('.lang-switch__btn').forEach(btn => {
                 btn.classList.toggle('is-active', btn.getAttribute('data-lang') === lang);
             });
@@ -462,6 +533,39 @@
         // Password validation
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('confirmPassword');
+
+        function bindPasswordToggle(buttonId, inputId) {
+            const button = document.getElementById(buttonId);
+            const input = document.getElementById(inputId);
+            if (!button || !input) return;
+
+            let isVisible = false;
+
+            const render = () => {
+                const keyAria = isVisible ? 'register.toggleHideAria' : 'register.toggleShowAria';
+                const fallbackAria = isVisible ? 'Ocultar contraseña' : 'Mostrar contraseña';
+                const dict = translations[currentLang] || translations.es;
+                button.setAttribute('aria-label', dict[keyAria] || fallbackAria);
+                button.setAttribute('aria-pressed', isVisible ? 'true' : 'false');
+                button.classList.toggle('is-visible', isVisible);
+            };
+
+            button.addEventListener('click', () => {
+                isVisible = !isVisible;
+                input.setAttribute('type', isVisible ? 'text' : 'password');
+                render();
+            });
+
+            passwordToggleRenderers.push(render);
+            render();
+        }
+
+        function refreshPasswordToggleAria() {
+            passwordToggleRenderers.forEach(render => render());
+        }
+
+        bindPasswordToggle('toggle-password', 'password');
+        bindPasswordToggle('toggle-confirm-password', 'confirmPassword');
 
         passwordInput?.addEventListener('input', function () {
             const password = this.value;
@@ -517,6 +621,18 @@
                 groupIds: []
             };
 
+            // Validar fortaleza de contraseña
+            const pwd = formData.password;
+            const pwdValid =
+                pwd.length >= 8 &&
+                /[A-Z]/.test(pwd) &&
+                /[a-z]/.test(pwd) &&
+                /[0-9]/.test(pwd);
+            if (!pwdValid) {
+                showFieldError('password', t('register.passwordWeak'));
+                return;
+            }
+
             // Validar que las contraseñas coincidan
             if (formData.password !== formData.confirmPassword) {
                 showFieldError('confirmPassword', t('register.passwordMismatch'));
@@ -552,8 +668,13 @@
                         window.location.href = '/login';
                     }, 2000);
                 } else {
-                    const error = await response.json();
-                    showAlert(error.message || t('register.createError'), 'error');
+                    const error = await response.json().catch(() => null);
+                    const resolvedError = resolveRegisterError(error);
+                    if (resolvedError.fieldId) {
+                        showFieldError(resolvedError.fieldId, resolvedError.message);
+                    } else {
+                        showAlert(resolvedError.message, 'error');
+                    }
                 }
             } catch (error) {
                 console.error('Error de registro:', error);
@@ -567,12 +688,87 @@
 
         function showFieldError(fieldId, message) {
             const field = document.getElementById(fieldId);
-            const errorEl = field?.parentElement.querySelector('.error-message');
-            if (errorEl) {
-                errorEl.textContent = message;
-                errorEl.style.display = 'block';
-                field.classList.add('error');
+            if (field) field.classList.add('error');
+            showAlert(message, 'error');
+        }
+
+        function resolveRegisterError(error) {
+            const details = Array.isArray(error?.details)
+                ? error.details.filter(detail => typeof detail === 'string' && detail.trim())
+                : [];
+            const message = typeof error?.message === 'string' ? error.message.trim() : '';
+            const firstDetail = details[0] ? details[0].trim() : '';
+            const normalized = `${message} ${firstDetail}`.toLowerCase();
+
+            if (isDuplicateError(normalized, ['email'])) {
+                return { fieldId: 'email', message: t('register.emailExists') };
             }
+
+            if (isDuplicateError(normalized, ['nick_name', 'nickname', 'user_name', 'username'])) {
+                return { fieldId: 'nickName', message: t('register.usernameExists') };
+            }
+
+            if (firstDetail) {
+                return {
+                    fieldId: guessErrorFieldId(firstDetail),
+                    message: translateServerMessage(sanitizeErrorMessage(firstDetail))
+                };
+            }
+
+            if (message && message !== 'One or more validation errors occurred.' && message !== 'Validation error') {
+                return {
+                    fieldId: guessErrorFieldId(message),
+                    message: translateServerMessage(message)
+                };
+            }
+
+            return { fieldId: null, message: t('register.createError') };
+        }
+
+        function isDuplicateError(text, tokens) {
+            const hasDuplicateMarker =
+                text.includes('duplicate key') ||
+                text.includes('already exists') ||
+                text.includes('ya existe') ||
+                text.includes('registered');
+
+            return hasDuplicateMarker && tokens.some(token => text.includes(token));
+        }
+
+        function guessErrorFieldId(text) {
+            const normalized = text.toLowerCase();
+
+            if (normalized.includes('email') || normalized.includes('correo')) {
+                return 'email';
+            }
+
+            if (
+                normalized.includes('nick_name') ||
+                normalized.includes('nickname') ||
+                normalized.includes('username') ||
+                normalized.includes('user_name') ||
+                normalized.includes('usuario')
+            ) {
+                return 'nickName';
+            }
+
+            if (normalized.includes('confirm') || normalized.includes('confirmación')) {
+                return 'confirmPassword';
+            }
+
+            if (normalized.includes('password') || normalized.includes('contraseña')) {
+                return 'password';
+            }
+
+            return null;
+        }
+
+        function sanitizeErrorMessage(message) {
+            return message
+                .replace(/^ERROR:\s*/i, '')
+                .replace(/^Detail:\s*/i, '')
+                .replace(/\s+/g, ' ')
+                .trim();
         }
 
         function clearErrors() {
@@ -585,11 +781,23 @@
             });
         }
 
+        let alertDismissTimer = null;
         function showAlert(message, type) {
-            const alert = document.getElementById('alert');
-            alert.textContent = message;
-            alert.className = `alert alert--${type}`;
-            alert.style.display = 'block';
+            if (alertDismissTimer) { clearTimeout(alertDismissTimer); alertDismissTimer = null; }
+            const alertEl = document.getElementById('alert');
+            alertEl.textContent = message;
+            alertEl.className = `alert alert--${type}`;
+            alertEl.classList.remove('alert--dismissing');
+            alertEl.hidden = false;
+            if (type === 'error') {
+                alertDismissTimer = setTimeout(() => {
+                    alertEl.classList.add('alert--dismissing');
+                    alertDismissTimer = setTimeout(() => {
+                        alertEl.hidden = true;
+                        alertEl.classList.remove('alert--dismissing');
+                    }, 400);
+                }, 3000);
+            }
         }
     </script>
 </body>

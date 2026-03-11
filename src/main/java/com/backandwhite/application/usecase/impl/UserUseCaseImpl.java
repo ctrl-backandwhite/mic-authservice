@@ -1,6 +1,7 @@
 package com.backandwhite.application.usecase.impl;
 
 import com.backandwhite.application.usecase.UserUseCase;
+import com.backandwhite.common.exception.ArgumentException;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.repository.UserRepository;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
+import static com.backandwhite.common.exception.Message.VALIDATION_ERROR;
 
 @Log4j2
 @Service
@@ -40,6 +42,11 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Transactional
     @CacheEvict(value = "user_all", allEntries = true)
     public User save(User model) {
+        User existingUser = userRepository.findUserByEmail(model.getEmail());
+        if (existingUser != null) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Email already exists.");
+        }
+
         // Assign default GUEST role if user has no roles
         if (model.getRoles() == null || model.getRoles().isEmpty()) {
             Role guestRole = findGuestRole();
@@ -118,8 +125,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
             log.warn("::> User not found: {}", username);
             throw ENTITY_NOT_FOUND.toEntityNotFound("User", username);
         }
-        log.debug("::> User loaded successfully: {} with {} roles", username, 
-                  user.getRoles() != null ? user.getRoles().size() : 0);
+        log.debug("::> User loaded successfully: {} with {} roles", username,
+                user.getRoles() != null ? user.getRoles().size() : 0);
         return user;
     }
 }

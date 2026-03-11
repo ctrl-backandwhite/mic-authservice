@@ -33,13 +33,21 @@
 }
 
 .register-card__content {
-    padding: 0 2.5rem;
+    padding: 1.5rem 2.5rem 1rem;
     display: flex;
     flex-direction: column;
     max-height: 650px;
-    overflow-y: hidden;
+    overflow-y: auto;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
+}
+
+.register-card__content .form {
+    gap: 12px;
+}
+
+.register-form__alerts {
+    margin-bottom: 0.125rem;
 }
 
 /* Campos en dos columnas */
@@ -78,6 +86,10 @@
     font-weight: 300;
 }
 
+.register-card__content .field__password input {
+    padding-right: 42px;
+}
+
 .register-card__content .field input:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(25, 179, 164, 0.18);
@@ -104,7 +116,7 @@
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     padding: 0.75rem;
-    margin: 0.5rem 0 0.75rem 0;
+    margin: 0.25rem 0 0;
     font-size: 12px;
 }
 
@@ -163,8 +175,16 @@
     padding: 0.875rem 1rem;
     border-radius: 8px;
     font-size: 12px;
-    margin-top: 1rem;
+    margin-bottom: 0.75rem;
     font-weight: 400;
+    text-align: center;
+    transition: opacity 0.4s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.alert--dismissing {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .alert--success {
@@ -174,9 +194,10 @@
 }
 
 .alert--error {
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fca5a5;
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-left: 3px solid #f59e0b;
+    color: #92400e;
 }
 
 /* Spinner for loading state */
@@ -208,7 +229,7 @@
 .register-card__content .btn {
     padding: 10px 16px;
     font-size: 12px;
-    margin-top: 0.75rem;
+    margin-top: 0.35rem;
     font-weight: 600;
     width: 100%;
 }
@@ -222,7 +243,7 @@
     font-size: 11px;
     color: #334155;
     font-weight: 300;
-    margin: 5px 0;
+    margin: 0;
 }
 
 .register-card__content .checkbox input[type="checkbox"] {
@@ -375,7 +396,8 @@ body.modal-open {
 
     .register-card__content {
         max-height: none;
-        padding: 0 2rem;
+        padding: 1.1rem 2rem 0.9rem;
+        justify-content: flex-start;
     }
 
     .form__row {
@@ -394,7 +416,8 @@ body.modal-open {
     }
 
     .register-card__content {
-        padding: 0 1.5rem;
+        padding: 1rem 1.5rem 0.85rem;
+        justify-content: flex-start;
     }
 
     .register-card__content .content__header h1 {
@@ -427,7 +450,8 @@ body.modal-open {
     }
 
     .register-card__content {
-        padding: 0 1.25rem;
+        padding: 0.9rem 1.25rem 0.8rem;
+        justify-content: flex-start;
     }
 
     .register-card__content .content__header h1 {
@@ -438,6 +462,10 @@ body.modal-open {
         font-size: 12px;
         padding: 7px 10px;
         height: 32px;
+    }
+
+    .register-card__content .field__password input {
+        padding-right: 42px;
     }
 
     .register-card__content .field label {
@@ -463,7 +491,8 @@ body.modal-open {
     }
 
     .register-card__content {
-        padding: 0 1rem;
+        padding: 0.8rem 1rem 0.7rem;
+        justify-content: flex-start;
     }
 
     .register-card__content .content__header h1 {
@@ -495,6 +524,10 @@ body.modal-open {
         height: 30px;
     }
 
+    .register-card__content .field__password input {
+        padding-right: 40px;
+    }
+
     .register-card__content .field label {
         font-size: 10px;
     }
@@ -519,7 +552,7 @@ body.modal-open {
 
     .password-requirements {
         padding: 0.625rem;
-        margin: 0.5rem 0 0.5rem 0;
+        margin: 0.25rem 0 0;
     }
 
     .password-requirements p {
