@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8443}
+  port: ${SERVER_PORT:6001}
   ssl:
     enabled: ${SSL_ENABLED:true}
     key-store: ${SSL_KEY_STORE:classpath:keystore.p12}
@@ -37,7 +37,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${ISSUER_URI:http://localhost:8443}
+          issuer-uri: ${ISSUER_URI:http://localhost:6001}
 app:
   security:
     handler-url: ${HANDLER_URL:http://localhost:4200}

@@ -1,7 +1,3 @@
--- Insertar cliente OIDC en las tablas existentes
--- @formatter:off
---liquibase formatted sql
-
 --changeset authservice:1.4_insert_grant_types
 INSERT INTO grant_types (name, enabled) VALUES 
 ('authorization_code', true),
@@ -18,8 +14,6 @@ ON CONFLICT (unique_name) DO NOTHING;
 INSERT INTO redirect_uris (name, value, enabled) VALUES 
 ('localhost admin', 'http://localhost:4200/admin', true),
 ('localhost callback', 'http://localhost:4200/auth/callback', true),
-('production admin', 'https://webapp-production-68d2.up.railway.app/admin', true),
-('production callback', 'https://webapp-production-68d2.up.railway.app/auth/callback', true),
 ('oauth debugger', 'https://oauthdebugger.com/debug', true)
 ON CONFLICT (value) DO NOTHING;
 
@@ -52,9 +46,7 @@ WHERE c.client_id = 'oidc-client'
 INSERT INTO oauthclient_redirecturis (oauthclient_id, redirecturi_id)
 SELECT c.id, r.id FROM oauth_clients c, redirect_uris r 
 WHERE c.client_id = 'oidc-client' 
-  AND r.value IN ('http://localhost:4200/admin', 'http://localhost:4200/auth/callback', 
-                    'https://webapp-production-68d2.up.railway.app/admin', 
-                    'https://webapp-production-68d2.up.railway.app/auth/callback',
+  AND r.value IN ('http://localhost:4200/admin', 'http://localhost:4200/auth/callback',
                     'https://oauthdebugger.com/debug')
   AND NOT EXISTS (
     SELECT 1 FROM oauthclient_redirecturis 

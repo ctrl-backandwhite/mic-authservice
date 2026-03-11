@@ -1,6 +1,3 @@
---liquibase formatted sql
-
---changeset authservice:1.5_add_auditing_columns
 ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS created_by VARCHAR(120);
