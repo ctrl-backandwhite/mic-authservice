@@ -26,11 +26,13 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   snyk:
     permissions:
       contents: read # for actions/checkout to fetch code
+      packages: read # required to resolve private dependencies from GitHub Packages
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
       actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
     runs-on: ubuntu-latest
@@ -50,7 +52,49 @@ jobs:
         # In this case we want to upload the SAST issues to GitHub Code Scanning
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
       - name: Build project with Maven
-        run: mvn clean install -DskipTests -q
+        env:
+          MAVEN_SETTINGS_XML_SECRET: ${{ secrets.MAVEN_SETTINGS_XML }}
+          MAVEN_SETTINGS_XML_VAR: ${{ vars.MAVEN_SETTINGS_XML }}
+          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          SETTINGS_CONTENT="$MAVEN_SETTINGS_XML_SECRET"
+          PACKAGE_TOKEN="$GITHUB_TOKEN"
+
+          if [ -n "$GH_PACKAGES_TOKEN" ]; then
+            PACKAGE_TOKEN="$GH_PACKAGES_TOKEN"
+          fi
+
+          if [ -z "$SETTINGS_CONTENT" ]; then
+            SETTINGS_CONTENT="$MAVEN_SETTINGS_XML_VAR"
+          fi
+
+          mkdir -p ~/.m2
+
+          if [ -n "$SETTINGS_CONTENT" ]; then
+            printf "%s" "$SETTINGS_CONTENT" > ~/.m2/settings.xml
+          else
+            cat > ~/.m2/settings.xml <<EOF
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${GITHUB_ACTOR}</username>
+                <password>${PACKAGE_TOKEN}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+          fi
+
+          if ! grep -q "<id>github</id>" ~/.m2/settings.xml; then
+            echo "::error::MAVEN_SETTINGS_XML debe incluir <server><id>github</id>...</server> para autenticar contra GitHub Packages."
+            exit 1
+          fi
+
+          mvn -s ~/.m2/settings.xml -B clean install -DskipTests
 
       - name: Snyk Code test
         run: snyk code test --sarif > snyk-code.sarif || true
