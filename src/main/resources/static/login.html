@@ -39,17 +39,41 @@
                     </div>
                 </header>
 
-                <form method="post" action="/login" class="form">
+                <form method="post" action="/login" class="form" id="login-form">
+                    <div class="form__alerts" aria-live="polite" aria-atomic="true">
+                        <p class="alert alert--error" id="form-error" hidden></p>
+                        <p class="alert alert--success" id="form-success" hidden></p>
+                    </div>
                     <label class="field">
                         <span data-i18n="login.usernameLabel">Usuario</span>
-                        <input type="text" name="username" autocomplete="username" placeholder="Ingresa tu usuario"
-                            data-i18n-placeholder="login.usernamePlaceholder" required />
+                        <input id="username" type="text" name="username" autocomplete="username"
+                            placeholder="Ingresa tu usuario" data-i18n-placeholder="login.usernamePlaceholder"
+                            required />
                     </label>
                     <label class="field">
                         <span data-i18n="login.passwordLabel">Contraseña</span>
-                        <input type="password" name="password" autocomplete="current-password"
-                            placeholder="Ingresa tu contraseña" data-i18n-placeholder="login.passwordPlaceholder"
-                            required />
+                        <div class="field__password">
+                            <input id="password" type="password" name="password" autocomplete="current-password"
+                                placeholder="Ingresa tu contraseña" data-i18n-placeholder="login.passwordPlaceholder"
+                                required />
+                            <button type="button" class="field__toggle" id="toggle-password"
+                                data-i18n-aria-label="login.toggleShowAria" aria-label="Mostrar contraseña"
+                                aria-pressed="false">
+                                <svg class="field__toggle-icon field__toggle-icon--show" viewBox="0 0 24 24"
+                                    aria-hidden="true">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="field__toggle-icon field__toggle-icon--hide" viewBox="0 0 24 24"
+                                    aria-hidden="true">
+                                    <path d="M3 3l18 18"></path>
+                                    <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                                    <path d="M9.9 5.1A11.4 11.4 0 0 1 12 5c7 0 11 7 11 7a20.2 20.2 0 0 1-4.2 4.8">
+                                    </path>
+                                    <path d="M6.1 6.1A20.8 20.8 0 0 0 1 12s4 7 11 7c1.6 0 3-.3 4.3-.9"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </label>
 
                     <div class="form__meta">
@@ -96,6 +120,13 @@
                     "login.divider": "Inicia sesión con",
                     "login.noAccount": "¿No tienes cuenta?",
                     "login.createAccount": "Crear cuenta",
+                    "login.toggleShow": "Mostrar",
+                    "login.toggleHide": "Ocultar",
+                    "login.toggleShowAria": "Mostrar contraseña",
+                    "login.toggleHideAria": "Ocultar contraseña",
+                    "login.error.required": "Completa usuario y contraseña.",
+                    "login.error.invalidCredentials": "Usuario o contraseña inválidos.",
+                    "login.success.loggedOut": "Sesión cerrada correctamente.",
                     quotes: [
                         "Sistemas inteligentes para una experiencia fluida.",
                         "Flujos digitales optimizados para el mañana.",
@@ -117,6 +148,13 @@
                     "login.divider": "Sign in with",
                     "login.noAccount": "Don't have an account?",
                     "login.createAccount": "Create account",
+                    "login.toggleShow": "Show",
+                    "login.toggleHide": "Hide",
+                    "login.toggleShowAria": "Show password",
+                    "login.toggleHideAria": "Hide password",
+                    "login.error.required": "Please enter username and password.",
+                    "login.error.invalidCredentials": "Invalid username or password.",
+                    "login.success.loggedOut": "Session closed successfully.",
                     quotes: [
                         "Intelligent systems for a seamless experience.",
                         "Optimized digital flows for tomorrow.",
@@ -141,6 +179,12 @@
                     var key = el.getAttribute("data-i18n-placeholder");
                     if (dict[key]) {
                         el.setAttribute("placeholder", dict[key]);
+                    }
+                });
+                document.querySelectorAll("[data-i18n-aria-label]").forEach(function (el) {
+                    var key = el.getAttribute("data-i18n-aria-label");
+                    if (dict[key]) {
+                        el.setAttribute("aria-label", dict[key]);
                     }
                 });
             }
@@ -182,6 +226,8 @@
                 localStorage.setItem("lang", lang);
                 applyTranslations(lang);
                 startQuotes(lang);
+                updatePasswordToggleText();
+                renderAlert();
                 document.querySelectorAll(".lang-switch__btn").forEach(function (btn) {
                     btn.classList.toggle("is-active", btn.getAttribute("data-lang") === lang);
                 });
@@ -196,9 +242,86 @@
             setLanguage(currentLang);
 
             // Remember Me functionality
-            var form = document.querySelector("form");
+            var form = document.getElementById("login-form");
             var usernameInput = document.querySelector("input[name='username']");
+            var passwordInput = document.querySelector("input[name='password']");
             var rememberCheckbox = document.querySelector("input[name='remember']");
+            var errorBox = document.getElementById("form-error");
+            var successBox = document.getElementById("form-success");
+            var togglePasswordBtn = document.getElementById("toggle-password");
+            var isPasswordVisible = false;
+            var activeAlertType = null;
+            var activeAlertKey = null;
+            var alertDismissTimer = null;
+
+            function hideAlert(el) {
+                if (!el) return;
+                el.hidden = true;
+                el.textContent = "";
+                el.classList.remove("alert--dismissing");
+            }
+
+            function renderAlert() {
+                hideAlert(errorBox);
+                hideAlert(successBox);
+                if (!activeAlertType || !activeAlertKey) {
+                    return;
+                }
+                var dict = translations[currentLang] || translations.es;
+                var message = dict[activeAlertKey] || activeAlertKey;
+                var target = activeAlertType === "success" ? successBox : errorBox;
+                if (!target) {
+                    return;
+                }
+                target.textContent = message;
+                target.hidden = false;
+            }
+
+            function setAlert(type, key) {
+                if (alertDismissTimer) {
+                    clearTimeout(alertDismissTimer);
+                    alertDismissTimer = null;
+                }
+                activeAlertType = type;
+                activeAlertKey = key;
+                renderAlert();
+                if (type === "error") {
+                    alertDismissTimer = setTimeout(function () {
+                        if (errorBox) errorBox.classList.add("alert--dismissing");
+                        alertDismissTimer = setTimeout(function () {
+                            clearAlert();
+                        }, 400);
+                    }, 3000);
+                }
+            }
+
+            function clearAlert() {
+                if (alertDismissTimer) {
+                    clearTimeout(alertDismissTimer);
+                    alertDismissTimer = null;
+                }
+                activeAlertType = null;
+                activeAlertKey = null;
+                renderAlert();
+            }
+
+            function updatePasswordToggleText() {
+                if (!togglePasswordBtn) return;
+                var dict = translations[currentLang] || translations.es;
+                var keyAria = isPasswordVisible ? "login.toggleHideAria" : "login.toggleShowAria";
+                var fallbackAria = isPasswordVisible ? "Ocultar contraseña" : "Mostrar contraseña";
+                togglePasswordBtn.setAttribute("aria-label", dict[keyAria] || fallbackAria);
+                togglePasswordBtn.setAttribute("aria-pressed", isPasswordVisible ? "true" : "false");
+                togglePasswordBtn.classList.toggle("is-visible", isPasswordVisible);
+            }
+
+            if (togglePasswordBtn && passwordInput) {
+                togglePasswordBtn.addEventListener("click", function () {
+                    isPasswordVisible = !isPasswordVisible;
+                    passwordInput.setAttribute("type", isPasswordVisible ? "text" : "password");
+                    updatePasswordToggleText();
+                });
+            }
 
             // Load saved username on page load
             var savedUsername = localStorage.getItem("rememberedUsername");
@@ -207,10 +330,27 @@
                 rememberCheckbox.checked = true;
             }
 
+            var params = new URLSearchParams(window.location.search);
+            if (params.has("error")) {
+                setAlert("error", "login.error.invalidCredentials");
+            } else if (params.has("logout")) {
+                setAlert("success", "login.success.loggedOut");
+            }
+
             // Save username when form is submitted if remember is checked
-            form.addEventListener("submit", function () {
+            form.addEventListener("submit", function (event) {
+                var username = usernameInput.value.trim();
+                var password = passwordInput.value.trim();
+
+                if (!username || !password) {
+                    event.preventDefault();
+                    setAlert("error", "login.error.required");
+                    return;
+                }
+
+                clearAlert();
                 if (rememberCheckbox.checked) {
-                    localStorage.setItem("rememberedUsername", usernameInput.value);
+                    localStorage.setItem("rememberedUsername", username);
                 } else {
                     localStorage.removeItem("rememberedUsername");
                 }
