@@ -14,7 +14,7 @@ public final class UserProvider {
     public static final String USER_LAST_NAME = "Lopez";
     public static final String USER_NICK_NAME = "ana.lopez";
     public static final String USER_EMAIL = "ana.lopez@example.com";
-    public static final String USER_PASSWORD = "secret";
+    public static final String USER_PASSWORD = "Secret123!";
     public static final Boolean USER_ENABLED = true;
     public static final Boolean USER_ACCOUNT_NON_EXPIRED = true;
     public static final Boolean USER_ACCOUNT_NON_LOCKED = true;
@@ -25,7 +25,7 @@ public final class UserProvider {
     public static final String OTHER_USER_LAST_NAME = "Diaz";
     public static final String OTHER_USER_NICK_NAME = "bruno.diaz";
     public static final String OTHER_USER_EMAIL = "bruno.diaz@example.com";
-    public static final String OTHER_USER_PASSWORD = "secret-2";
+    public static final String OTHER_USER_PASSWORD = "Secret456@";
     public static final Boolean OTHER_USER_ENABLED = false;
     public static final Boolean OTHER_USER_ACCOUNT_NON_EXPIRED = false;
     public static final Boolean OTHER_USER_ACCOUNT_NON_LOCKED = false;

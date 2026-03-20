@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.web.cors.CorsConfiguration;
@@ -19,15 +18,16 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SecurityConfigTest {
 
+    private final SecurityConfig config = new SecurityConfig();
+
     @Test
     void corsConfigurationSource_includesExpectedOriginsAndMethods() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
-
         CorsConfigurationSource source = config.corsConfigurationSource();
         CorsConfiguration cors = source.getCorsConfiguration(new MockHttpServletRequest());
 
@@ -37,29 +37,26 @@ class SecurityConfigTest {
                 "https://webapp-production-68d2.up.railway.app",
                 "https://mic-authservice-production.up.railway.app");
         assertThat(cors.getAllowedMethods()).contains("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
-        assertThat(cors.getAllowedHeaders()).contains("*");
+        assertThat(cors.getAllowedHeaders()).contains(
+                "Authorization", "Content-Type", "Accept", "X-Auth-Token");
+        assertThat(cors.getAllowedHeaders()).doesNotContain("*");
         assertThat(cors.getExposedHeaders()).contains("Set-Cookie", "x-auth-token");
         assertThat(cors.getAllowCredentials()).isTrue();
         assertThat(cors.getMaxAge()).isEqualTo(3600L);
     }
 
     @Test
-    void registeredClientRepository_returnsInMemoryWhenNoOauthClientRepository() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
-
+    void registeredClientRepository_throwsWhenNoOauthClientRepository() {
         ObjectProvider<OauthClientRepository> provider = mock(ObjectProvider.class);
         when(provider.getIfAvailable()).thenReturn(null);
 
-        RegisteredClientRepository repository = config.registeredClientRepository(provider);
-
-        assertThat(repository).isNotNull();
-        assertThat(repository.getClass().getSimpleName()).isEqualTo("InMemoryRegisteredClientRepository");
+        assertThatThrownBy(() -> config.registeredClientRepository(provider))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("OauthClientRepository no disponible");
     }
 
     @Test
     void registeredClientRepository_returnsCustomWhenOauthClientRepositoryAvailable() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
-
         OauthClientRepository mockRepository = mock(OauthClientRepository.class);
         ObjectProvider<OauthClientRepository> provider = mock(ObjectProvider.class);
         when(provider.getIfAvailable()).thenReturn(mockRepository);
@@ -72,8 +69,6 @@ class SecurityConfigTest {
 
     @Test
     void jwkSource_providesRsaKeyWithPrivateKey() throws Exception {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
-
         JWKSource<SecurityContext> source = config.jwkSource();
         RSAKey rsaKey = (RSAKey) source
                 .get(new com.nimbusds.jose.jwk.JWKSelector(
@@ -88,8 +83,6 @@ class SecurityConfigTest {
 
     @Test
     void jwtAuthenticationConverter_addsRolesFromClaim() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
-
         Jwt jwt = Jwt.withTokenValue("token")
                 .header("alg", "RS256")
                 .claim("roles", List.of("ROLE_ADMIN", "ROLE_USER"))

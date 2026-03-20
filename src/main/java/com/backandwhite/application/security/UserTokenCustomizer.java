@@ -39,7 +39,7 @@ public class UserTokenCustomizer {
             }
             if (context.getTokenType().getValue().equals("access_token")) {
                 User user = userRepository.findUserByEmail(principal.getName());
-                log.info("Información de usuario: {}", user);
+                log.debug("Customizing token for user: {}", principal.getName());
                 context.getClaims().claim(TOKEN_TYPE, "access token");
                 List<String> roles = context.getPrincipal().getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)

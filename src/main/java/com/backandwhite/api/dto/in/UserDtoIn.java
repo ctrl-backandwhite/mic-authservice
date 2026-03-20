@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import com.backandwhite.api.validation.CreateValidation;
@@ -38,6 +39,11 @@ public class UserDtoIn {
 
     @Schema(description = "Contraseña del usuario (mínimo 8 caracteres, debe contener mayúsculas, minúsculas y números)", example = "MiPassword123!", minLength = 8, maxLength = 255)
     @NotEmpty(message = "La contraseña es obligatoria", groups = CreateValidation.class)
+    @Pattern(
+        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{8,}$",
+        message = "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial",
+        groups = CreateValidation.class
+    )
     private String password;
 
     @Schema(description = "Contraseña del usuario (mínimo 8 caracteres, debe contener mayúsculas, minúsculas y números)", example = "MiPassword123!", minLength = 8, maxLength = 255)

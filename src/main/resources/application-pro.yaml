@@ -19,7 +19,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           time_zone: UTC
-    show-sql: true
+    show-sql: false
   liquibase:
     enabled: true
 
@@ -37,7 +37,7 @@ server:
     session:
       timeout: 30m
       cookie:
-        same-site: none
+        same-site: lax
         secure: true
         http-only: true
         max-age: 1800

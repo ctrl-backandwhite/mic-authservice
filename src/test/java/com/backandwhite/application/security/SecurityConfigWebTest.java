@@ -1,8 +1,11 @@
 package com.backandwhite.application.security;
 
+import com.backandwhite.domain.repository.OauthClientRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
@@ -19,6 +22,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 class SecurityConfigWebTest {
 
+    @MockitoBean
+    private OauthClientRepository oauthClientRepository;
+
+    @MockitoBean
+    private JdbcTemplate jdbcTemplate;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -30,7 +39,7 @@ class SecurityConfigWebTest {
     }
 
     @Test
-    void logout_unauthenticated_redirectsToLogin() throws Exception {
+    void logout_unauthenticated_returnsNoContent() throws Exception {
         mockMvc.perform(post("/logout"))
                 .andExpect(status().isNoContent());
     }

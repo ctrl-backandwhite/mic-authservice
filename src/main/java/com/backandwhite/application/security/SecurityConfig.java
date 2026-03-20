@@ -9,6 +9,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -25,13 +26,8 @@ import org.springframework.security.config.annotation.web.configuration.OAuth2Au
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -57,14 +53,8 @@ public class SecurityConfig {
 
     private static final String LOGIN_PATH = "/login";
 
-    private final PasswordEncoder passwordEncoder;
-
     @Autowired
     private Environment env;
-
-    public SecurityConfig(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Value("${app.security.handler-url:http://localhost:4200}")
     private String handlerUrl;
@@ -156,7 +146,11 @@ public class SecurityConfig {
                 "https://webapp-production-68d2.up.railway.app",
                 "https://mic-authservice-production.up.railway.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("*")); // Permitir todos los headers
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization", "Content-Type", "Accept",
+                "X-Requested-With", "Origin",
+                "Access-Control-Request-Method", "Access-Control-Request-Headers",
+                "X-Auth-Token", "Cookie"));
         configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "x-auth-token"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L); // Cache preflight por 1 hora
@@ -170,19 +164,10 @@ public class SecurityConfig {
             ObjectProvider<OauthClientRepository> oauthClientRepositoryProvider) {
         OauthClientRepository oauthClientRepository = oauthClientRepositoryProvider.getIfAvailable();
         if (oauthClientRepository == null) {
-            return new InMemoryRegisteredClientRepository(defaultRegisteredClient());
+            throw new IllegalStateException(
+                    "OauthClientRepository no disponible. La base de datos es requerida para gestionar clientes OAuth2.");
         }
         return new CustomRegisteredClientRepository(oauthClientRepository);
-    }
-
-    private RegisteredClient defaultRegisteredClient() {
-        return RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("default-client")
-                .clientSecret(passwordEncoder.encode("secret"))
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .scope("default")
-                .build();
     }
 
     @Bean
@@ -221,8 +206,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService authorizationService() {
-        return new org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService();
+    public org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService authorizationService(
+            JdbcTemplate jdbcTemplate,
+            RegisteredClientRepository registeredClientRepository) {
+        return new UniqueTokenOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
     }
 
     @Bean

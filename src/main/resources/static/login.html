@@ -17,7 +17,7 @@
             <div class="login-card__media" aria-hidden="true">
                 <div class="media__overlay"></div>
                 <div class="media__content">
-                    <span class="logo">Back &amp; White</span>
+                    <span class="logo">NEXA</span>
                     <div class="media__quote">
                         <p id="quote-text" data-i18n="login.quote">Sistemas inteligentes para una experiencia fluida.
                         </p>
@@ -324,7 +324,7 @@
             }
 
             // Load saved username on page load
-            var savedUsername = localStorage.getItem("rememberedUsername");
+            var savedUsername = sessionStorage.getItem("rememberedUsername");
             if (savedUsername) {
                 usernameInput.value = savedUsername;
                 rememberCheckbox.checked = true;
@@ -350,16 +350,16 @@
 
                 clearAlert();
                 if (rememberCheckbox.checked) {
-                    localStorage.setItem("rememberedUsername", username);
+                    sessionStorage.setItem("rememberedUsername", username);
                 } else {
-                    localStorage.removeItem("rememberedUsername");
+                    sessionStorage.removeItem("rememberedUsername");
                 }
             });
 
             // Clear saved username if remember is unchecked
             rememberCheckbox.addEventListener("change", function () {
                 if (!this.checked) {
-                    localStorage.removeItem("rememberedUsername");
+                    sessionStorage.removeItem("rememberedUsername");
                 }
             });
         })();

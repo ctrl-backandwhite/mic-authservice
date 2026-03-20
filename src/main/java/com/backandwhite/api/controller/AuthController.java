@@ -99,32 +99,17 @@ public class AuthController {
     }
 
     /**
-     * Eliminar una cookie específica con múltiples configuraciones
+     * Elimina una cookie invalidando su Max-Age.
+     * Se usa request.isSecure() para mantener la misma configuración con la que fue creada.
      */
     private void deleteCookie(String name, HttpServletRequest request, HttpServletResponse response) {
-        // Configuración 1: Cookie segura con path /
-        Cookie cookie1 = new Cookie(name, "");
-        cookie1.setMaxAge(0);
-        cookie1.setPath("/");
-        cookie1.setHttpOnly(true);
-        cookie1.setSecure(true);
-        response.addCookie(cookie1);
-
-        // Configuración 2: Cookie no segura con path /
-        Cookie cookie2 = new Cookie(name, "");
-        cookie2.setMaxAge(0);
-        cookie2.setPath("/");
-        cookie2.setHttpOnly(true);
-        cookie2.setSecure(false);
-        response.addCookie(cookie2);
-
-        // Configuración 3: Sin especificar HttpOnly ni Secure
-        Cookie cookie3 = new Cookie(name, "");
-        cookie3.setMaxAge(0);
-        cookie3.setPath("/");
-        response.addCookie(cookie3);
-
-        log.info("::> Deleted cookie '{}' with multiple configurations", name);
+        Cookie cookie = new Cookie(name, "");
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(request.isSecure());
+        response.addCookie(cookie);
+        log.debug("::> Deleted cookie '{}'", name);
     }
 
     @PostMapping("/revoke")
@@ -134,6 +119,11 @@ public class AuthController {
             @RequestParam(required = false, defaultValue = "access_token") String tokenTypeHint) {
 
         log.info("::> Token revocation request received");
+
+        if (!tokenTypeHint.equals("access_token") && !tokenTypeHint.equals("refresh_token")) {
+            log.warn("::> Invalid tokenTypeHint: {}", tokenTypeHint);
+            return ResponseEntity.badRequest().build();
+        }
 
         try {
             OAuth2TokenType tokenType = tokenTypeHint.equals("refresh_token")
