@@ -34,6 +34,7 @@ public interface GroupEntityMapper {
     @Mapping(target = "description", source = "description")
     @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "roles", source = "roles")
+    @Mapping(target = "users", ignore = true)
     GroupEntity toEntity(Group model);
 
     List<Group> toDomainList(List<GroupEntity> entities);

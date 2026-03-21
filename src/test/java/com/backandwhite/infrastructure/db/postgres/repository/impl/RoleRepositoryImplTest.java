@@ -16,6 +16,7 @@ import java.util.Optional;
 import static com.backandwhite.provider.RoleProvider.role;
 import static com.backandwhite.provider.RoleProvider.roleEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,14 +109,11 @@ class RoleRepositoryImplTest {
     }
 
     @Test
-    void getById_missingEntity_returnsNull() {
+    void getById_missingEntity_throwsException() {
         when(roleJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(roleEntityMapper.toDomain(null)).thenReturn(null);
 
-        Role result = roleRepository.getById(5L);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> roleRepository.getById(5L))
+                .isInstanceOf(com.backandwhite.common.exception.EntityNotFoundException.class);
         verify(roleJpaRepositoryAdapter).findById(5L);
-        verify(roleEntityMapper).toDomain(null);
     }
 }

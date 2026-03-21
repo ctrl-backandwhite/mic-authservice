@@ -47,8 +47,8 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getById(Long id) {
         UserEntity entity = userJpaRepositoryAdapter.findById(id).orElse(null);
-        if(Objects.isNull(entity)) {
-            ENTITY_NOT_FOUND.toEntityNotFound("User", id);
+        if (Objects.isNull(entity)) {
+            throw ENTITY_NOT_FOUND.toEntityNotFound("User", id);
         }
         return userEntityMapper.toDomain(entity);
     }

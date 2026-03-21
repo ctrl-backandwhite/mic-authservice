@@ -16,6 +16,7 @@ import java.util.Optional;
 import static com.backandwhite.provider.OauthClientProvider.oauthClient;
 import static com.backandwhite.provider.OauthClientProvider.oauthClientEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,14 +109,11 @@ class OauthClientRepositoryImplTest {
     }
 
     @Test
-    void getById_missingEntity_returnsNull() {
+    void getById_missingEntity_throwsException() {
         when(oauthClientJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(oauthClientEntityMapper.toDomain(null)).thenReturn(null);
 
-        OauthClient result = oauthClientRepository.getById(5L);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> oauthClientRepository.getById(5L))
+                .isInstanceOf(com.backandwhite.common.exception.EntityNotFoundException.class);
         verify(oauthClientJpaRepositoryAdapter).findById(5L);
-        verify(oauthClientEntityMapper).toDomain(null);
     }
 }

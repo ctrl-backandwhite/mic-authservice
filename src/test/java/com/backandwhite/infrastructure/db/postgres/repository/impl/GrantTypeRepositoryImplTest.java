@@ -16,6 +16,7 @@ import java.util.Optional;
 import static com.backandwhite.provider.GrantTypeProvider.grantType;
 import static com.backandwhite.provider.GrantTypeProvider.grantTypeEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,14 +109,11 @@ class GrantTypeRepositoryImplTest {
     }
 
     @Test
-    void getById_missingEntity_returnsNull() {
+    void getById_missingEntity_throwsException() {
         when(grantTypeJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(grantTypeEntityMapper.toDomain(null)).thenReturn(null);
 
-        GrantType result = grantTypeRepository.getById(5L);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> grantTypeRepository.getById(5L))
+                .isInstanceOf(com.backandwhite.common.exception.EntityNotFoundException.class);
         verify(grantTypeJpaRepositoryAdapter).findById(5L);
-        verify(grantTypeEntityMapper).toDomain(null);
     }
 }

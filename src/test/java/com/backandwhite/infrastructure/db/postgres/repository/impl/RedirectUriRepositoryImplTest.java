@@ -16,6 +16,7 @@ import java.util.Optional;
 import static com.backandwhite.provider.RedirectUriProvider.redirectUri;
 import static com.backandwhite.provider.RedirectUriProvider.redirectUriEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,14 +109,11 @@ class RedirectUriRepositoryImplTest {
     }
 
     @Test
-    void getById_missingEntity_returnsNull() {
+    void getById_missingEntity_throwsException() {
         when(redirectUriJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(redirectUriEntityMapper.toDomain(null)).thenReturn(null);
 
-        RedirectUri result = redirectUriRepository.getById(5L);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> redirectUriRepository.getById(5L))
+                .isInstanceOf(com.backandwhite.common.exception.EntityNotFoundException.class);
         verify(redirectUriJpaRepositoryAdapter).findById(5L);
-        verify(redirectUriEntityMapper).toDomain(null);
     }
 }

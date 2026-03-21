@@ -27,6 +27,7 @@ public interface GrantTypeEntityMapper {
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "value", source = "value")
     @Mapping(target = "enabled", source = "enabled")
+    @Mapping(target = "oauthClients", ignore = true)
     GrantTypeEntity toEntity(GrantType model);
 
     List<GrantType> toDomainList(List<GrantTypeEntity> entities);

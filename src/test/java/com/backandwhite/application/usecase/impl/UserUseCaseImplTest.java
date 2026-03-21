@@ -123,7 +123,7 @@ class UserUseCaseImplTest {
 
         User result = userUseCase.update(update, 10L);
 
-        verify(userCommandHandler).validate(update);
+        verify(userCommandHandler).validate(any(User.class));
         verify(userRepository).update(any(User.class));
         assertThat(result)
                 .usingRecursiveComparison()

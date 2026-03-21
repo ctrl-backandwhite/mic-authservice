@@ -29,6 +29,7 @@ public interface RedirectUriEntityMapper {
     @Mapping(target = "name", source = "name")
     @Mapping(target = "value", source = "value")
     @Mapping(target = "enabled", source = "enabled")
+    @Mapping(target = "oauthClients", ignore = true)
     RedirectUriEntity toEntity(RedirectUri model);
 
     List<RedirectUri> toDomainList(List<RedirectUriEntity> entities);

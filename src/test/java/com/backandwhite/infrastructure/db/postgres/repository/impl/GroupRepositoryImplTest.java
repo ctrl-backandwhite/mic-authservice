@@ -16,6 +16,7 @@ import java.util.Optional;
 import static com.backandwhite.provider.GroupProvider.group;
 import static com.backandwhite.provider.GroupProvider.groupEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,14 +109,11 @@ class GroupRepositoryImplTest {
     }
 
     @Test
-    void getById_missingEntity_returnsNull() {
+    void getById_missingEntity_throwsException() {
         when(groupJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(groupEntityMapper.toDomain(null)).thenReturn(null);
 
-        Group result = groupRepository.getById(5L);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> groupRepository.getById(5L))
+                .isInstanceOf(com.backandwhite.common.exception.EntityNotFoundException.class);
         verify(groupJpaRepositoryAdapter).findById(5L);
-        verify(groupEntityMapper).toDomain(null);
     }
 }

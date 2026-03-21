@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
@@ -46,7 +47,9 @@ public class RedirectUriRepositoryImpl implements RedirectUriRepository {
     @Override
     public RedirectUri getById(Long id) {
         RedirectUriEntity entity = redirectUriJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("RedirectUri", id);
+        if (Objects.isNull(entity)) {
+            throw ENTITY_NOT_FOUND.toEntityNotFound("RedirectUri", id);
+        }
         return redirectUriEntityMapper.toDomain(entity);
     }
 }

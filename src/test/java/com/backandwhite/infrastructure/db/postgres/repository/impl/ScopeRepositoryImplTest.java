@@ -16,6 +16,7 @@ import java.util.Optional;
 import static com.backandwhite.provider.ScopeProvider.scope;
 import static com.backandwhite.provider.ScopeProvider.scopeEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,14 +109,11 @@ class ScopeRepositoryImplTest {
     }
 
     @Test
-    void getById_missingEntity_returnsNull() {
+    void getById_missingEntity_throwsException() {
         when(scopeJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(scopeEntityMapper.toDomain(null)).thenReturn(null);
 
-        Scope result = scopeRepository.getById(5L);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> scopeRepository.getById(5L))
+                .isInstanceOf(com.backandwhite.common.exception.EntityNotFoundException.class);
         verify(scopeJpaRepositoryAdapter).findById(5L);
-        verify(scopeEntityMapper).toDomain(null);
     }
 }

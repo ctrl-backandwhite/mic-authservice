@@ -31,6 +31,8 @@ public interface ScopeEntityMapper {
     @Mapping(target = "uniqueName", source = "uniqueName")
     @Mapping(target = "description", source = "description")
     @Mapping(target = "enabled", source = "enabled")
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "oauthClients", ignore = true)
     ScopeEntity toEntity(Scope model);
 
     List<Scope> toDomainList(List<ScopeEntity> entities);

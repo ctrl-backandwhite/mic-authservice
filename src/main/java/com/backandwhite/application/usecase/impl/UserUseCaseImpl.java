@@ -102,7 +102,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         log.debug("::> Updating user {}", model);
         User existing = this.getById(id);
         BeanUtils.copyProperties(model, existing, "id", "password");
-        userCommandHandler.validate(model);
+        userCommandHandler.validate(existing);
         return userRepository.update(existing);
     }
 

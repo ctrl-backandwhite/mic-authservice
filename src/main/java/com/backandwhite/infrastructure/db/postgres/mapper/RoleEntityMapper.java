@@ -31,6 +31,7 @@ public interface RoleEntityMapper {
     @Mapping(target = "uniqueName", source = "uniqueName")
     @Mapping(target = "description", source = "description")
     @Mapping(target = "enabled", source = "enabled")
+    @Mapping(target = "groups", ignore = true)
     RoleEntity toEntity(Role model);
 
     List<Role> toDomainList(List<RoleEntity> entities);

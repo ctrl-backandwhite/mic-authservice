@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
@@ -46,7 +47,9 @@ public class RoleRepositoryImpl implements RoleRepository {
     @Override
     public Role getById(Long id) {
         RoleEntity entity = roleJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("Role", id);
+        if (Objects.isNull(entity)) {
+            throw ENTITY_NOT_FOUND.toEntityNotFound("Role", id);
+        }
         return roleEntityMapper.toDomain(entity);
     }
 }

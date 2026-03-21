@@ -7,8 +7,8 @@ import org.springframework.boot.SpringApplication;
 
 @EnableCoreApplication
 @OpenAPIDefinition(servers = {
-        //@Server(url = "", description = "Production Server."),
-        @Server(url = "https://localhost:6001", description = "Local Server.")
+        // @Server(url = "", description = "Production Server."),
+        @Server(url = "http://localhost:6001", description = "Local Server.")
 })
 public class MicAuthserviceApplication {
 
