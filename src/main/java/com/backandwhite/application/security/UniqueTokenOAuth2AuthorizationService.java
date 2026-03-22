@@ -19,12 +19,14 @@ import java.util.List;
  * Servicio de autorización OAuth2 que persiste tokens en base de datos
  * y garantiza que cada usuario tenga como máximo un token activo por cliente.
  *
- * <p>Antes de persistir, reemplaza el principal complejo del dominio
+ * <p>
+ * Antes de persistir, reemplaza el principal complejo del dominio
  * ({@code User}, {@code Role}, etc.) por un
  * {@link UsernamePasswordAuthenticationToken} ligero con solo el username
  * y {@link SimpleGrantedAuthority}. Así el serializador Jackson solo
  * maneja tipos estándar de Spring Security y no necesita un
- * {@code PolymorphicTypeValidator} personalizado.</p>
+ * {@code PolymorphicTypeValidator} personalizado.
+ * </p>
  */
 public class UniqueTokenOAuth2AuthorizationService implements OAuth2AuthorizationService {
 
@@ -43,8 +45,7 @@ public class UniqueTokenOAuth2AuthorizationService implements OAuth2Authorizatio
         // Standard Security modules — no custom PTV needed because we
         // simplify the principal before persisting (see simplifyPrincipal).
         ClassLoader classLoader = JdbcOAuth2AuthorizationService.class.getClassLoader();
-        List<tools.jackson.databind.JacksonModule> securityModules =
-                SecurityJacksonModules.getModules(classLoader);
+        List<tools.jackson.databind.JacksonModule> securityModules = SecurityJacksonModules.getModules(classLoader);
 
         JsonMapper jsonMapper = JsonMapper.builder()
                 .addModules(securityModules)
@@ -106,10 +107,12 @@ public class UniqueTokenOAuth2AuthorizationService implements OAuth2Authorizatio
      * principal is just the username {@link String} and whose authorities
      * are plain {@link SimpleGrantedAuthority} instances.
      *
-     * <p>This ensures the {@code oauth2_authorization.attributes} column
+     * <p>
+     * This ensures the {@code oauth2_authorization.attributes} column
      * only contains standard Spring Security types that the default
      * {@link tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator}
-     * already allows.</p>
+     * already allows.
+     * </p>
      */
     OAuth2Authorization simplifyPrincipal(OAuth2Authorization authorization) {
         Authentication auth = authorization.getAttribute(Principal.class.getName());
@@ -122,9 +125,8 @@ public class UniqueTokenOAuth2AuthorizationService implements OAuth2Authorizatio
                 .map(a -> new SimpleGrantedAuthority(a.getAuthority()))
                 .toList();
 
-        UsernamePasswordAuthenticationToken simpleAuth =
-                UsernamePasswordAuthenticationToken.authenticated(
-                        auth.getName(), null, authorities);
+        UsernamePasswordAuthenticationToken simpleAuth = UsernamePasswordAuthenticationToken.authenticated(
+                auth.getName(), null, authorities);
 
         return OAuth2Authorization.from(authorization)
                 .attribute(Principal.class.getName(), simpleAuth)

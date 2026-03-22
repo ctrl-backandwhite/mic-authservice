@@ -58,8 +58,7 @@ class UniqueTokenOAuth2AuthorizationServiceTest {
                 eq(DELETE_PREVIOUS_SQL),
                 eq("client-1"),
                 eq("user@example.com"),
-                eq("auth-id-123")
-        );
+                eq("auth-id-123"));
         verify(delegate).save(authorization);
     }
 
@@ -131,8 +130,7 @@ class UniqueTokenOAuth2AuthorizationServiceTest {
 
         verify(jdbcOperations).update(
                 contains("access_token_value IS NOT NULL"),
-                anyString(), anyString(), anyString()
-        );
+                anyString(), anyString(), anyString());
     }
 
     // ------------------------------------------------------------------
