@@ -85,6 +85,7 @@ public class SecurityConfig {
 
         http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/oauth2/token", "/oauth2/revoke", "/oauth2/introspect"))
                 .with(authorizationServerConfigurer,
                         authorizationServer -> authorizationServer
                                 .oidc(Customizer.withDefaults()))
@@ -150,7 +151,7 @@ public class SecurityConfig {
                 "Authorization", "Content-Type", "Accept",
                 "X-Requested-With", "Origin",
                 "Access-Control-Request-Method", "Access-Control-Request-Headers",
-                "X-Auth-Token", "Cookie"));
+                "X-Auth-Token", "X-XSRF-TOKEN", "Cookie"));
         configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "x-auth-token"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L); // Cache preflight por 1 hora
