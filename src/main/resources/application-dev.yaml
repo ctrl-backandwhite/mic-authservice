@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${POSTGRES_URL}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://postgres-c4jk.railway.internal:5432/railway
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 30000
@@ -27,7 +27,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://mic-authservice-production.up.railway.app
+          issuer-uri: ${ISSUER_URI}
 server:
   port: 8080
   ssl:
