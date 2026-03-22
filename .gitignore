@@ -32,3 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 /src/main/resources/compose/.env
+
+### Docker (root) ###
+docker-compose.yml
+Dockerfile
+.dockerignore
