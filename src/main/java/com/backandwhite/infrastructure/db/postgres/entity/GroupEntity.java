@@ -39,6 +39,10 @@ public class GroupEntity extends AuditableEntity {
     @JoinTable(name = "group_roles", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<RoleEntity> roles = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "group_permissions", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private List<PermissionEntity> permissions = new ArrayList<>();
+
     @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER)
     private List<UserEntity> users = new ArrayList<>();
 

@@ -62,7 +62,8 @@ private final GroupCommandHandler groupCommandHandler;
     public Group update(Group model, Long id) {
         log.debug("::> Updating group {}", model);
         Group existing = this.getById(id);
-        BeanUtils.copyProperties(model, existing, "id");
+        BeanUtils.copyProperties(model, existing, "id", "createdAt", "updatedAt", "createdBy", "updatedBy");
+        groupCommandHandler.validate(existing);
         return groupRepository.update(existing);
     }
 

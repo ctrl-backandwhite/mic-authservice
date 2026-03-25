@@ -20,6 +20,8 @@ public class Group {
     private Boolean enabled;
     @Builder.Default
     private List<Role> roles = new ArrayList<>();
+    @Builder.Default
+    private List<Permission> permissions = new ArrayList<>();
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;

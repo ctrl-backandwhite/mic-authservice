@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
-
 @Log4j2
 @Repository
 @AllArgsConstructor
@@ -46,7 +44,6 @@ public class GroupRepositoryImpl implements GroupRepository {
     @Override
     public Group getById(Long id) {
         GroupEntity entity = groupJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("Group", id);
-        return groupEntityMapper.toDomain(entity);
+        return entity != null ? groupEntityMapper.toDomain(entity) : null;
     }
 }

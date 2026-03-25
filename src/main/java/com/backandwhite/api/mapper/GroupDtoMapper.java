@@ -32,6 +32,7 @@ public interface GroupDtoMapper {
     GroupDtoOut toDtoOut(Group model);
 
     @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapRoleIds")
+    @Mapping(target = "permissions", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)

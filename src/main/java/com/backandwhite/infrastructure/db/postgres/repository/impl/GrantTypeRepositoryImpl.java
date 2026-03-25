@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
-
 @Log4j2
 @Repository
 @AllArgsConstructor
@@ -46,7 +44,6 @@ public class GrantTypeRepositoryImpl implements GrantTypeRepository {
     @Override
     public GrantType getById(Long id) {
         GrantTypeEntity entity = grantTypeJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("GrantType", id);
-        return grantTypeEntityMapper.toDomain(entity);
+        return entity != null ? grantTypeEntityMapper.toDomain(entity) : null;
     }
 }

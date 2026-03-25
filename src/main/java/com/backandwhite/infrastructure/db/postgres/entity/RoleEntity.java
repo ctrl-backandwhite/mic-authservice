@@ -38,6 +38,10 @@ public class RoleEntity extends AuditableEntity {
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     private List<GroupEntity> groups = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private List<PermissionEntity> permissions = new ArrayList<>();
+
     @Override
     public boolean equals(Object object) {
         if (object == null || getClass() != object.getClass())
