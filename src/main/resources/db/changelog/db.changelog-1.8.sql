@@ -11,6 +11,6 @@ WHERE c.client_id = 'oidc-client'
   AND NOT EXISTS (
     SELECT 1 FROM oauthclient_redirecturis
     WHERE oauthclient_id = c.id AND redirecturi_id = r.id
-  );
+  ); 
 
 
