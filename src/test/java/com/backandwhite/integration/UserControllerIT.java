@@ -67,12 +67,15 @@ class UserControllerIT extends BaseIntegration {
                                 .returnResult()
                                 .getResponseBody();
 
+                UserDtoOut expected = userDtoOut(null);
+                expected.setEnabled(false);
+
                 assertThat(response)
                                 .usingRecursiveComparison()
                                 .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy",
                                                 ".*updatedBy")
                                 .ignoringFields("id", "password", "scopes", "roles", "groups")
-                                .isEqualTo(userDtoOut(null));
+                                .isEqualTo(expected);
         }
 
         @Test

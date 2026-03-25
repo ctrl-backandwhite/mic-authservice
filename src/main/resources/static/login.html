@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/login.css?v=20260215" />
+    <link rel="stylesheet" href="/css/login.css?v=20260325" />
 </head>
 
 <body>
@@ -126,6 +126,7 @@
                     "login.toggleHideAria": "Ocultar contraseña",
                     "login.error.required": "Completa usuario y contraseña.",
                     "login.error.invalidCredentials": "Usuario o contraseña inválidos.",
+                    "login.error.accountDisabled": "Tu cuenta no está activada. Revisa tu correo electrónico para activarla.",
                     "login.success.loggedOut": "Sesión cerrada correctamente.",
                     quotes: [
                         "Sistemas inteligentes para una experiencia fluida.",
@@ -154,6 +155,7 @@
                     "login.toggleHideAria": "Hide password",
                     "login.error.required": "Please enter username and password.",
                     "login.error.invalidCredentials": "Invalid username or password.",
+                    "login.error.accountDisabled": "Your account is not activated. Check your email to activate it.",
                     "login.success.loggedOut": "Session closed successfully.",
                     quotes: [
                         "Intelligent systems for a seamless experience.",
@@ -331,7 +333,9 @@
             }
 
             var params = new URLSearchParams(window.location.search);
-            if (params.has("error")) {
+            if (params.get("error") === "disabled") {
+                setAlert("error", "login.error.accountDisabled");
+            } else if (params.has("error")) {
                 setAlert("error", "login.error.invalidCredentials");
             } else if (params.has("logout")) {
                 setAlert("success", "login.success.loggedOut");

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Error de activación</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/login.css?v=20260325" />
+</head>
+
+<body class="status-page">
+    <div class="status-card">
+        <div class="status-card__header status-card__header--error">
+            <div class="logo">NEXA</div>
+            <div class="icon-circle">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="status-card__body">
+            <h1>Error de activación</h1>
+            <p>No fue posible activar tu cuenta. Es posible que el enlace ya haya sido utilizado o haya expirado.</p>
+            <div class="error-detail" id="error-detail"></div>
+            <div class="progress-bar">
+                <div class="progress-bar__fill progress-bar__fill--error"></div>
+            </div>
+            <p class="countdown countdown--error">Redirigiendo al login en <span id="seconds">5</span> segundos...</p>
+            <a class="btn--status" href="/login.html">Ir al login ahora</a>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            var msg = params.get('message');
+            var el = document.getElementById('error-detail');
+            if (msg) {
+                el.textContent = decodeURIComponent(msg);
+            } else {
+                el.style.display = 'none';
+            }
+
+            var t = 5;
+            var sec = document.getElementById('seconds');
+            var interval = setInterval(function () {
+                t--;
+                sec.textContent = t;
+                if (t <= 0) { clearInterval(interval); window.location.href = '/login.html'; }
+            }, 1000);
+        })();
+    </script>
+</body>
+
+</html>

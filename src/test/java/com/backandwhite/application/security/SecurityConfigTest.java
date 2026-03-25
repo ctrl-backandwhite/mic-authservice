@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.web.cors.CorsConfiguration;
@@ -19,89 +18,82 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SecurityConfigTest {
 
-    @Test
-    void corsConfigurationSource_includesExpectedOriginsAndMethods() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
+        private final SecurityConfig config = new SecurityConfig();
 
-        CorsConfigurationSource source = config.corsConfigurationSource();
-        CorsConfiguration cors = source.getCorsConfiguration(new MockHttpServletRequest());
+        @Test
+        void corsConfigurationSource_includesExpectedOriginsAndMethods() {
+                CorsConfigurationSource source = config.corsConfigurationSource();
+                CorsConfiguration cors = source.getCorsConfiguration(new MockHttpServletRequest());
 
-        assertThat(cors).isNotNull();
-        assertThat(cors.getAllowedOrigins()).contains(
-                "http://localhost:4200",
-                "https://webapp-production-68d2.up.railway.app",
-                "https://mic-authservice-production.up.railway.app");
-        assertThat(cors.getAllowedMethods()).contains("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
-        assertThat(cors.getAllowedHeaders()).contains("*");
-        assertThat(cors.getExposedHeaders()).contains("Set-Cookie", "x-auth-token");
-        assertThat(cors.getAllowCredentials()).isTrue();
-        assertThat(cors.getMaxAge()).isEqualTo(3600L);
-    }
+                assertThat(cors).isNotNull();
+                assertThat(cors.getAllowedOrigins()).contains(
+                                "http://localhost:4200",
+                                "https://web-auth-des.up.railway.app");
+                assertThat(cors.getAllowedMethods()).contains("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
+                assertThat(cors.getAllowedHeaders()).contains(
+                                "Authorization", "Content-Type", "Accept", "X-Auth-Token");
+                assertThat(cors.getAllowedHeaders()).doesNotContain("*");
+                assertThat(cors.getExposedHeaders()).contains("Set-Cookie", "x-auth-token");
+                assertThat(cors.getAllowCredentials()).isTrue();
+                assertThat(cors.getMaxAge()).isEqualTo(3600L);
+        }
 
-    @Test
-    void registeredClientRepository_returnsInMemoryWhenNoOauthClientRepository() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
+        @Test
+        void registeredClientRepository_throwsWhenNoOauthClientRepository() {
+                ObjectProvider<OauthClientRepository> provider = mock(ObjectProvider.class);
+                when(provider.getIfAvailable()).thenReturn(null);
 
-        ObjectProvider<OauthClientRepository> provider = mock(ObjectProvider.class);
-        when(provider.getIfAvailable()).thenReturn(null);
+                assertThatThrownBy(() -> config.registeredClientRepository(provider))
+                                .isInstanceOf(IllegalStateException.class)
+                                .hasMessageContaining("OauthClientRepository no disponible");
+        }
 
-        RegisteredClientRepository repository = config.registeredClientRepository(provider);
+        @Test
+        void registeredClientRepository_returnsCustomWhenOauthClientRepositoryAvailable() {
+                OauthClientRepository mockRepository = mock(OauthClientRepository.class);
+                ObjectProvider<OauthClientRepository> provider = mock(ObjectProvider.class);
+                when(provider.getIfAvailable()).thenReturn(mockRepository);
 
-        assertThat(repository).isNotNull();
-        assertThat(repository.getClass().getSimpleName()).isEqualTo("InMemoryRegisteredClientRepository");
-    }
+                RegisteredClientRepository repository = config.registeredClientRepository(provider);
 
-    @Test
-    void registeredClientRepository_returnsCustomWhenOauthClientRepositoryAvailable() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
+                assertThat(repository).isNotNull();
+                assertThat(repository).isInstanceOf(CustomRegisteredClientRepository.class);
+        }
 
-        OauthClientRepository mockRepository = mock(OauthClientRepository.class);
-        ObjectProvider<OauthClientRepository> provider = mock(ObjectProvider.class);
-        when(provider.getIfAvailable()).thenReturn(mockRepository);
+        @Test
+        void jwkSource_providesRsaKeyWithPrivateKey() throws Exception {
+                JWKSource<SecurityContext> source = config.jwkSource();
+                RSAKey rsaKey = (RSAKey) source
+                                .get(new com.nimbusds.jose.jwk.JWKSelector(
+                                                new com.nimbusds.jose.jwk.JWKMatcher.Builder().build()),
+                                                null)
+                                .get(0);
 
-        RegisteredClientRepository repository = config.registeredClientRepository(provider);
+                assertThat(rsaKey).isNotNull();
+                assertThat(rsaKey.toRSAPublicKey()).isNotNull();
+                assertThat(rsaKey.toRSAPrivateKey()).isNotNull();
+        }
 
-        assertThat(repository).isNotNull();
-        assertThat(repository).isInstanceOf(CustomRegisteredClientRepository.class);
-    }
+        @Test
+        void jwtAuthenticationConverter_addsRolesFromClaim() {
+                Jwt jwt = Jwt.withTokenValue("token")
+                                .header("alg", "RS256")
+                                .claim("roles", List.of("ROLE_ADMIN", "ROLE_USER"))
+                                .issuedAt(Instant.now())
+                                .expiresAt(Instant.now().plusSeconds(300))
+                                .build();
 
-    @Test
-    void jwkSource_providesRsaKeyWithPrivateKey() throws Exception {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
+                Collection<GrantedAuthority> authorities = config.jwtAuthenticationConverter().convert(jwt)
+                                .getAuthorities();
 
-        JWKSource<SecurityContext> source = config.jwkSource();
-        RSAKey rsaKey = (RSAKey) source
-                .get(new com.nimbusds.jose.jwk.JWKSelector(
-                                new com.nimbusds.jose.jwk.JWKMatcher.Builder().build()),
-                        null)
-                .get(0);
-
-        assertThat(rsaKey).isNotNull();
-        assertThat(rsaKey.toRSAPublicKey()).isNotNull();
-        assertThat(rsaKey.toRSAPrivateKey()).isNotNull();
-    }
-
-    @Test
-    void jwtAuthenticationConverter_addsRolesFromClaim() {
-        SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
-
-        Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "RS256")
-                .claim("roles", List.of("ROLE_ADMIN", "ROLE_USER"))
-                .issuedAt(Instant.now())
-                .expiresAt(Instant.now().plusSeconds(300))
-                .build();
-
-        Collection<GrantedAuthority> authorities = config.jwtAuthenticationConverter().convert(jwt)
-                .getAuthorities();
-
-        assertThat(authorities)
-                .extracting(GrantedAuthority::getAuthority)
-                .contains("ROLE_ADMIN", "ROLE_USER");
-    }
+                assertThat(authorities)
+                                .extracting(GrantedAuthority::getAuthority)
+                                .contains("ROLE_ADMIN", "ROLE_USER");
+        }
 }

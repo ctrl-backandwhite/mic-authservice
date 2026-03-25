@@ -1,6 +1,7 @@
 package com.backandwhite.application.usecase.impl;
 
 import com.backandwhite.application.handler.UserCommandHandler;
+import com.backandwhite.application.service.NotificationProducerService;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.model.Role;
@@ -12,10 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.backandwhite.provider.UserProvider.otherUser;
 import static com.backandwhite.provider.UserProvider.user;
@@ -42,6 +45,9 @@ class UserUseCaseImplTest {
 
     @Mock
     private UserCommandHandler userCommandHandler;
+
+    @Spy
+    private Optional<NotificationProducerService> notificationProducerService = Optional.empty();
 
     @InjectMocks
     private UserUseCaseImpl userUseCase;

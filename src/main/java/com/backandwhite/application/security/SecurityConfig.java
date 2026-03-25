@@ -75,6 +75,11 @@ public class SecurityConfig {
             "/forgot-password.html",
             "/register.html",
             "/terms.html",
+            "/activation-success.html",
+            "/activation-error.html",
+            "/reset-password.html",
+            "/reset-success.html",
+            "/reset-error.html",
             "/css/**",
             "/js/**",
             "/images/**",
@@ -129,6 +134,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage(LOGIN_PATH)
                         .successHandler(authenticationSuccessHandler())
+                        .failureHandler(new CustomAuthenticationFailureHandler())
                         .permitAll());
         return http.build();
     }
@@ -151,7 +157,6 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
-                "https://backandwhite.com",
                 "http://localhost:4200",
                 "https://webapp-production-68d2.up.railway.app",
                 "https://mic-authservice-production.up.railway.app"));
