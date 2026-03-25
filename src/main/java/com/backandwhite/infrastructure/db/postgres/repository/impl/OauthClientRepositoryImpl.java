@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
-
 @Log4j2
 @Repository
 @AllArgsConstructor
@@ -46,8 +44,7 @@ public class OauthClientRepositoryImpl implements OauthClientRepository {
     @Override
     public OauthClient getById(Long id) {
         OauthClientEntity entity = oauthClientJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("OauthClient", id);
-        return oauthClientEntityMapper.toDomain(entity);
+        return entity != null ? oauthClientEntityMapper.toDomain(entity) : null;
     }
 
     @Override

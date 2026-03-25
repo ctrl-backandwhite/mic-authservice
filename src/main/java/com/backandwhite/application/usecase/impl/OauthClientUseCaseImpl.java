@@ -62,7 +62,8 @@ private final OauthClientCommandHandler oauthClientCommandHandler;
     public OauthClient update(OauthClient model, Long id) {
         log.debug("::> Updating oauthclient {}", model);
         OauthClient existing = this.getById(id);
-        BeanUtils.copyProperties(model, existing, "id");
+        BeanUtils.copyProperties(model, existing, "id", "createdAt", "updatedAt", "createdBy", "updatedBy");
+        oauthClientCommandHandler.validate(existing);
         return oauthClientRepository.update(existing);
     }
 
