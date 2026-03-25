@@ -159,7 +159,9 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
                 "https://webapp-production-68d2.up.railway.app",
-                "https://mic-authservice-production.up.railway.app"));
+                "https://mic-authservice-production.up.railway.app",
+                "https://web-auth-des.up.railway.app",
+                "https://auth-service-des.up.railway.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Auth-Token"));
         configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "x-auth-token"));

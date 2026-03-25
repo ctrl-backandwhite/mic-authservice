@@ -36,7 +36,9 @@ class SecurityConfigTest {
                 assertThat(cors.getAllowedOrigins()).contains(
                                 "http://localhost:4200",
                                 "https://webapp-production-68d2.up.railway.app",
-                                "https://mic-authservice-production.up.railway.app");
+                                "https://mic-authservice-production.up.railway.app",
+                                "https://web-auth-des.up.railway.app",
+                                "https://auth-service-des.up.railway.app");
                 assertThat(cors.getAllowedMethods()).contains("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
                 assertThat(cors.getAllowedHeaders()).contains(
                                 "Authorization", "Content-Type", "Accept", "X-Auth-Token");
