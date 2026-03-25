@@ -10,6 +10,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 class SecurityConfigTest {
 
-        private final SecurityConfig config = new SecurityConfig();
+        private final SecurityConfig config = new SecurityConfig(mock(PasswordEncoder.class));
 
         @Test
         void corsConfigurationSource_includesExpectedOriginsAndMethods() {
@@ -34,7 +35,8 @@ class SecurityConfigTest {
                 assertThat(cors).isNotNull();
                 assertThat(cors.getAllowedOrigins()).contains(
                                 "http://localhost:4200",
-                                "https://web-auth-des.up.railway.app");
+                                "https://webapp-production-68d2.up.railway.app",
+                                "https://mic-authservice-production.up.railway.app");
                 assertThat(cors.getAllowedMethods()).contains("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
                 assertThat(cors.getAllowedHeaders()).contains(
                                 "Authorization", "Content-Type", "Accept", "X-Auth-Token");
@@ -45,13 +47,13 @@ class SecurityConfigTest {
         }
 
         @Test
-        void registeredClientRepository_throwsWhenNoOauthClientRepository() {
+        void registeredClientRepository_fallsBackToInMemoryWhenNoOauthClientRepository() {
                 ObjectProvider<OauthClientRepository> provider = mock(ObjectProvider.class);
                 when(provider.getIfAvailable()).thenReturn(null);
 
-                assertThatThrownBy(() -> config.registeredClientRepository(provider))
-                                .isInstanceOf(IllegalStateException.class)
-                                .hasMessageContaining("OauthClientRepository no disponible");
+                RegisteredClientRepository repository = config.registeredClientRepository(provider);
+
+                assertThat(repository).isNotNull();
         }
 
         @Test
