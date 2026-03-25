@@ -84,9 +84,11 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     }
 
     @GetMapping("/activate")
-    public ResponseEntity<Void> activateUser(@RequestParam String token) {
+    public ResponseEntity<Void> activateUser(
+            @RequestParam String token,
+            @RequestParam(defaultValue = "es") String lang) {
         try {
-            useCase.activateUser(token);
+            useCase.activateUser(token, lang);
             log.info("::> User activated successfully with token");
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create("/activation-success.html"))

@@ -126,7 +126,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     private void sendActivationEmail(User user, String activationToken, String lang) {
         notificationProducerService.ifPresent(producer -> {
-            String activationUrl = activationBaseUrl + "/api/v1/users/activate?token=" + activationToken;
+            String activationUrl = activationBaseUrl + "/api/v1/users/activate?token=" + activationToken + "&lang=" + lang;
 
             Map<String, String> variables = new HashMap<>();
             variables.put("name", user.getName());
@@ -224,6 +224,13 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Transactional
     @CacheEvict(value = { "user_all", "user" }, allEntries = true)
     public void activateUser(String token) {
+        activateUser(token, "es");
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = { "user_all", "user" }, allEntries = true)
+    public void activateUser(String token, String lang) {
         log.debug("::> Activating user with token: {}", token);
         User user = userRepository.findByActivationToken(token);
         if (user == null) {
@@ -241,6 +248,31 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         user.setActivationTokenExpiry(null);
         log.debug("::> User {} activated successfully", user.getEmail());
         userRepository.update(user);
+
+        sendWelcomeEmail(user, lang != null ? lang : "es");
+    }
+
+    private void sendWelcomeEmail(User user, String lang) {
+        notificationProducerService.ifPresent(producer -> {
+            Map<String, String> variables = new HashMap<>();
+            variables.put("name", user.getName());
+            variables.put("loginUrl", activationBaseUrl + "/login.html");
+            variables.put("lang", lang);
+
+            String subject = "en".equals(lang)
+                    ? "Welcome to NEXA!"
+                    : "¡Bienvenido a NEXA!";
+
+            EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
+                    .setRecipient(user.getEmail())
+                    .setSubject(subject)
+                    .setTemplateName("welcome-email")
+                    .setVariables(variables)
+                    .build();
+
+            producer.sendNotificationEvent(event);
+            log.debug("::> Welcome email event sent for user {}", user.getEmail());
+        });
     }
 
     @Override

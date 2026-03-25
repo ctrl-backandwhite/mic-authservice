@@ -13,6 +13,10 @@ public interface UserUseCase extends BaseUseCase<User, User, Long> {
 
     void activateUser(String token);
 
+    default void activateUser(String token, String lang) {
+        activateUser(token);
+    }
+
     void requestPasswordReset(String email);
 
     default void requestPasswordReset(String email, String lang) {
