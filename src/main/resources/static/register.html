@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n="register.pageTitle">Crear cuenta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/register.css?v=20260312" />
+</head>
+
+<body>
+    <main class="register-page">
+        <section class="register-card">
+            <div class="register-card__media" aria-hidden="true">
+                <div class="media__overlay"></div>
+                <div class="media__content">
+                    <span class="logo">Back &amp; White</span>
+                    <div class="media__quote">
+                        <p id="quote-text" data-i18n="register.quote">Únete a nosotros y disfruta de todas las
+                            funcionalidades.</p>
+                    </div>
+                    <div class="media__dots" id="quote-dots">
+                        <span class="is-active"></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="register-card__content">
+
+                <form id="registerForm" class="form" novalidate>
+                    <div class="form__alerts register-form__alerts" aria-live="polite" aria-atomic="true">
+                        <div class="alert" id="alert" hidden></div>
+                    </div>
+
+                    <div class="form__row">
+                        <label class="field">
+                            <span data-i18n="register.nameLabel">Nombre *</span>
+                            <input type="text" id="name" name="name" placeholder="Ingresa tu nombre"
+                                data-i18n-placeholder="register.namePlaceholder" required minlength="2"
+                                maxlength="100" />
+                            <small class="error-message"></small>
+                        </label>
+                        <label class="field">
+                            <span data-i18n="register.lastNameLabel">Apellido *</span>
+                            <input type="text" id="lastName" name="lastName" placeholder="Ingresa tu apellido"
+                                data-i18n-placeholder="register.lastNamePlaceholder" required minlength="2"
+                                maxlength="100" />
+                            <small class="error-message"></small>
+                        </label>
+                    </div>
+
+                    <label class="field">
+                        <span data-i18n="register.emailLabel">Correo Electrónico *</span>
+                        <input type="email" id="email" name="email" autocomplete="email"
+                            placeholder="Ingresa tu correo electrónico"
+                            data-i18n-placeholder="register.emailPlaceholder" required />
+                        <small class="error-message"></small>
+                    </label>
+
+                    <label class="field">
+                        <span data-i18n="register.usernameLabel">Usuario</span>
+                        <input type="text" id="nickName" name="nickName" autocomplete="username"
+                            placeholder="Ingresa tu usuario (opcional)"
+                            data-i18n-placeholder="register.usernamePlaceholder" minlength="3" maxlength="50" />
+                        <small class="error-message"></small>
+                    </label>
+
+                    <div class="form__row">
+                        <label class="field">
+                            <span data-i18n="register.passwordLabel">Contraseña *</span>
+                            <div class="field__password">
+                                <input type="password" id="password" name="password" autocomplete="new-password"
+                                    placeholder="Ingresa tu contraseña"
+                                    data-i18n-placeholder="register.passwordPlaceholder" required minlength="8" />
+                                <button type="button" class="field__toggle" id="toggle-password"
+                                    data-i18n-aria-label="register.toggleShowAria" aria-label="Mostrar contraseña"
+                                    aria-pressed="false">
+                                    <svg class="field__toggle-icon field__toggle-icon--show" viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg class="field__toggle-icon field__toggle-icon--hide" viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <path d="M3 3l18 18"></path>
+                                        <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                                        <path d="M9.9 5.1A11.4 11.4 0 0 1 12 5c7 0 11 7 11 7a20.2 20.2 0 0 1-4.2 4.8">
+                                        </path>
+                                        <path d="M6.1 6.1A20.8 20.8 0 0 0 1 12s4 7 11 7c1.6 0 3-.3 4.3-.9"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <small class="error-message"></small>
+                        </label>
+                        <label class="field">
+                            <span data-i18n="register.confirmPasswordLabel">Confirmar Contraseña *</span>
+                            <div class="field__password">
+                                <input type="password" id="confirmPassword" name="confirmPassword"
+                                    autocomplete="new-password" placeholder="Confirma tu contraseña"
+                                    data-i18n-placeholder="register.confirmPasswordPlaceholder" required
+                                    minlength="8" />
+                                <button type="button" class="field__toggle" id="toggle-confirm-password"
+                                    data-i18n-aria-label="register.toggleShowAria" aria-label="Mostrar contraseña"
+                                    aria-pressed="false">
+                                    <svg class="field__toggle-icon field__toggle-icon--show" viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg class="field__toggle-icon field__toggle-icon--hide" viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <path d="M3 3l18 18"></path>
+                                        <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                                        <path d="M9.9 5.1A11.4 11.4 0 0 1 12 5c7 0 11 7 11 7a20.2 20.2 0 0 1-4.2 4.8">
+                                        </path>
+                                        <path d="M6.1 6.1A20.8 20.8 0 0 0 1 12s4 7 11 7c1.6 0 3-.3 4.3-.9"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <small class="error-message"></small>
+                        </label>
+                    </div>
+
+                    <div class="password-requirements">
+                        <p data-i18n="register.passwordRequirements">La contraseña debe contener:</p>
+                        <ul>
+                            <li id="req-length" data-i18n="register.reqLength">Al menos 8 caracteres</li>
+                            <li id="req-uppercase" data-i18n="register.reqUppercase">Una letra mayúscula</li>
+                            <li id="req-lowercase" data-i18n="register.reqLowercase">Una letra minúscula</li>
+                            <li id="req-number" data-i18n="register.reqNumber">Un número</li>
+                        </ul>
+                    </div>
+
+                    <label class="checkbox">
+                        <input type="checkbox" id="terms" name="terms" required />
+                        <span><span data-i18n="register.acceptTerms">Acepto los</span>
+                            <a href="/terms.html" class="link" data-open-terms="true"
+                                data-i18n="register.termsLink">Términos y
+                                Condiciones</a></span>
+                    </label>
+
+                    <button type="submit" class="btn btn--primary">
+                        <span class="btn-text" data-i18n="register.submit">Crear Cuenta</span>
+                        <span class="spinner" style="display: none;"></span>
+                    </button>
+                </form>
+
+                <p class="signin"><span data-i18n="register.haveAccount">¿Ya tienes cuenta?</span>
+                    <a class="link" href="/login" data-i18n="register.loginLink">Inicia sesión</a>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <div class="terms-modal" id="termsModal" aria-hidden="true" role="dialog" aria-modal="true"
+        aria-labelledby="termsModalTitle">
+        <div class="terms-modal__backdrop" data-close-terms="true"></div>
+        <div class="terms-modal__content" role="document">
+            <header class="terms-modal__header">
+                <h2 id="termsModalTitle" data-i18n="terms.title">Términos y Condiciones</h2>
+                <button type="button" class="terms-modal__close" data-close-terms="true" aria-label="Cerrar">×</button>
+            </header>
+            <div class="terms-modal__body">
+                <h3 data-i18n="terms.section1Title">1. Aceptación de los Términos</h3>
+                <p data-i18n="terms.section1Text">
+                    Al acceder y utilizar este sitio web, usted acepta estar vinculado por estos Términos y
+                    Condiciones. Si no está de acuerdo con alguna parte de estos términos, por favor no utilice nuestro
+                    servicio.
+                </p>
+
+                <h3 data-i18n="terms.section2Title">2. Uso Licenciado</h3>
+                <p data-i18n="terms.section2Text">
+                    Se le otorga una licencia limitada, no exclusiva e intransferible para acceder y utilizar este
+                    sitio web únicamente con propósitos personales y no comerciales.
+                </p>
+
+                <h3 data-i18n="terms.section3Title">3. Restricciones</h3>
+                <p data-i18n="terms.section3Intro">Usted no podrá:</p>
+                <ul>
+                    <li data-i18n="terms.section3Item1">Reproducir, duplicar, copiar o explotar de otra manera cualquier
+                        contenido del sitio para propósitos comerciales</li>
+                    <li data-i18n="terms.section3Item2">Acceder no autorizadamente o interferir con los sistemas de
+                        seguridad del sitio</li>
+                    <li data-i18n="terms.section3Item3">Transmitir cualquier virus, gusano u otro código malicioso</li>
+                    <li data-i18n="terms.section3Item4">Recopilar o rastrear información personal de otros usuarios sin
+                        consentimiento</li>
+                    <li data-i18n="terms.section3Item5">Acosar, amenazar, difamar o causar daño a otros usuarios</li>
+                </ul>
+
+                <h3 data-i18n="terms.section4Title">4. Cuenta de Usuario</h3>
+                <p data-i18n="terms.section4Text">
+                    Al crear una cuenta, usted es responsable de mantener la confidencialidad de su contraseña y de
+                    todas las actividades que ocurran bajo su cuenta. Debe proporcionar información exacta y
+                    actualizada durante el registro.
+                </p>
+
+                <h3 data-i18n="terms.section5Title">5. Privacidad de Datos</h3>
+                <p data-i18n="terms.section5Text">
+                    Sus datos personales serán tratados de acuerdo con nuestras políticas de privacidad. Nos
+                    comprometemos a proteger su información y cumplir con todas las leyes de protección de datos
+                    aplicables.
+                </p>
+
+                <h3 data-i18n="terms.section6Title">6. Contenido del Usuario</h3>
+                <p data-i18n="terms.section6Text">
+                    Cualquier contenido que proporcione es de su responsabilidad. Garantiza que tiene todos los
+                    derechos necesarios para compartir dicho contenido. Nos reservamos el derecho de eliminar contenido
+                    que viole estos términos.
+                </p>
+
+                <h3 data-i18n="terms.section7Title">7. Limitación de Responsabilidad</h3>
+                <p data-i18n="terms.section7Text">
+                    En la medida permitida por la ley, no seremos responsables por daños indirectos, incidentales,
+                    especiales o consecuentes derivados del uso o la imposibilidad de usar este sitio o sus servicios.
+                </p>
+
+                <h3 data-i18n="terms.section8Title">8. Modificación de Términos</h3>
+                <p data-i18n="terms.section8Text">
+                    Nos reservamos el derecho de modificar estos Términos y Condiciones en cualquier momento. Los
+                    cambios entrarán en vigor inmediatamente tras su publicación. Su uso continuado del sitio
+                    constituye su aceptación de los términos modificados.
+                </p>
+
+                <h3 data-i18n="terms.section9Title">9. Terminación</h3>
+                <p data-i18n="terms.section9Text">
+                    Nos reservamos el derecho de suspender o terminar su cuenta y acceso al sitio en cualquier momento,
+                    sin previo aviso, si viola estos términos o si consideramos que es necesario hacerlo.
+                </p>
+
+                <h3 data-i18n="terms.section10Title">10. Ley Aplicable</h3>
+                <p data-i18n="terms.section10Text">
+                    Estos Términos y Condiciones se rigen por las leyes de la jurisdicción en la que operamos.
+                    Cualquier disputa derivada de estos términos será resuelta exclusivamente en los tribunales
+                    competentes de dicha jurisdicción.
+                </p>
+
+                <h3 data-i18n="terms.section11Title">11. Contacto</h3>
+                <p data-i18n="terms.section11Text">
+                    Si tiene preguntas sobre estos Términos y Condiciones, por favor contáctenos a través de nuestro
+                    formulario de contacto o envíe un correo electrónico a nuestro equipo de soporte.
+                </p>
+
+                <p class="terms-modal__updated"><strong data-i18n="terms.lastUpdatedLabel">Última
+                        actualización:</strong>
+                    16 de febrero de 2026</p>
+            </div>
+            <footer class="terms-modal__footer">
+                <button type="button" class="btn btn--primary" data-close-terms="true"
+                    data-i18n="terms.close">Cerrar</button>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            es: {
+                "register.pageTitle": "Crear cuenta",
+                "register.quote": "Sistemas inteligentes para una experiencia fluida.",
+                "register.nameLabel": "Nombre *",
+                "register.namePlaceholder": "Ingresa tu nombre",
+                "register.lastNameLabel": "Apellido *",
+                "register.lastNamePlaceholder": "Ingresa tu apellido",
+                "register.emailLabel": "Correo Electrónico *",
+                "register.emailPlaceholder": "Ingresa tu correo electrónico",
+                "register.usernameLabel": "Usuario",
+                "register.usernamePlaceholder": "Ingresa tu usuario (opcional)",
+                "register.passwordLabel": "Contraseña *",
+                "register.passwordPlaceholder": "Ingresa tu contraseña",
+                "register.confirmPasswordLabel": "Confirmar Contraseña *",
+                "register.confirmPasswordPlaceholder": "Confirma tu contraseña",
+                "register.toggleShowAria": "Mostrar contraseña",
+                "register.toggleHideAria": "Ocultar contraseña",
+                "register.passwordRequirements": "La contraseña debe contener:",
+                "register.reqLength": "Al menos 8 caracteres",
+                "register.reqUppercase": "Una letra mayúscula",
+                "register.reqLowercase": "Una letra minúscula",
+                "register.reqNumber": "Un número",
+                "register.acceptTerms": "Acepto los",
+                "register.termsLink": "Términos y Condiciones",
+                "register.submit": "Crear Cuenta",
+                "register.haveAccount": "¿Ya tienes cuenta?",
+                "register.loginLink": "Inicia sesión",
+                "register.passwordMismatch": "Las contraseñas no coinciden",
+                "register.passwordWeak": "La contraseña no cumple los requisitos de seguridad",
+                "register.emailExists": "El correo electrónico ya está registrado",
+                "register.usernameExists": "El nombre de usuario ya está registrado",
+                "Email already exists.": "El correo electrónico ya está registrado",
+                "Username already exists.": "El nombre de usuario ya está registrado",
+                "A record with the same unique value already exists.": "Ya existe un registro con ese valor único",
+                "register.acceptTermsError": "Por favor acepta los Términos y Condiciones",
+                "register.creatingAccount": "Creando cuenta...",
+                "register.successMessage": "¡Cuenta creada exitosamente! Redirigiendo a iniciar sesión...",
+                "register.createError": "No se pudo crear la cuenta. Por favor intenta de nuevo.",
+                "register.genericError": "Ocurrió un error. Por favor intenta más tarde.",
+                "terms.title": "Términos y Condiciones",
+                "terms.section1Title": "1. Aceptación de los Términos",
+                "terms.section1Text": "Al acceder y utilizar este sitio web, usted acepta estar vinculado por estos Términos y Condiciones. Si no está de acuerdo con alguna parte de estos términos, por favor no utilice nuestro servicio.",
+                "terms.section2Title": "2. Uso Licenciado",
+                "terms.section2Text": "Se le otorga una licencia limitada, no exclusiva e intransferible para acceder y utilizar este sitio web únicamente con propósitos personales y no comerciales.",
+                "terms.section3Title": "3. Restricciones",
+                "terms.section3Intro": "Usted no podrá:",
+                "terms.section3Item1": "Reproducir, duplicar, copiar o explotar de otra manera cualquier contenido del sitio para propósitos comerciales",
+                "terms.section3Item2": "Acceder no autorizadamente o interferir con los sistemas de seguridad del sitio",
+                "terms.section3Item3": "Transmitir cualquier virus, gusano u otro código malicioso",
+                "terms.section3Item4": "Recopilar o rastrear información personal de otros usuarios sin consentimiento",
+                "terms.section3Item5": "Acosar, amenazar, difamar o causar daño a otros usuarios",
+                "terms.section4Title": "4. Cuenta de Usuario",
+                "terms.section4Text": "Al crear una cuenta, usted es responsable de mantener la confidencialidad de su contraseña y de todas las actividades que ocurran bajo su cuenta. Debe proporcionar información exacta y actualizada durante el registro.",
+                "terms.section5Title": "5. Privacidad de Datos",
+                "terms.section5Text": "Sus datos personales serán tratados de acuerdo con nuestras políticas de privacidad. Nos comprometemos a proteger su información y cumplir con todas las leyes de protección de datos aplicables.",
+                "terms.section6Title": "6. Contenido del Usuario",
+                "terms.section6Text": "Cualquier contenido que proporcione es de su responsabilidad. Garantiza que tiene todos los derechos necesarios para compartir dicho contenido. Nos reservamos el derecho de eliminar contenido que viole estos términos.",
+                "terms.section7Title": "7. Limitación de Responsabilidad",
+                "terms.section7Text": "En la medida permitida por la ley, no seremos responsables por daños indirectos, incidentales, especiales o consecuentes derivados del uso o la imposibilidad de usar este sitio o sus servicios.",
+                "terms.section8Title": "8. Modificación de Términos",
+                "terms.section8Text": "Nos reservamos el derecho de modificar estos Términos y Condiciones en cualquier momento. Los cambios entrarán en vigor inmediatamente tras su publicación. Su uso continuado del sitio constituye su aceptación de los términos modificados.",
+                "terms.section9Title": "9. Terminación",
+                "terms.section9Text": "Nos reservamos el derecho de suspender o terminar su cuenta y acceso al sitio en cualquier momento, sin previo aviso, si viola estos términos o si consideramos que es necesario hacerlo.",
+                "terms.section10Title": "10. Ley Aplicable",
+                "terms.section10Text": "Estos Términos y Condiciones se rigen por las leyes de la jurisdicción en la que operamos. Cualquier disputa derivada de estos términos será resuelta exclusivamente en los tribunales competentes de dicha jurisdicción.",
+                "terms.section11Title": "11. Contacto",
+                "terms.section11Text": "Si tiene preguntas sobre estos Términos y Condiciones, por favor contáctenos a través de nuestro formulario de contacto o envíe un correo electrónico a nuestro equipo de soporte.",
+                "terms.lastUpdatedLabel": "Última actualización:",
+                "terms.close": "Cerrar",
+                quotes: [
+                    "Sistemas inteligentes para una experiencia fluida.",
+                    "Flujos digitales optimizados para el mañana.",
+                    "Conexiones seguras en un entorno futurista.",
+                    "Tecnología avanzada con interacción sencilla."
+                ]
+            },
+            en: {
+                "register.pageTitle": "Create account",
+                "register.quote": "Intelligent systems for a seamless experience.",
+                "register.nameLabel": "First name *",
+                "register.namePlaceholder": "Enter your first name",
+                "register.lastNameLabel": "Last name *",
+                "register.lastNamePlaceholder": "Enter your last name",
+                "register.emailLabel": "Email *",
+                "register.emailPlaceholder": "Enter your email",
+                "register.usernameLabel": "Username",
+                "register.usernamePlaceholder": "Enter your username (optional)",
+                "register.passwordLabel": "Password *",
+                "register.passwordPlaceholder": "Enter your password",
+                "register.confirmPasswordLabel": "Confirm Password *",
+                "register.confirmPasswordPlaceholder": "Confirm your password",
+                "register.toggleShowAria": "Show password",
+                "register.toggleHideAria": "Hide password",
+                "register.passwordRequirements": "Your password must contain:",
+                "register.reqLength": "At least 8 characters",
+                "register.reqUppercase": "One uppercase letter",
+                "register.reqLowercase": "One lowercase letter",
+                "register.reqNumber": "One number",
+                "register.acceptTerms": "I accept the",
+                "register.termsLink": "Terms and Conditions",
+                "register.submit": "Create Account",
+                "register.haveAccount": "Already have an account?",
+                "register.loginLink": "Sign in",
+                "register.passwordMismatch": "Passwords do not match",
+                "register.passwordWeak": "Password does not meet the security requirements",
+                "register.emailExists": "Email is already registered",
+                "register.usernameExists": "Username is already registered",
+                "Email already exists.": "Email is already registered",
+                "Username already exists.": "Username is already registered",
+                "A record with the same unique value already exists.": "A record with the same unique value already exists.",
+                "register.acceptTermsError": "Please accept the Terms and Conditions",
+                "register.creatingAccount": "Creating account...",
+                "register.successMessage": "Account created successfully! Redirecting to sign in...",
+                "register.createError": "Couldn't create the account. Please try again.",
+                "register.genericError": "Something went wrong. Please try again later.",
+                "terms.title": "Terms and Conditions",
+                "terms.section1Title": "1. Acceptance of Terms",
+                "terms.section1Text": "By accessing and using this website, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, please do not use our service.",
+                "terms.section2Title": "2. Licensed Use",
+                "terms.section2Text": "You are granted a limited, non-exclusive, non-transferable license to access and use this website solely for personal and non-commercial purposes.",
+                "terms.section3Title": "3. Restrictions",
+                "terms.section3Intro": "You may not:",
+                "terms.section3Item1": "Reproduce, duplicate, copy, or otherwise exploit any content of the site for commercial purposes",
+                "terms.section3Item2": "Access without authorization or interfere with the site's security systems",
+                "terms.section3Item3": "Transmit any virus, worm, or other malicious code",
+                "terms.section3Item4": "Collect or track personal information of other users without consent",
+                "terms.section3Item5": "Harass, threaten, defame, or cause harm to other users",
+                "terms.section4Title": "4. User Account",
+                "terms.section4Text": "By creating an account, you are responsible for maintaining the confidentiality of your password and all activities that occur under your account. You must provide accurate and up-to-date information during registration.",
+                "terms.section5Title": "5. Data Privacy",
+                "terms.section5Text": "Your personal data will be processed in accordance with our privacy policies. We are committed to protecting your information and complying with applicable data protection laws.",
+                "terms.section6Title": "6. User Content",
+                "terms.section6Text": "Any content you provide is your responsibility. You warrant that you have all necessary rights to share such content. We reserve the right to remove content that violates these terms.",
+                "terms.section7Title": "7. Limitation of Liability",
+                "terms.section7Text": "To the fullest extent permitted by law, we will not be liable for indirect, incidental, special, or consequential damages arising from the use or inability to use this site or its services.",
+                "terms.section8Title": "8. Changes to Terms",
+                "terms.section8Text": "We reserve the right to modify these Terms and Conditions at any time. Changes take effect immediately upon publication. Continued use of the site constitutes acceptance of the modified terms.",
+                "terms.section9Title": "9. Termination",
+                "terms.section9Text": "We reserve the right to suspend or terminate your account and access to the site at any time, without prior notice, if you violate these terms or if we deem it necessary.",
+                "terms.section10Title": "10. Governing Law",
+                "terms.section10Text": "These Terms and Conditions are governed by the laws of the jurisdiction in which we operate. Any dispute arising from these terms will be resolved exclusively in the competent courts of that jurisdiction.",
+                "terms.section11Title": "11. Contact",
+                "terms.section11Text": "If you have questions about these Terms and Conditions, please contact us through our contact form or email our support team.",
+                "terms.lastUpdatedLabel": "Last updated:",
+                "terms.close": "Close",
+                quotes: [
+                    "Intelligent systems for a seamless experience.",
+                    "Optimized digital flows for tomorrow.",
+                    "Secure connections in a futuristic environment.",
+                    "Advanced technology with simple interaction."
+                ]
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'es';
+        let quoteInterval;
+        const passwordToggleRenderers = [];
+
+        function t(key) {
+            const dict = translations[currentLang] || translations.es;
+            return dict[key] || key;
+        }
+
+        function translateServerMessage(message) {
+            const text = typeof message === 'string' ? message.trim() : '';
+            if (!text) return text;
+            const dict = translations[currentLang] || translations.es;
+            return dict[text] || text;
+        }
+
+        function applyTranslations(lang) {
+            const dict = translations[lang] || translations.es;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.textContent = dict[key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (dict[key]) {
+                    el.setAttribute('placeholder', dict[key]);
+                }
+            });
+            document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+                const key = el.getAttribute('data-i18n-aria-label');
+                if (dict[key]) {
+                    el.setAttribute('aria-label', dict[key]);
+                }
+            });
+        }
+
+        function startQuotes(lang) {
+            const dict = translations[lang] || translations.es;
+            const quotes = dict.quotes || [];
+            let index = 0;
+            const el = document.getElementById("quote-text");
+            const quoteBox = document.querySelector(".media__quote");
+            const dots = document.querySelectorAll("#quote-dots span");
+
+            if (!el || !quotes.length) return;
+            el.textContent = quotes[0];
+
+            if (quoteInterval) clearInterval(quoteInterval);
+            quoteInterval = setInterval(() => {
+                if (quoteBox) quoteBox.classList.add("fade-out");
+                if (dots.length) {
+                    dots.forEach(dot => dot.classList.add("fade-out"));
+                }
+                setTimeout(() => {
+                    index = (index + 1) % quotes.length;
+                    el.textContent = quotes[index];
+                    if (dots.length) {
+                        dots.forEach((dot, i) => {
+                            dot.classList.toggle("is-active", i === index % dots.length);
+                            dot.classList.remove("fade-out");
+                        });
+                    }
+                    if (quoteBox) quoteBox.classList.remove("fade-out");
+                }, 200);
+            }, 3000);
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.setAttribute('lang', lang);
+            localStorage.setItem('lang', lang);
+            applyTranslations(lang);
+            startQuotes(lang);
+            refreshPasswordToggleAria();
+            document.querySelectorAll('.lang-switch__btn').forEach(btn => {
+                btn.classList.toggle('is-active', btn.getAttribute('data-lang') === lang);
+            });
+        }
+
+        document.querySelectorAll('.lang-switch__btn').forEach(btn => {
+            btn.addEventListener('click', () => setLanguage(btn.getAttribute('data-lang')));
+        });
+
+        setLanguage(currentLang);
+
+        const termsModal = document.getElementById('termsModal');
+
+        function openTermsModal() {
+            if (!termsModal) return;
+            termsModal.classList.add('is-open');
+            termsModal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeTermsModal() {
+            if (!termsModal) return;
+            termsModal.classList.remove('is-open');
+            termsModal.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('modal-open');
+        }
+
+        document.querySelectorAll('[data-open-terms]').forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                openTermsModal();
+            });
+        });
+
+        document.querySelectorAll('[data-close-terms]').forEach(btn => {
+            btn.addEventListener('click', () => closeTermsModal());
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && termsModal?.classList.contains('is-open')) {
+                closeTermsModal();
+            }
+        });
+
+        // Password validation
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+
+        function bindPasswordToggle(buttonId, inputId) {
+            const button = document.getElementById(buttonId);
+            const input = document.getElementById(inputId);
+            if (!button || !input) return;
+
+            let isVisible = false;
+
+            const render = () => {
+                const keyAria = isVisible ? 'register.toggleHideAria' : 'register.toggleShowAria';
+                const fallbackAria = isVisible ? 'Ocultar contraseña' : 'Mostrar contraseña';
+                const dict = translations[currentLang] || translations.es;
+                button.setAttribute('aria-label', dict[keyAria] || fallbackAria);
+                button.setAttribute('aria-pressed', isVisible ? 'true' : 'false');
+                button.classList.toggle('is-visible', isVisible);
+            };
+
+            button.addEventListener('click', () => {
+                isVisible = !isVisible;
+                input.setAttribute('type', isVisible ? 'text' : 'password');
+                render();
+            });
+
+            passwordToggleRenderers.push(render);
+            render();
+        }
+
+        function refreshPasswordToggleAria() {
+            passwordToggleRenderers.forEach(render => render());
+        }
+
+        bindPasswordToggle('toggle-password', 'password');
+        bindPasswordToggle('toggle-confirm-password', 'confirmPassword');
+
+        passwordInput?.addEventListener('input', function () {
+            const password = this.value;
+
+            // Check length
+            const lengthValid = password.length >= 8;
+            toggleRequirement('req-length', lengthValid);
+
+            // Check uppercase
+            const uppercaseValid = /[A-Z]/.test(password);
+            toggleRequirement('req-uppercase', uppercaseValid);
+
+            // Check lowercase
+            const lowercaseValid = /[a-z]/.test(password);
+            toggleRequirement('req-lowercase', lowercaseValid);
+
+            // Check number
+            const numberValid = /[0-9]/.test(password);
+            toggleRequirement('req-number', numberValid);
+        });
+
+        function toggleRequirement(id, isValid) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.color = isValid ? '#10b981' : '#94a3b8';
+                element.style.fontWeight = isValid ? '500' : '300';
+            }
+        }
+
+        // Form submission
+        const form = document.getElementById('registerForm');
+        form?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Clear previous errors
+            clearErrors();
+
+            // Get form data
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                nickName: document.getElementById('nickName').value.trim() || null,
+                password: document.getElementById('password').value,
+                confirmPassword: document.getElementById('confirmPassword').value,
+                termsAccepted: document.getElementById('terms').checked,
+                enabled: true,
+                accountNonExpired: true,
+                accountNonLocked: true,
+                credentialsNonExpired: true,
+                scopeIds: [],
+                roleIds: [],
+                groupIds: []
+            };
+
+            // Validar fortaleza de contraseña
+            const pwd = formData.password;
+            const pwdValid =
+                pwd.length >= 8 &&
+                /[A-Z]/.test(pwd) &&
+                /[a-z]/.test(pwd) &&
+                /[0-9]/.test(pwd);
+            if (!pwdValid) {
+                showFieldError('password', t('register.passwordWeak'));
+                return;
+            }
+
+            // Validar que las contraseñas coincidan
+            if (formData.password !== formData.confirmPassword) {
+                showFieldError('confirmPassword', t('register.passwordMismatch'));
+                return;
+            }
+
+            // Validar términos
+            if (!document.getElementById('terms').checked) {
+                showAlert(t('register.acceptTermsError'), 'error');
+                return;
+            }
+
+            // Mostrar cargando
+            const btn = form.querySelector('button[type="submit"]');
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner');
+            btn.disabled = true;
+            btnText.textContent = t('register.creatingAccount');
+            spinner.style.display = 'inline-block';
+
+            try {
+                const response = await fetch('/api/v1/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showAlert(t('register.successMessage'), 'success');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    const error = await response.json().catch(() => null);
+                    const resolvedError = resolveRegisterError(error);
+                    if (resolvedError.fieldId) {
+                        showFieldError(resolvedError.fieldId, resolvedError.message);
+                    } else {
+                        showAlert(resolvedError.message, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error de registro:', error);
+                showAlert(t('register.genericError'), 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = t('register.submit');
+                spinner.style.display = 'none';
+            }
+        });
+
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            if (field) field.classList.add('error');
+            showAlert(message, 'error');
+        }
+
+        function resolveRegisterError(error) {
+            const details = Array.isArray(error?.details)
+                ? error.details.filter(detail => typeof detail === 'string' && detail.trim())
+                : [];
+            const message = typeof error?.message === 'string' ? error.message.trim() : '';
+            const firstDetail = details[0] ? details[0].trim() : '';
+            const normalized = `${message} ${firstDetail}`.toLowerCase();
+
+            if (isDuplicateError(normalized, ['email'])) {
+                return { fieldId: 'email', message: t('register.emailExists') };
+            }
+
+            if (isDuplicateError(normalized, ['nick_name', 'nickname', 'user_name', 'username'])) {
+                return { fieldId: 'nickName', message: t('register.usernameExists') };
+            }
+
+            if (firstDetail) {
+                return {
+                    fieldId: guessErrorFieldId(firstDetail),
+                    message: translateServerMessage(sanitizeErrorMessage(firstDetail))
+                };
+            }
+
+            if (message && message !== 'One or more validation errors occurred.' && message !== 'Validation error') {
+                return {
+                    fieldId: guessErrorFieldId(message),
+                    message: translateServerMessage(message)
+                };
+            }
+
+            return { fieldId: null, message: t('register.createError') };
+        }
+
+        function isDuplicateError(text, tokens) {
+            const hasDuplicateMarker =
+                text.includes('duplicate key') ||
+                text.includes('already exists') ||
+                text.includes('ya existe') ||
+                text.includes('registered');
+
+            return hasDuplicateMarker && tokens.some(token => text.includes(token));
+        }
+
+        function guessErrorFieldId(text) {
+            const normalized = text.toLowerCase();
+
+            if (normalized.includes('email') || normalized.includes('correo')) {
+                return 'email';
+            }
+
+            if (
+                normalized.includes('nick_name') ||
+                normalized.includes('nickname') ||
+                normalized.includes('username') ||
+                normalized.includes('user_name') ||
+                normalized.includes('usuario')
+            ) {
+                return 'nickName';
+            }
+
+            if (normalized.includes('confirm') || normalized.includes('confirmación')) {
+                return 'confirmPassword';
+            }
+
+            if (normalized.includes('password') || normalized.includes('contraseña')) {
+                return 'password';
+            }
+
+            return null;
+        }
+
+        function sanitizeErrorMessage(message) {
+            return message
+                .replace(/^ERROR:\s*/i, '')
+                .replace(/^Detail:\s*/i, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.textContent = '';
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.field input').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        let alertDismissTimer = null;
+        function showAlert(message, type) {
+            if (alertDismissTimer) { clearTimeout(alertDismissTimer); alertDismissTimer = null; }
+            const alertEl = document.getElementById('alert');
+            alertEl.textContent = message;
+            alertEl.className = `alert alert--${type}`;
+            alertEl.classList.remove('alert--dismissing');
+            alertEl.hidden = false;
+            if (type === 'error') {
+                alertDismissTimer = setTimeout(() => {
+                    alertEl.classList.add('alert--dismissing');
+                    alertDismissTimer = setTimeout(() => {
+                        alertEl.hidden = true;
+                        alertEl.classList.remove('alert--dismissing');
+                    }, 400);
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+
+</html>

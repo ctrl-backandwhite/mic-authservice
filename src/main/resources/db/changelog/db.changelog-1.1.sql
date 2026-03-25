@@ -1,0 +1,15 @@
+alter table if exists group_roles add constraint fk_group_roles_role_id foreign key (role_id) references roles;
+alter table if exists group_roles add constraint fk_group_roles_group_id foreign key (group_id) references groups;
+alter table if exists oauthclient_granttypes add constraint fk_oauthclient_granttypes_granttype_id foreign key (granttype_id) references grant_types;
+alter table if exists oauthclient_granttypes add constraint fk_oauthclient_granttypes_oauthclient_id foreign key (oauthclient_id) references oauth_clients;
+alter table if exists oauthclient_redirecturis add constraint fk_oauthclient_redirecturis_redirecturi_id foreign key (redirecturi_id) references redirect_uris;
+alter table if exists oauthclient_redirecturis add constraint fk_oauthclient_redirecturis_oauthclient_id foreign key (oauthclient_id) references oauth_clients;
+alter table if exists oauthclient_scopes add constraint fk_oauthclient_scopes_scope_id foreign key (scope_id) references scopes;
+alter table if exists oauthclient_scopes add constraint fk_oauthclient_scopes_oauthclient_id foreign key (oauthclient_id) references oauth_clients;
+alter table if exists scopes add constraint fk_scopes_user_id foreign key (user_id) references users;
+alter table if exists user_groups add constraint fk_user_groups_group_id foreign key (group_id) references groups;
+alter table if exists user_groups add constraint fk_user_groups_user_id foreign key (user_id) references users;
+alter table if exists user_roles add constraint fk_user_roles_role_id foreign key (role_id) references roles;
+alter table if exists user_roles add constraint fk_user_roles_user_id foreign key (user_id) references users;
+alter table if exists user_scopes add constraint fk_user_scopes_scope_id foreign key (scope_id) references scopes;
+alter table if exists user_scopes add constraint fk_user_scopes_user_id foreign key (user_id) references users;

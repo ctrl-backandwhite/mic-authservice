@@ -1,0 +1,1 @@
+alter table users rename column user_name to nick_name;

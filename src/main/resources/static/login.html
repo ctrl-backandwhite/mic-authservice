@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n="login.pageTitle">Iniciar sesión</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/login.css?v=20260215" />
+</head>
+
+<body>
+    <main class="login-page login">
+        <section class="login-card">
+            <div class="login-card__media" aria-hidden="true">
+                <div class="media__overlay"></div>
+                <div class="media__content">
+                    <span class="logo">Back &amp; White</span>
+                    <div class="media__quote">
+                        <p id="quote-text" data-i18n="login.quote">Sistemas inteligentes para una experiencia fluida.
+                        </p>
+                    </div>
+                    <div class="media__dots" id="quote-dots">
+                        <span class="is-active"></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-card__content">
+                <header class="content__header">
+                    <h1 data-i18n="login.title">¡Bienvenido!</h1>
+                    <p data-i18n="login.subtitle">Inicia sesión para continuar.</p>
+                    <div class="lang-switch" role="group" aria-label="Selector de idioma">
+                        <button type="button" class="lang-switch__btn" data-lang="es">ES</button>
+                        <span aria-hidden="true">|</span>
+                        <button type="button" class="lang-switch__btn" data-lang="en">EN</button>
+                    </div>
+                </header>
+
+                <form method="post" action="/login" class="form" id="login-form">
+                    <div class="form__alerts" aria-live="polite" aria-atomic="true">
+                        <p class="alert alert--error" id="form-error" hidden></p>
+                        <p class="alert alert--success" id="form-success" hidden></p>
+                    </div>
+                    <label class="field">
+                        <span data-i18n="login.usernameLabel">Usuario</span>
+                        <input id="username" type="text" name="username" autocomplete="username"
+                            placeholder="Ingresa tu usuario" data-i18n-placeholder="login.usernamePlaceholder"
+                            required />
+                    </label>
+                    <label class="field">
+                        <span data-i18n="login.passwordLabel">Contraseña</span>
+                        <div class="field__password">
+                            <input id="password" type="password" name="password" autocomplete="current-password"
+                                placeholder="Ingresa tu contraseña" data-i18n-placeholder="login.passwordPlaceholder"
+                                required />
+                            <button type="button" class="field__toggle" id="toggle-password"
+                                data-i18n-aria-label="login.toggleShowAria" aria-label="Mostrar contraseña"
+                                aria-pressed="false">
+                                <svg class="field__toggle-icon field__toggle-icon--show" viewBox="0 0 24 24"
+                                    aria-hidden="true">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="field__toggle-icon field__toggle-icon--hide" viewBox="0 0 24 24"
+                                    aria-hidden="true">
+                                    <path d="M3 3l18 18"></path>
+                                    <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                                    <path d="M9.9 5.1A11.4 11.4 0 0 1 12 5c7 0 11 7 11 7a20.2 20.2 0 0 1-4.2 4.8">
+                                    </path>
+                                    <path d="M6.1 6.1A20.8 20.8 0 0 0 1 12s4 7 11 7c1.6 0 3-.3 4.3-.9"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </label>
+
+                    <div class="form__meta">
+                        <label class="checkbox">
+                            <input type="checkbox" name="remember" />
+                            <span data-i18n="login.remember">Recuérdame</span>
+                        </label>
+                        <a class="link" href="/forgot-password.html" data-i18n="login.forgot">¿Olvidaste tu
+                            contraseña?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn--primary" data-i18n="login.submit">Iniciar Sesión</button>
+                </form>
+
+                <div class="divider">
+                    <span data-i18n="login.divider">Inicia sesión con</span>
+                </div>
+
+                <div class="social">
+                    <button type="button" class="social__btn">G</button>
+                    <button type="button" class="social__btn">X</button>
+                </div>
+
+                <p class="signup"><span data-i18n="login.noAccount">¿No tienes cuenta?</span>
+                    <a class="link" href="/register.html" data-i18n="login.createAccount">Crear cuenta</a>
+                </p>
+            </div>
+        </section>
+    </main>
+    <script>
+        (function () {
+            var translations = {
+                es: {
+                    "login.pageTitle": "Iniciar sesión",
+                    "login.title": "¡Bienvenido!",
+                    "login.subtitle": "Inicia sesión para continuar.",
+                    "login.usernameLabel": "Usuario",
+                    "login.usernamePlaceholder": "Ingresa tu usuario",
+                    "login.passwordLabel": "Contraseña",
+                    "login.passwordPlaceholder": "Ingresa tu contraseña",
+                    "login.remember": "Recuérdame",
+                    "login.forgot": "¿Olvidaste tu contraseña?",
+                    "login.submit": "Iniciar Sesión",
+                    "login.divider": "Inicia sesión con",
+                    "login.noAccount": "¿No tienes cuenta?",
+                    "login.createAccount": "Crear cuenta",
+                    "login.toggleShow": "Mostrar",
+                    "login.toggleHide": "Ocultar",
+                    "login.toggleShowAria": "Mostrar contraseña",
+                    "login.toggleHideAria": "Ocultar contraseña",
+                    "login.error.required": "Completa usuario y contraseña.",
+                    "login.error.invalidCredentials": "Usuario o contraseña inválidos.",
+                    "login.success.loggedOut": "Sesión cerrada correctamente.",
+                    quotes: [
+                        "Sistemas inteligentes para una experiencia fluida.",
+                        "Flujos digitales optimizados para el mañana.",
+                        "Conexiones seguras en un entorno futurista.",
+                        "Tecnología avanzada con interacción sencilla."
+                    ]
+                },
+                en: {
+                    "login.pageTitle": "Sign in",
+                    "login.title": "Welcome!",
+                    "login.subtitle": "Sign in to continue.",
+                    "login.usernameLabel": "Username",
+                    "login.usernamePlaceholder": "Enter your username",
+                    "login.passwordLabel": "Password",
+                    "login.passwordPlaceholder": "Enter your password",
+                    "login.remember": "Remember me",
+                    "login.forgot": "Forgot your password?",
+                    "login.submit": "Sign In",
+                    "login.divider": "Sign in with",
+                    "login.noAccount": "Don't have an account?",
+                    "login.createAccount": "Create account",
+                    "login.toggleShow": "Show",
+                    "login.toggleHide": "Hide",
+                    "login.toggleShowAria": "Show password",
+                    "login.toggleHideAria": "Hide password",
+                    "login.error.required": "Please enter username and password.",
+                    "login.error.invalidCredentials": "Invalid username or password.",
+                    "login.success.loggedOut": "Session closed successfully.",
+                    quotes: [
+                        "Intelligent systems for a seamless experience.",
+                        "Optimized digital flows for tomorrow.",
+                        "Secure connections in a futuristic environment.",
+                        "Advanced technology with simple interaction."
+                    ]
+                }
+            };
+
+            var currentLang = localStorage.getItem("lang") || "es";
+            var quoteInterval;
+
+            function applyTranslations(lang) {
+                var dict = translations[lang] || translations.es;
+                document.querySelectorAll("[data-i18n]").forEach(function (el) {
+                    var key = el.getAttribute("data-i18n");
+                    if (dict[key]) {
+                        el.textContent = dict[key];
+                    }
+                });
+                document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+                    var key = el.getAttribute("data-i18n-placeholder");
+                    if (dict[key]) {
+                        el.setAttribute("placeholder", dict[key]);
+                    }
+                });
+                document.querySelectorAll("[data-i18n-aria-label]").forEach(function (el) {
+                    var key = el.getAttribute("data-i18n-aria-label");
+                    if (dict[key]) {
+                        el.setAttribute("aria-label", dict[key]);
+                    }
+                });
+            }
+
+            function startQuotes(lang) {
+                var dict = translations[lang] || translations.es;
+                var quotes = dict.quotes || [];
+                var index = 0;
+                var el = document.getElementById("quote-text");
+                var quoteBox = document.querySelector(".media__quote");
+                var dots = document.querySelectorAll("#quote-dots span");
+                if (!el || !quotes.length) return;
+                el.textContent = quotes[0];
+                if (quoteInterval) clearInterval(quoteInterval);
+                quoteInterval = setInterval(function () {
+                    if (quoteBox) quoteBox.classList.add("fade-out");
+                    if (dots.length) {
+                        dots.forEach(function (dot) {
+                            dot.classList.add("fade-out");
+                        });
+                    }
+                    setTimeout(function () {
+                        index = (index + 1) % quotes.length;
+                        el.textContent = quotes[index];
+                        if (dots.length) {
+                            dots.forEach(function (dot, i) {
+                                dot.classList.toggle("is-active", i === index % dots.length);
+                                dot.classList.remove("fade-out");
+                            });
+                        }
+                        if (quoteBox) quoteBox.classList.remove("fade-out");
+                    }, 200);
+                }, 3000);
+            }
+
+            function setLanguage(lang) {
+                currentLang = lang;
+                document.documentElement.setAttribute("lang", lang);
+                localStorage.setItem("lang", lang);
+                applyTranslations(lang);
+                startQuotes(lang);
+                updatePasswordToggleText();
+                renderAlert();
+                document.querySelectorAll(".lang-switch__btn").forEach(function (btn) {
+                    btn.classList.toggle("is-active", btn.getAttribute("data-lang") === lang);
+                });
+            }
+
+            document.querySelectorAll(".lang-switch__btn").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    setLanguage(btn.getAttribute("data-lang"));
+                });
+            });
+
+            setLanguage(currentLang);
+
+            // Remember Me functionality
+            var form = document.getElementById("login-form");
+            var usernameInput = document.querySelector("input[name='username']");
+            var passwordInput = document.querySelector("input[name='password']");
+            var rememberCheckbox = document.querySelector("input[name='remember']");
+            var errorBox = document.getElementById("form-error");
+            var successBox = document.getElementById("form-success");
+            var togglePasswordBtn = document.getElementById("toggle-password");
+            var isPasswordVisible = false;
+            var activeAlertType = null;
+            var activeAlertKey = null;
+            var alertDismissTimer = null;
+
+            function hideAlert(el) {
+                if (!el) return;
+                el.hidden = true;
+                el.textContent = "";
+                el.classList.remove("alert--dismissing");
+            }
+
+            function renderAlert() {
+                hideAlert(errorBox);
+                hideAlert(successBox);
+                if (!activeAlertType || !activeAlertKey) {
+                    return;
+                }
+                var dict = translations[currentLang] || translations.es;
+                var message = dict[activeAlertKey] || activeAlertKey;
+                var target = activeAlertType === "success" ? successBox : errorBox;
+                if (!target) {
+                    return;
+                }
+                target.textContent = message;
+                target.hidden = false;
+            }
+
+            function setAlert(type, key) {
+                if (alertDismissTimer) {
+                    clearTimeout(alertDismissTimer);
+                    alertDismissTimer = null;
+                }
+                activeAlertType = type;
+                activeAlertKey = key;
+                renderAlert();
+                if (type === "error") {
+                    alertDismissTimer = setTimeout(function () {
+                        if (errorBox) errorBox.classList.add("alert--dismissing");
+                        alertDismissTimer = setTimeout(function () {
+                            clearAlert();
+                        }, 400);
+                    }, 3000);
+                }
+            }
+
+            function clearAlert() {
+                if (alertDismissTimer) {
+                    clearTimeout(alertDismissTimer);
+                    alertDismissTimer = null;
+                }
+                activeAlertType = null;
+                activeAlertKey = null;
+                renderAlert();
+            }
+
+            function updatePasswordToggleText() {
+                if (!togglePasswordBtn) return;
+                var dict = translations[currentLang] || translations.es;
+                var keyAria = isPasswordVisible ? "login.toggleHideAria" : "login.toggleShowAria";
+                var fallbackAria = isPasswordVisible ? "Ocultar contraseña" : "Mostrar contraseña";
+                togglePasswordBtn.setAttribute("aria-label", dict[keyAria] || fallbackAria);
+                togglePasswordBtn.setAttribute("aria-pressed", isPasswordVisible ? "true" : "false");
+                togglePasswordBtn.classList.toggle("is-visible", isPasswordVisible);
+            }
+
+            if (togglePasswordBtn && passwordInput) {
+                togglePasswordBtn.addEventListener("click", function () {
+                    isPasswordVisible = !isPasswordVisible;
+                    passwordInput.setAttribute("type", isPasswordVisible ? "text" : "password");
+                    updatePasswordToggleText();
+                });
+            }
+
+            // Load saved username on page load
+            var savedUsername = localStorage.getItem("rememberedUsername");
+            if (savedUsername) {
+                usernameInput.value = savedUsername;
+                rememberCheckbox.checked = true;
+            }
+
+            var params = new URLSearchParams(window.location.search);
+            if (params.has("error")) {
+                setAlert("error", "login.error.invalidCredentials");
+            } else if (params.has("logout")) {
+                setAlert("success", "login.success.loggedOut");
+            }
+
+            // Save username when form is submitted if remember is checked
+            form.addEventListener("submit", function (event) {
+                var username = usernameInput.value.trim();
+                var password = passwordInput.value.trim();
+
+                if (!username || !password) {
+                    event.preventDefault();
+                    setAlert("error", "login.error.required");
+                    return;
+                }
+
+                clearAlert();
+                if (rememberCheckbox.checked) {
+                    localStorage.setItem("rememberedUsername", username);
+                } else {
+                    localStorage.removeItem("rememberedUsername");
+                }
+            });
+
+            // Clear saved username if remember is unchecked
+            rememberCheckbox.addEventListener("change", function () {
+                if (!this.checked) {
+                    localStorage.removeItem("rememberedUsername");
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>
