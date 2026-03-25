@@ -48,16 +48,23 @@ databaseChangeLog:
             path: db.changelog-1.5.sql
             relativeToChangelogFile: "true"
   - changeSet:
-      id: "7"
+      id: 7
       author: Jesus.Finol
       changes:
         - sqlFile:
             path: db.changelog-1.6.sql
             relativeToChangelogFile: "true"
   - changeSet:
-      id: "8"
+      id: 8
       author: Jesus.Finol
       changes:
         - sqlFile:
             path: db.changelog-1.7.sql
+            relativeToChangelogFile: "true"
+  - changeSet:
+      id: 9
+      author: Jesus.Finol
+      changes:
+        - sqlFile:
+            path: db.changelog-1.8.sql
             relativeToChangelogFile: "true"
