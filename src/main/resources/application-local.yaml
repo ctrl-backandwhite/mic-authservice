@@ -14,9 +14,9 @@ server:
 
 spring:
   datasource:
-    url: ${AUTH_DATA_BASE}
-    username: ${AUTH_DATA_USER}
-    password: ${AUTH_DATA_PASSWORD}
+    url: jdbc:postgresql://caboose.proxy.rlwy.net:56135/railway
+    username: postgres
+    password: HzqtSlLQcwdwWbPaKSelEdvsnUuKbhSo
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -30,9 +30,9 @@ spring:
   kafka:
     bootstrap-servers: crossover.proxy.rlwy.net:32058
     properties:
-      schema.registry.url: ${AUTH_SCHEMA_REGISTRY_URL}
+      schema.registry.url: http://schema-registry-sbs4-desarollo.up.railway.app
       basic.auth.credentials.source: USER_INFO
-      basic.auth.user.info: ${AUTH_SCHEMA_REGISTRY_AUTH}
+      basic.auth.user.info: admin:admin123
     enabled: true
     consumer:
       auto-offset-reset: earliest
