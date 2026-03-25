@@ -161,7 +161,7 @@ public class SecurityConfig {
                 "https://webapp-production-68d2.up.railway.app",
                 "https://mic-authservice-production.up.railway.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("*")); // Permitir todos los headers
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Auth-Token"));
         configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "x-auth-token"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L); // Cache preflight por 1 hora
