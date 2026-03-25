@@ -8,97 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/login.css?v=20260216" />
-    <style>
-        .terms-page {
-            min-height: 100vh;
-            background: var(--bg);
-            padding: 40px 20px;
-        }
-
-        .terms-container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-        }
-
-        .terms-container h1 {
-            font-size: 28px;
-            color: var(--text);
-            margin-top: 0;
-            margin-bottom: 30px;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .terms-container h2 {
-            font-size: 18px;
-            color: var(--text);
-            margin-top: 25px;
-            margin-bottom: 12px;
-            font-weight: 500;
-        }
-
-        .terms-container p {
-            color: #334155;
-            line-height: 1.6;
-            font-size: 14px;
-            margin-bottom: 15px;
-            text-align: justify;
-        }
-
-        .terms-container ul,
-        .terms-container ol {
-            color: #334155;
-            line-height: 1.6;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .terms-container li {
-            margin-bottom: 8px;
-        }
-
-        .back-button {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 10px 20px;
-            background: var(--primary);
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background 0.3s ease;
-        }
-
-        .back-button:hover {
-            background: var(--primary-dark);
-        }
-
-        @media (max-width: 768px) {
-            .terms-container {
-                padding: 25px;
-            }
-
-            .terms-container h1 {
-                font-size: 22px;
-            }
-
-            .terms-container h2 {
-                font-size: 16px;
-            }
-
-            .terms-container p,
-            .terms-container ul,
-            .terms-container ol {
-                font-size: 13px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/css/login.css?v=20260325" />
 </head>
 
 <body>
@@ -184,11 +94,11 @@
                 formulario de contacto o envíe un correo electrónico a nuestro equipo de soporte.
             </p>
 
-            <p style="margin-top: 30px; color: #7a8796; font-size: 13px;">
+            <p class="terms-meta">
                 <strong data-i18n="terms.lastUpdatedLabel">Última actualización:</strong> 16 de febrero de 2026
             </p>
 
-            <a href="/register.html" class="back-button" data-i18n="terms.backToRegister">Volver al Registro</a>
+            <a href="/register.html" class="terms-back" data-i18n="terms.backToRegister">Volver al Registro</a>
         </div>
     </div>
 

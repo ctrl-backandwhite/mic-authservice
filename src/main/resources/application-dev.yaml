@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${POSTGRES_URL}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://postgres-c4jk.railway.internal:5432/railway
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 30000
@@ -22,12 +22,35 @@ spring:
     show-sql: true
   liquibase:
     enabled: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka.railway.internal:9092}
+    enabled: true
+    properties:
+      schema.registry.url: ${SCHEMA_REGISTRY_URL:http://schema-registry-sbs4.railway.internal:8081}
+      basic.auth.credentials.source: USER_INFO
+      basic.auth.user.info: ${SCHEMA_REGISTRY_AUTH:admin:admin123}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      acks: all
+    consumer:
+      group-id: ${spring.application.name}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      auto-offset-reset: earliest
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://mic-authservice-production.up.railway.app
+          issuer-uri: ${ISSUER_URI}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+      database: 1
+
 server:
   port: 8080
   ssl:
@@ -37,7 +60,7 @@ server:
     session:
       timeout: 30m
       cookie:
-        same-site: none
+        same-site: lax
         secure: true
         http-only: true
         max-age: 1800
@@ -46,6 +69,13 @@ logging:
   level:
     root: INFO
     org.springframework.security: DEBUG
+
+app:
+  security:
+    handler-url-1: https://web-auth-des.up.railway.app
+    handler-url-2: https://web-auth-des.up.railway.app
+  activation:
+    base-url: ${ACTIVATION_BASE_URL:https://auth-service-des.up.railway.app}
 #logging:
 #  level:
 #    root: INFO

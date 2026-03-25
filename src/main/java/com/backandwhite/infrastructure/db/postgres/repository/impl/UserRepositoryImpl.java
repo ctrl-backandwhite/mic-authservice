@@ -45,10 +45,15 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public void deleteAll(List<Long> ids) {
+        userJpaRepositoryAdapter.deleteAllByIdInBatch(ids);
+    }
+
+    @Override
     public User getById(Long id) {
         UserEntity entity = userJpaRepositoryAdapter.findById(id).orElse(null);
-        if(Objects.isNull(entity)) {
-            ENTITY_NOT_FOUND.toEntityNotFound("User", id);
+        if (Objects.isNull(entity)) {
+            throw ENTITY_NOT_FOUND.toEntityNotFound("User", id);
         }
         return userEntityMapper.toDomain(entity);
     }
@@ -57,5 +62,35 @@ public class UserRepositoryImpl implements UserRepository {
     public User findUserByEmail(String email) {
         UserEntity userEntity = userJpaRepositoryAdapter.findByEmail(email);
         return userEntityMapper.toDomain(userEntity);
+    }
+
+    @Override
+    public User findByActivationToken(String activationToken) {
+        UserEntity entity = userJpaRepositoryAdapter.findByActivationToken(activationToken);
+        return userEntityMapper.toDomain(entity);
+    }
+
+    @Override
+    public User findByPasswordResetToken(String token) {
+        UserEntity entity = userJpaRepositoryAdapter.findByPasswordResetToken(token);
+        return userEntityMapper.toDomain(entity);
+    }
+
+    @Override
+    public List<User> findByRoleId(Long roleId) {
+        List<UserEntity> entities = userJpaRepositoryAdapter.findByRolesId(roleId);
+        return userEntityMapper.toDomainList(entities);
+    }
+
+    @Override
+    public List<User> findByGroupId(Long groupId) {
+        List<UserEntity> entities = userJpaRepositoryAdapter.findByGroupsId(groupId);
+        return userEntityMapper.toDomainList(entities);
+    }
+
+    @Override
+    public List<User> findByScopeId(Long scopeId) {
+        List<UserEntity> entities = userJpaRepositoryAdapter.findByScopesId(scopeId);
+        return userEntityMapper.toDomainList(entities);
     }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -50,14 +51,29 @@ public class UserEntity extends AuditableEntity {
     @Column(name = "credentials_non_expired", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean credentialsNonExpired;
 
+    @Column(name = "activation_token", length = 64, unique = true)
+    private String activationToken;
+
+    @Column(name = "activation_token_expiry")
+    private Instant activationTokenExpiry;
+
+    @Column(name = "password_reset_token", length = 64, unique = true)
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_token_expiry")
+    private Instant passwordResetTokenExpiry;
+
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_scopes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "scope_id"))
     private List<ScopeEntity> scopes = new ArrayList<>();
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<RoleEntity> roles = new ArrayList<>();
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_groups", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
     private List<GroupEntity> groups = new ArrayList<>();
@@ -76,12 +92,17 @@ public class UserEntity extends AuditableEntity {
                 && Objects.equals(enabled, that.enabled)
                 && Objects.equals(accountNonExpired, that.accountNonExpired)
                 && Objects.equals(accountNonLocked, that.accountNonLocked)
-                && Objects.equals(credentialsNonExpired, that.credentialsNonExpired);
+                && Objects.equals(credentialsNonExpired, that.credentialsNonExpired)
+                && Objects.equals(activationToken, that.activationToken)
+                && Objects.equals(activationTokenExpiry, that.activationTokenExpiry)
+                && Objects.equals(passwordResetToken, that.passwordResetToken)
+                && Objects.equals(passwordResetTokenExpiry, that.passwordResetTokenExpiry);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name, lastName, nickName, email, password, enabled, accountNonExpired, accountNonLocked,
-                credentialsNonExpired);
+                credentialsNonExpired, activationToken, activationTokenExpiry,
+                passwordResetToken, passwordResetTokenExpiry);
     }
 }

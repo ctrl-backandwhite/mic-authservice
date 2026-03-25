@@ -14,9 +14,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5401/db01
-    username: user01
-    password: pass01
+    url: ${AUTH_DATA_BASE}
+    username: ${AUTH_DATA_USER}
+    password: ${AUTH_DATA_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -27,6 +27,15 @@ spring:
     show-sql: true
   liquibase:
     enabled: true
+  kafka:
+    bootstrap-servers: crossover.proxy.rlwy.net:32058
+    properties:
+      schema.registry.url: ${AUTH_SCHEMA_REGISTRY_URL}
+      basic.auth.credentials.source: USER_INFO
+      basic.auth.user.info: ${AUTH_SCHEMA_REGISTRY_AUTH}
+    enabled: true
+    consumer:
+      auto-offset-reset: earliest
   data:
     redis:
       host: ${REDIS_HOST:localhost}

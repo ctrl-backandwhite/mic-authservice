@@ -27,6 +27,10 @@ public class User implements UserDetails {
     private Boolean accountNonExpired;
     private Boolean accountNonLocked;
     private Boolean credentialsNonExpired;
+    private String activationToken;
+    private Instant activationTokenExpiry;
+    private String passwordResetToken;
+    private Instant passwordResetTokenExpiry;
     private List<Scope> scopes;
     private List<Role> roles;
     private List<Group> groups;
