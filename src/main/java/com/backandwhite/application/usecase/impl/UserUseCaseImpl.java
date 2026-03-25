@@ -83,22 +83,63 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         User savedUser = userRepository.save(model);
 
         // Send activation email via Kafka
-        sendActivationEmail(savedUser, activationToken);
+        sendActivationEmail(savedUser, activationToken, "es");
 
         return savedUser;
     }
 
-    private void sendActivationEmail(User user, String activationToken) {
+    @Override
+    @Transactional
+    @CacheEvict(value = "user_all", allEntries = true)
+    public User save(User model, String lang) {
+        User existingUser = userRepository.findUserByEmail(model.getEmail());
+        if (existingUser != null) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Email already exists.");
+        }
+
+        if (model.getRoles() == null || model.getRoles().isEmpty()) {
+            Role guestRole = findGuestRole();
+            if (guestRole != null) {
+                model.setRoles(new ArrayList<>(List.of(guestRole)));
+                log.debug("::> Assigned default GUEST role to user {}", model.getEmail());
+            }
+        }
+
+        model.setPassword(passwordEncoder.encode(model.getPassword()));
+        model.setEnabled(false);
+        model.setAccountNonExpired(true);
+        model.setAccountNonLocked(true);
+        model.setCredentialsNonExpired(true);
+
+        String activationToken = UUID.randomUUID().toString().replace("-", "");
+        model.setActivationToken(activationToken);
+        model.setActivationTokenExpiry(Instant.now().plus(24, ChronoUnit.HOURS));
+
+        log.debug("::> Creating user {} with activation token", model.getEmail());
+        userCommandHandler.validate(model);
+        User savedUser = userRepository.save(model);
+
+        sendActivationEmail(savedUser, activationToken, lang != null ? lang : "es");
+
+        return savedUser;
+    }
+
+    private void sendActivationEmail(User user, String activationToken, String lang) {
         notificationProducerService.ifPresent(producer -> {
             String activationUrl = activationBaseUrl + "/api/v1/users/activate?token=" + activationToken;
 
             Map<String, String> variables = new HashMap<>();
             variables.put("name", user.getName());
             variables.put("activationUrl", activationUrl);
+            variables.put("lang", lang);
+
+            String subject = "en".equals(lang)
+                    ? "Activate your account on NEXA"
+                    : "Activa tu cuenta en NEXA";
 
             EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
                     .setRecipient(user.getEmail())
-                    .setSubject("Activa tu cuenta en Nexa")
+                    .setSubject(subject)
                     .setTemplateName("account-activation")
                     .setVariables(variables)
                     .build();
@@ -205,10 +246,15 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Override
     @Transactional
     public void requestPasswordReset(String email) {
+        requestPasswordReset(email, "es");
+    }
+
+    @Override
+    @Transactional
+    public void requestPasswordReset(String email, String lang) {
         log.debug("::> Password reset requested for email: {}", email);
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
-            // Don't reveal if the email exists — just return silently
             log.warn("::> Password reset requested for non-existent email: {}", email);
             return;
         }
@@ -222,21 +268,26 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         user.setPasswordResetTokenExpiry(Instant.now().plus(30, ChronoUnit.MINUTES));
         userRepository.update(user);
 
-        sendPasswordResetEmail(user, resetToken);
+        sendPasswordResetEmail(user, resetToken, lang != null ? lang : "es");
         log.debug("::> Password reset token generated for user {}", email);
     }
 
-    private void sendPasswordResetEmail(User user, String resetToken) {
+    private void sendPasswordResetEmail(User user, String resetToken, String lang) {
         notificationProducerService.ifPresent(producer -> {
             String resetUrl = activationBaseUrl + "/reset-password.html?token=" + resetToken;
 
             Map<String, String> variables = new HashMap<>();
             variables.put("name", user.getName());
             variables.put("resetUrl", resetUrl);
+            variables.put("lang", lang);
+
+            String subject = "en".equals(lang)
+                    ? "Reset your password on NEXA"
+                    : "Recupera tu contraseña en NEXA";
 
             EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
                     .setRecipient(user.getEmail())
-                    .setSubject("Recupera tu contraseña en Nexa")
+                    .setSubject(subject)
                     .setTemplateName("password-reset")
                     .setVariables(variables)
                     .build();

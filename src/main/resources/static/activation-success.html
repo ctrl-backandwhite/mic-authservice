@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cuenta activada</title>
+    <title data-i18n="activationSuccess.pageTitle">Cuenta activada</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -22,24 +22,56 @@
             </div>
         </div>
         <div class="status-card__body">
-            <h1>¡Cuenta activada!</h1>
-            <p>Tu cuenta ha sido activada exitosamente. Ya puedes iniciar sesión con tus credenciales.</p>
+            <h1 data-i18n="activationSuccess.title">¡Cuenta activada!</h1>
+            <p data-i18n="activationSuccess.message">Tu cuenta ha sido activada exitosamente. Ya puedes iniciar sesión con tus credenciales.</p>
             <div class="progress-bar">
                 <div class="progress-bar__fill progress-bar__fill--success"></div>
             </div>
-            <p class="countdown countdown--success">Redirigiendo al login en <span id="seconds">3</span> segundos...
+            <p class="countdown countdown--success" id="countdown-text">Redirigiendo al login en <span id="seconds">3</span> segundos...
             </p>
-            <a class="btn--status" href="/login.html">Ir al login ahora</a>
+            <a class="btn--status" href="/login.html" data-i18n="activationSuccess.goToLogin">Ir al login ahora</a>
         </div>
     </div>
 
     <script>
         (function () {
+            var translations = {
+                es: {
+                    "activationSuccess.pageTitle": "Cuenta activada",
+                    "activationSuccess.title": "¡Cuenta activada!",
+                    "activationSuccess.message": "Tu cuenta ha sido activada exitosamente. Ya puedes iniciar sesión con tus credenciales.",
+                    "activationSuccess.countdown": "Redirigiendo al login en {s} segundos...",
+                    "activationSuccess.goToLogin": "Ir al login ahora"
+                },
+                en: {
+                    "activationSuccess.pageTitle": "Account activated",
+                    "activationSuccess.title": "Account activated!",
+                    "activationSuccess.message": "Your account has been activated successfully. You can now sign in with your credentials.",
+                    "activationSuccess.countdown": "Redirecting to login in {s} seconds...",
+                    "activationSuccess.goToLogin": "Go to login now"
+                }
+            };
+
+            var currentLang = localStorage.getItem('lang') || 'es';
+            var dict = translations[currentLang] || translations.es;
+
+            document.documentElement.setAttribute('lang', currentLang);
+            document.querySelectorAll('[data-i18n]').forEach(function (el) {
+                var key = el.getAttribute('data-i18n');
+                if (dict[key]) el.textContent = dict[key];
+            });
+
             var t = 3;
             var el = document.getElementById('seconds');
+            var countdownEl = document.getElementById('countdown-text');
+            function updateCountdown() {
+                var tmpl = dict['activationSuccess.countdown'] || 'Redirigiendo al login en {s} segundos...';
+                countdownEl.innerHTML = tmpl.replace('{s}', '<span id="seconds">' + t + '</span>');
+            }
+            updateCountdown();
             var interval = setInterval(function () {
                 t--;
-                el.textContent = t;
+                updateCountdown();
                 if (t <= 0) { clearInterval(interval); window.location.href = '/login.html'; }
             }, 1000);
         })();

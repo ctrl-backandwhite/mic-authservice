@@ -35,11 +35,11 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     private final UserDtoMapper mapper;
     private final UserUseCase useCase;
 
-    @Override
     @PostMapping
     public ResponseEntity<UserDtoOut> create(
-            @Validated({ Default.class, CreateValidation.class }) @RequestBody UserDtoIn dto) {
-        User entity = useCase.save(mapper.toDomain(dto));
+            @Validated({ Default.class, CreateValidation.class }) @RequestBody UserDtoIn dto,
+            @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
+        User entity = useCase.save(mapper.toDomain(dto), lang);
         return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.CREATED);
     }
 
@@ -101,13 +101,15 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody Map<String, String> body) {
+    public ResponseEntity<Map<String, String>> forgotPassword(
+            @RequestBody Map<String, String> body,
+            @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
         String email = body.get("email");
         if (email == null || email.isBlank()) {
             return ResponseEntity.badRequest()
                     .body(Map.of("message", "El correo es obligatorio."));
         }
-        useCase.requestPasswordReset(email.trim());
+        useCase.requestPasswordReset(email.trim(), lang);
         // Always return success to not reveal if the email exists
         return ResponseEntity.ok(Map.of("message",
                 "Si el correo está registrado, recibirás un enlace para restablecer tu contraseña."));
