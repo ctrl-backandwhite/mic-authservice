@@ -4,7 +4,9 @@ import com.backandwhite.api.dto.in.RedirectUriDtoIn;
 import com.backandwhite.api.dto.out.RedirectUriDtoOut;
 import com.backandwhite.domain.model.RedirectUri;
 import com.backandwhite.infrastructure.db.postgres.entity.RedirectUriEntity;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public final class RedirectUriProvider {
 
     public static final Long REDIRECT_URI_ID = 1L;
@@ -17,9 +19,6 @@ public final class RedirectUriProvider {
     public static final String OTHER_REDIRECT_URI_VALUE = "app://callback";
     public static final Boolean OTHER_REDIRECT_URI_ENABLED = false;
 
-    private RedirectUriProvider() {
-        // Utility class.
-    }
 
     public static RedirectUri redirectUri() {
         return RedirectUri.builder()

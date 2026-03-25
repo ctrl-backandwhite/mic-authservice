@@ -4,9 +4,11 @@ import com.backandwhite.api.dto.in.UserDtoIn;
 import com.backandwhite.api.dto.out.UserDtoOut;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.infrastructure.db.postgres.entity.UserEntity;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public final class UserProvider {
 
     public static final Long USER_ID = 1L;
@@ -31,9 +33,6 @@ public final class UserProvider {
     public static final Boolean OTHER_USER_ACCOUNT_NON_LOCKED = false;
     public static final Boolean OTHER_USER_CREDENTIALS_NON_EXPIRED = false;
 
-    private UserProvider() {
-        // Utility class.
-    }
 
     public static User user() {
         return User.builder()

@@ -4,9 +4,11 @@ import com.backandwhite.api.dto.in.OauthClientDtoIn;
 import com.backandwhite.api.dto.out.OauthClientDtoOut;
 import com.backandwhite.domain.model.OauthClient;
 import com.backandwhite.infrastructure.db.postgres.entity.OauthClientEntity;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public final class OauthClientProvider {
 
     public static final Long CLIENT_ID = 1L;
@@ -17,16 +19,13 @@ public final class OauthClientProvider {
     public static final String OTHER_CLIENT_CLIENT_ID = "client-admin";
     public static final String OTHER_CLIENT_SECRET = "client-secret-2";
 
-    private OauthClientProvider() {
-        // Utility class.
-    }
 
     public static OauthClient oauthClient() {
         return OauthClient.builder()
                 .id(CLIENT_ID)
                 .clientId(CLIENT_CLIENT_ID)
                 .clientSecret(CLIENT_SECRET)
-                .scopes(List.of(ScopeProvider.readScope()))
+                .scopes(List.of(ScopeProvider.openidScope()))
                 .redirectUris(List.of(RedirectUriProvider.redirectUri()))
                 .grantTypes(List.of(GrantTypeProvider.grantType()))
                 .createdAt(AuditProvider.CREATED_AT)
@@ -41,7 +40,7 @@ public final class OauthClientProvider {
                 .id(OTHER_CLIENT_ID)
                 .clientId(OTHER_CLIENT_CLIENT_ID)
                 .clientSecret(OTHER_CLIENT_SECRET)
-                .scopes(List.of(ScopeProvider.writeScope()))
+                .scopes(List.of(ScopeProvider.profileScope()))
                 .redirectUris(List.of(RedirectUriProvider.otherRedirectUri()))
                 .grantTypes(List.of(GrantTypeProvider.otherGrantType()))
                 .createdAt(AuditProvider.CREATED_AT)
@@ -56,7 +55,7 @@ public final class OauthClientProvider {
                 .id(CLIENT_ID)
                 .clientId(CLIENT_CLIENT_ID)
                 .clientSecret(CLIENT_SECRET)
-                .scopes(List.of(ScopeProvider.scopeEntity()))
+                .scopes(List.of(ScopeProvider.openidScopeEntity()))
                 .redirectUris(List.of(RedirectUriProvider.redirectUriEntity()))
                 .grantTypes(List.of(GrantTypeProvider.grantTypeEntity()))
                 .createdAt(AuditProvider.CREATED_AT)
@@ -71,7 +70,7 @@ public final class OauthClientProvider {
                 .id(OTHER_CLIENT_ID)
                 .clientId(OTHER_CLIENT_CLIENT_ID)
                 .clientSecret(OTHER_CLIENT_SECRET)
-                .scopes(List.of(ScopeProvider.writeScopeEntity()))
+                .scopes(List.of(ScopeProvider.profileScopeEntity()))
                 .redirectUris(List.of(RedirectUriProvider.otherRedirectUriEntity()))
                 .grantTypes(List.of(GrantTypeProvider.otherGrantTypeEntity()))
                 .createdAt(AuditProvider.CREATED_AT)
@@ -85,7 +84,7 @@ public final class OauthClientProvider {
         return OauthClientDtoIn.builder()
                 .clientId(CLIENT_CLIENT_ID)
                 .clientSecret(CLIENT_SECRET)
-                .scopeIds(List.of(ScopeProvider.READ_ID))
+                .scopeIds(List.of(ScopeProvider.OPENID_ID))
                 .redirectUriIds(List.of(RedirectUriProvider.REDIRECT_URI_ID))
                 .grantTypeIds(List.of(GrantTypeProvider.GRANT_TYPE_ID))
                 .build();
@@ -95,7 +94,7 @@ public final class OauthClientProvider {
         return OauthClientDtoIn.builder()
                 .clientId(OTHER_CLIENT_CLIENT_ID)
                 .clientSecret(OTHER_CLIENT_SECRET)
-                .scopeIds(List.of(ScopeProvider.WRITE_ID))
+                .scopeIds(List.of(ScopeProvider.PROFILE_ID))
                 .redirectUriIds(List.of(RedirectUriProvider.OTHER_REDIRECT_URI_ID))
                 .grantTypeIds(List.of(GrantTypeProvider.OTHER_GRANT_TYPE_ID))
                 .build();
@@ -106,7 +105,7 @@ public final class OauthClientProvider {
                 .id(id)
                 .clientId(CLIENT_CLIENT_ID)
                 .clientSecret(CLIENT_SECRET)
-                .scopes(List.of(ScopeProvider.readScopeDtoOut(ScopeProvider.READ_ID)))
+                .scopes(List.of(ScopeProvider.openidScopeDtoOut(ScopeProvider.OPENID_ID)))
                 .redirectUris(List.of(RedirectUriProvider.redirectUriDtoOut(RedirectUriProvider.REDIRECT_URI_ID)))
                 .grantTypes(List.of(GrantTypeProvider.grantTypeDtoOut(GrantTypeProvider.GRANT_TYPE_ID)))
                 .createdAt(AuditProvider.CREATED_AT)
@@ -121,7 +120,7 @@ public final class OauthClientProvider {
                 .id(id)
                 .clientId(OTHER_CLIENT_CLIENT_ID)
                 .clientSecret(OTHER_CLIENT_SECRET)
-                .scopes(List.of(ScopeProvider.writeScopeDtoOut(ScopeProvider.WRITE_ID)))
+                .scopes(List.of(ScopeProvider.profileScopeDtoOut(ScopeProvider.PROFILE_ID)))
                 .redirectUris(
                         List.of(RedirectUriProvider.otherRedirectUriDtoOut(RedirectUriProvider.OTHER_REDIRECT_URI_ID)))
                 .grantTypes(List.of(GrantTypeProvider.otherGrantTypeDtoOut(GrantTypeProvider.OTHER_GRANT_TYPE_ID)))

@@ -1,11 +1,12 @@
 package com.backandwhite.provider;
 
-import com.backandwhite.api.dto.out.RoleDtoOut;
 import com.backandwhite.api.dto.in.RoleDtoIn;
-
+import com.backandwhite.api.dto.out.RoleDtoOut;
 import com.backandwhite.domain.model.Role;
 import com.backandwhite.infrastructure.db.postgres.entity.RoleEntity;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public final class RoleProvider {
 
     public static final Long ADMIN_ID = 1L;
@@ -32,9 +33,6 @@ public final class RoleProvider {
     public static final String GUEST_DESCRIPTION = "Guest role";
     public static final Boolean GUEST_ENABLED = true;
 
-    private RoleProvider() {
-        // Utility class.
-    }
 
     public static Role adminRole() {
         return Role.builder()

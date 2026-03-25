@@ -21,7 +21,7 @@ import static com.backandwhite.provider.OauthClientProvider.oauthClient;
 import static com.backandwhite.provider.OauthClientProvider.oauthClientDtoIn;
 import static com.backandwhite.provider.OauthClientProvider.oauthClientDtoOut;
 import static com.backandwhite.provider.RedirectUriProvider.REDIRECT_URI_ID;
-import static com.backandwhite.provider.ScopeProvider.READ_ID;
+import static com.backandwhite.provider.ScopeProvider.OPENID_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class OauthClientDtoMapperTest {
@@ -60,7 +60,7 @@ class OauthClientDtoMapperTest {
         OauthClient expected = OauthClient.builder()
                 .clientId(CLIENT_CLIENT_ID)
                 .clientSecret(CLIENT_SECRET)
-                .scopes(List.of(Scope.builder().id(READ_ID).build()))
+                .scopes(List.of(Scope.builder().id(OPENID_ID).build()))
                 .redirectUris(List.of(RedirectUri.builder().id(REDIRECT_URI_ID).build()))
                 .grantTypes(List.of(GrantType.builder().id(GRANT_TYPE_ID).build()))
                 .build();
