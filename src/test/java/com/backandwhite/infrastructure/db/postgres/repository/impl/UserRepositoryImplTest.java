@@ -1,5 +1,6 @@
 package com.backandwhite.infrastructure.db.postgres.repository.impl;
 
+import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.infrastructure.db.postgres.entity.UserEntity;
 import com.backandwhite.infrastructure.db.postgres.mapper.UserEntityMapper;
@@ -18,6 +19,7 @@ import static com.backandwhite.provider.UserProvider.user;
 import static com.backandwhite.provider.UserProvider.userEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -109,15 +111,11 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    void getById_missingEntity_returnsNull() {
+    void getById_missingEntity_throwsEntityNotFound() {
         when(userJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(userEntityMapper.toDomain(null)).thenReturn(null);
 
-        User result = userRepository.getById(5L);
-
-        assertThat(result).isNull();
+        assertThrows(EntityNotFoundException.class, () -> userRepository.getById(5L));
         verify(userJpaRepositoryAdapter).findById(5L);
-        verify(userEntityMapper).toDomain(null);
     }
 
     @Test

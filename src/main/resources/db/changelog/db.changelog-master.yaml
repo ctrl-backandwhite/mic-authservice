@@ -15,6 +15,7 @@ databaseChangeLog:
                           - sqlFile:
                                     path: db.changelog-1.1.sql
                                     relativeToChangelogFile: "true"
+                                    splitStatements: false
         - changeSet:
                   id: 3
                   author: Jesus.Finol
@@ -23,6 +24,7 @@ databaseChangeLog:
                           - sqlFile:
                                     path: db.changelog-1.2.sql
                                     relativeToChangelogFile: "true"
+                                    splitStatements: false
         - changeSet:
                   id: 4
                   author: Jesus.Finol
@@ -50,6 +52,7 @@ databaseChangeLog:
         - changeSet:
                   id: "7"
                   author: Jesus.Finol
+                  context: local,dev
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.6.sql
@@ -57,21 +60,8 @@ databaseChangeLog:
         - changeSet:
                   id: "8"
                   author: Jesus.Finol
+                  context: local,dev
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.7.sql
-                                    relativeToChangelogFile: "true"
-        - changeSet:
-                  id: "9"
-                  author: Jesus.Finol
-                  changes:
-                          - sqlFile:
-                                    path: db.changelog-1.8.sql
-                                    relativeToChangelogFile: "true"
-        - changeSet:
-                  id: "10"
-                  author: Jesus.Finol
-                  changes:
-                          - sqlFile:
-                                    path: db.changelog-1.9.sql
                                     relativeToChangelogFile: "true"
