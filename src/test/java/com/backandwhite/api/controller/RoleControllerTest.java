@@ -105,11 +105,29 @@ class RoleControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<RoleDtoOut>> response = controller.findAll();
+        ResponseEntity<List<RoleDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
         verify(useCase).findAll();
         verify(mapper).toDtoOutList(models);
+    }
+
+    @Test
+    void findAll_withEnabledFilter_returnsOnlyEnabled() {
+        Role enabledRole = Role.builder().enabled(Boolean.TRUE).build();
+        Role disabledRole = Role.builder().enabled(Boolean.FALSE).build();
+        List<Role> onlyEnabled = List.of(enabledRole);
+        List<RoleDtoOut> dtoOuts = List.of(supportRoleDtoOut(ROLE_ID));
+
+        when(useCase.findAll()).thenReturn(List.of(enabledRole, disabledRole));
+        when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
+
+        ResponseEntity<List<RoleDtoOut>> response = controller.findAll(Boolean.TRUE);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(dtoOuts);
+        verify(useCase).findAll();
+        verify(mapper).toDtoOutList(onlyEnabled);
     }
 }

@@ -4,6 +4,7 @@ import com.backandwhite.api.dto.in.GroupDtoIn;
 import com.backandwhite.api.dto.out.GroupDtoOut;
 import com.backandwhite.domain.model.Group;
 
+import com.backandwhite.domain.model.Permission;
 import com.backandwhite.domain.model.Role;
 import org.mapstruct.Named;
 import java.util.Collections;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {
         RoleDtoMapper.class,
+        PermissionDtoMapper.class,
 })
 public interface GroupDtoMapper {
 
@@ -29,9 +31,11 @@ public interface GroupDtoMapper {
     @Mapping(target = "description", source = "description")
     @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "roles", source = "roles")
+    @Mapping(target = "permissions", source = "permissions")
     GroupDtoOut toDtoOut(Group model);
 
     @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapRoleIds")
+    @Mapping(target = "permissions", source = "permissionIds", qualifiedByName = "mapGroupPermissionIds")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
@@ -49,6 +53,16 @@ public interface GroupDtoMapper {
         }
         return roleIds.stream()
                 .map(id -> Role.builder().id(id).build())
+                .collect(Collectors.toList());
+    }
+
+    @Named("mapGroupPermissionIds")
+    default List<Permission> mapGroupPermissionIds(List<Long> permissionIds) {
+        if (permissionIds == null || permissionIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return permissionIds.stream()
+                .map(id -> Permission.builder().id(id).build())
                 .collect(Collectors.toList());
     }
 }

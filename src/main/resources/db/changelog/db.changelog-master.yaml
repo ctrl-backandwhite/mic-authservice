@@ -65,3 +65,35 @@ databaseChangeLog:
                           - sqlFile:
                                     path: db.changelog-1.7.sql
                                     relativeToChangelogFile: "true"
+        - changeSet:
+                  id: "9"
+                  author: Jesus.Finol
+                  context: local,dev
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.8.sql
+                                    relativeToChangelogFile: "true"
+        - changeSet:
+                  id: "10"
+                  author: Jesus.Finol
+                  context: local,dev
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.9.sql
+                                    relativeToChangelogFile: "true"
+        - changeSet:
+                  id: "11"
+                  author: Jesus.Finol
+                  context: local,dev
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.10.sql
+                                    relativeToChangelogFile: "true"
+        - changeSet:
+                  id: "12"
+                  author: Jesus.Finol
+                  context: dev
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.11.sql
+                                    relativeToChangelogFile: "true"

@@ -105,11 +105,29 @@ class ScopeControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<ScopeDtoOut>> response = controller.findAll();
+        ResponseEntity<List<ScopeDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
         verify(useCase).findAll();
         verify(mapper).toDtoOutList(models);
+    }
+
+    @Test
+    void findAll_withEnabledFilter_returnsOnlyEnabled() {
+        Scope enabledScope = Scope.builder().enabled(Boolean.TRUE).build();
+        Scope disabledScope = Scope.builder().enabled(Boolean.FALSE).build();
+        List<Scope> onlyEnabled = List.of(enabledScope);
+        List<ScopeDtoOut> dtoOuts = List.of(readScopeDtoOut(READ_ID));
+
+        when(useCase.findAll()).thenReturn(List.of(enabledScope, disabledScope));
+        when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
+
+        ResponseEntity<List<ScopeDtoOut>> response = controller.findAll(Boolean.TRUE);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(dtoOuts);
+        verify(useCase).findAll();
+        verify(mapper).toDtoOutList(onlyEnabled);
     }
 }

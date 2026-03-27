@@ -105,11 +105,29 @@ class GrantTypeControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<GrantTypeDtoOut>> response = controller.findAll();
+        ResponseEntity<List<GrantTypeDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
         verify(useCase).findAll();
         verify(mapper).toDtoOutList(models);
+    }
+
+    @Test
+    void findAll_withEnabledFilter_returnsOnlyEnabled() {
+        GrantType enabledGt = GrantType.builder().enabled(Boolean.TRUE).build();
+        GrantType disabledGt = GrantType.builder().enabled(Boolean.FALSE).build();
+        List<GrantType> onlyEnabled = List.of(enabledGt);
+        List<GrantTypeDtoOut> dtoOuts = List.of(grantTypeDtoOut(GRANT_TYPE_ID));
+
+        when(useCase.findAll()).thenReturn(List.of(enabledGt, disabledGt));
+        when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
+
+        ResponseEntity<List<GrantTypeDtoOut>> response = controller.findAll(Boolean.TRUE);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(dtoOuts);
+        verify(useCase).findAll();
+        verify(mapper).toDtoOutList(onlyEnabled);
     }
 }

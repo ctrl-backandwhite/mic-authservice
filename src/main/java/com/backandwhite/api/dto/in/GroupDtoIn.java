@@ -63,4 +63,10 @@ public class GroupDtoIn {
         )
     )
     private List<Long> roleIds;
+
+    @ArraySchema(
+        schema = @Schema(description = "ID del permiso a asignar", example = "1", minimum = "1"),
+        arraySchema = @Schema(description = "Lista de IDs de permisos del grupo", example = "[1, 2, 3]")
+    )
+    private List<Long> permissionIds;
 }

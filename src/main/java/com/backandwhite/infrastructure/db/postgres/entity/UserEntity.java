@@ -65,11 +65,6 @@ public class UserEntity extends AuditableEntity {
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_scopes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "scope_id"))
-    private List<ScopeEntity> scopes = new ArrayList<>();
-
-    @Builder.Default
-    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<RoleEntity> roles = new ArrayList<>();
 

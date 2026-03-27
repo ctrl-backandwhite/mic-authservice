@@ -50,9 +50,13 @@ public class RoleController implements BaseApi<RoleDtoIn, RoleDtoOut, Long> {
         return new ResponseEntity<>(mapper.toDtoOut(useCase.getById(id)), HttpStatus.OK);
     }
 
-    @Override
     @GetMapping
-    public ResponseEntity<List<RoleDtoOut>> findAll() {
-        return new ResponseEntity<>(mapper.toDtoOutList(useCase.findAll()), HttpStatus.OK);
+    public ResponseEntity<List<RoleDtoOut>> findAll(
+            @RequestParam(required = false) Boolean enabled) {
+        List<Role> roles = useCase.findAll();
+        if (enabled != null) {
+            roles = roles.stream().filter(r -> enabled.equals(r.getEnabled())).toList();
+        }
+        return new ResponseEntity<>(mapper.toDtoOutList(roles), HttpStatus.OK);
     }
 }

@@ -11,15 +11,18 @@ services:
       SSL_ENABLED: "false"
       SERVER_COOKIE_SECURE: "false"
       SERVER_COOKIE_SAME_SITE: lax
-      POSTGRES_URL: jdbc:postgresql://host.docker.internal:5401/db01
-      POSTGRES_USER: user01
-      POSTGRES_PASSWORD: pass01
-      REDIS_HOST: host.docker.internal
-      REDIS_PORT: 6379
+      AUTH_DATA_BASE: jdbc:postgresql://host.docker.internal:5401/db01
+      AUTH_DATA_USER: user01
+      AUTH_DATA_PASSWORD: pass01
       ISSUER_URI: http://localhost:6001
       HANDLER_URL: http://localhost:4200
+      REDIS_HOST: host.docker.internal
+      REDIS_PORT: 6379
+      REDIS_DATABASE: 1
+      # Kafka Schema Registry (Confluent Cloud)
+      AUTH_SCHEMA_REGISTRY_URL: your-schema-registry-url
+      AUTH_SCHEMA_REGISTRY_AUTH: your-key:your-secret
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
       - "6001:8080"
-      - "8443:8080"

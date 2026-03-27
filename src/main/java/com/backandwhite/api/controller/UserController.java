@@ -43,6 +43,13 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
         return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.CREATED);
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<UserDtoOut> register(
+            @Validated({ Default.class, CreateValidation.class }) @RequestBody UserDtoIn dto) {
+        User entity = useCase.save(mapper.toDomain(dto));
+        return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.CREATED);
+    }
+
     @Override
     @PutMapping("/{id}")
     public ResponseEntity<UserDtoOut> update(

@@ -18,13 +18,13 @@
     width: 100%;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.10), 0 1px 3px rgba(15,23,42,0.06);
     overflow: hidden;
     min-height: 650px;
 }
 
 .register-card__media {
-    background: linear-gradient(135deg, #1f9e9c 0%, #2c3e88 100%);
+    background: #1e293b;
     position: relative;
     padding: 3rem;
     display: flex;

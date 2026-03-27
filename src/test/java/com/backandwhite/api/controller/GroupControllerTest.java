@@ -105,11 +105,29 @@ class GroupControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<GroupDtoOut>> response = controller.findAll();
+        ResponseEntity<List<GroupDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
         verify(useCase).findAll();
         verify(mapper).toDtoOutList(models);
+    }
+
+    @Test
+    void findAll_withEnabledFilter_returnsOnlyEnabled() {
+        Group enabledGroup = Group.builder().enabled(Boolean.TRUE).build();
+        Group disabledGroup = Group.builder().enabled(Boolean.FALSE).build();
+        List<Group> onlyEnabled = List.of(enabledGroup);
+        List<GroupDtoOut> dtoOuts = List.of(adminGroupDtoOut(ADMIN_ID));
+
+        when(useCase.findAll()).thenReturn(List.of(enabledGroup, disabledGroup));
+        when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
+
+        ResponseEntity<List<GroupDtoOut>> response = controller.findAll(Boolean.TRUE);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(dtoOuts);
+        verify(useCase).findAll();
+        verify(mapper).toDtoOutList(onlyEnabled);
     }
 }

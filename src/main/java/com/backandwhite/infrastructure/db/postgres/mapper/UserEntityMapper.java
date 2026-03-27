@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {
-        ScopeEntityMapper.class,
         RoleEntityMapper.class,
         GroupEntityMapper.class
 })
@@ -32,7 +31,6 @@ public interface UserEntityMapper {
     @Mapping(target = "activationTokenExpiry", source = "activationTokenExpiry")
     @Mapping(target = "passwordResetToken", source = "passwordResetToken")
     @Mapping(target = "passwordResetTokenExpiry", source = "passwordResetTokenExpiry")
-    @Mapping(target = "scopes", source = "scopes")
     @Mapping(target = "roles", source = "roles")
     @Mapping(target = "groups", source = "groups")
     User toDomain(UserEntity entity);
@@ -55,7 +53,6 @@ public interface UserEntityMapper {
     @Mapping(target = "activationTokenExpiry", source = "activationTokenExpiry")
     @Mapping(target = "passwordResetToken", source = "passwordResetToken")
     @Mapping(target = "passwordResetTokenExpiry", source = "passwordResetTokenExpiry")
-    @Mapping(target = "scopes", source = "scopes")
     @Mapping(target = "roles", source = "roles")
     @Mapping(target = "groups", source = "groups")
     UserEntity toEntity(User model);

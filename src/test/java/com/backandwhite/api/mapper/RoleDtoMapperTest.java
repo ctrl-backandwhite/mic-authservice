@@ -3,6 +3,8 @@ package com.backandwhite.api.mapper;
 import com.backandwhite.api.dto.in.RoleDtoIn;
 import com.backandwhite.api.dto.out.RoleDtoOut;
 import com.backandwhite.domain.model.Role;
+import com.backandwhite.util.MapperTestUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -16,7 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RoleDtoMapperTest {
 
-    private final RoleDtoMapper mapper = Mappers.getMapper(RoleDtoMapper.class);
+    private RoleDtoMapper mapper;
+
+    @BeforeEach
+    void setUp() {
+        PermissionDtoMapper permissionDtoMapper = Mappers.getMapper(PermissionDtoMapper.class);
+        mapper = Mappers.getMapper(RoleDtoMapper.class);
+        MapperTestUtils.setField(mapper, "permissionDtoMapper", permissionDtoMapper);
+    }
 
     @Test
     void toDtoOut_mapsDomainToDtoOut() {

@@ -27,9 +27,12 @@ class GroupDtoMapperTest {
 
     @BeforeEach
     void setUp() {
+        PermissionDtoMapper permissionDtoMapper = Mappers.getMapper(PermissionDtoMapper.class);
         RoleDtoMapper roleDtoMapper = Mappers.getMapper(RoleDtoMapper.class);
+        MapperTestUtils.setField(roleDtoMapper, "permissionDtoMapper", permissionDtoMapper);
         mapper = Mappers.getMapper(GroupDtoMapper.class);
         MapperTestUtils.setField(mapper, "roleDtoMapper", roleDtoMapper);
+        MapperTestUtils.setField(mapper, "permissionDtoMapper", permissionDtoMapper);
     }
 
     @Test

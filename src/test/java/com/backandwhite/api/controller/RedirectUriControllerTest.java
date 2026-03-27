@@ -105,11 +105,29 @@ class RedirectUriControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<RedirectUriDtoOut>> response = controller.findAll();
+        ResponseEntity<List<RedirectUriDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
         verify(useCase).findAll();
         verify(mapper).toDtoOutList(models);
+    }
+
+    @Test
+    void findAll_withEnabledFilter_returnsOnlyEnabled() {
+        RedirectUri enabledUri = RedirectUri.builder().enabled(Boolean.TRUE).build();
+        RedirectUri disabledUri = RedirectUri.builder().enabled(Boolean.FALSE).build();
+        List<RedirectUri> onlyEnabled = List.of(enabledUri);
+        List<RedirectUriDtoOut> dtoOuts = List.of(redirectUriDtoOut(REDIRECT_URI_ID));
+
+        when(useCase.findAll()).thenReturn(List.of(enabledUri, disabledUri));
+        when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
+
+        ResponseEntity<List<RedirectUriDtoOut>> response = controller.findAll(Boolean.TRUE);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(dtoOuts);
+        verify(useCase).findAll();
+        verify(mapper).toDtoOutList(onlyEnabled);
     }
 }

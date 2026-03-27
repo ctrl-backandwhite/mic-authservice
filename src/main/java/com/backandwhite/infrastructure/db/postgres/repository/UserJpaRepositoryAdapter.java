@@ -16,6 +16,4 @@ public interface UserJpaRepositoryAdapter extends JpaRepository<UserEntity, Long
     List<UserEntity> findByRolesId(Long roleId);
 
     List<UserEntity> findByGroupsId(Long groupId);
-
-    List<UserEntity> findByScopesId(Long scopeId);
 }

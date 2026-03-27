@@ -4,6 +4,10 @@ test:
     password: test_password
     database: test_db
 
+app:
+  jwt:
+    secret: local-secret-key-change-me-in-production-must-be-256-bits-long
+
 logging:
   level:
     com.backandwhite.common.exception.Message: ERROR

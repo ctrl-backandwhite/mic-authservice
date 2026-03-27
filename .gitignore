@@ -33,3 +33,6 @@ build/
 .vscode/
 /src/main/resources/compose/.env
 .claude/
+
+### Docker (local only) ###
+docker-compose.yml

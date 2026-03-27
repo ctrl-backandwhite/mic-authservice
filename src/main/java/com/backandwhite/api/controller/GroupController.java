@@ -50,9 +50,13 @@ public class GroupController implements BaseApi<GroupDtoIn, GroupDtoOut, Long> {
         return new ResponseEntity<>(mapper.toDtoOut(useCase.getById(id)), HttpStatus.OK);
     }
 
-    @Override
     @GetMapping
-    public ResponseEntity<List<GroupDtoOut>> findAll() {
-        return new ResponseEntity<>(mapper.toDtoOutList(useCase.findAll()), HttpStatus.OK);
+    public ResponseEntity<List<GroupDtoOut>> findAll(
+            @RequestParam(required = false) Boolean enabled) {
+        List<Group> groups = useCase.findAll();
+        if (enabled != null) {
+            groups = groups.stream().filter(g -> enabled.equals(g.getEnabled())).toList();
+        }
+        return new ResponseEntity<>(mapper.toDtoOutList(groups), HttpStatus.OK);
     }
 }

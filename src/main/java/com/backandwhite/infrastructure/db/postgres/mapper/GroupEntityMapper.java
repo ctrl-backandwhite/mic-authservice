@@ -8,7 +8,8 @@ import org.mapstruct.Mapping;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {
-        RoleEntityMapper.class
+        RoleEntityMapper.class,
+        PermissionEntityMapper.class
 })
 public interface GroupEntityMapper {
 
@@ -22,6 +23,7 @@ public interface GroupEntityMapper {
     @Mapping(target = "description", source = "description")
     @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "roles", source = "roles")
+    @Mapping(target = "permissions", source = "permissions")
     Group toDomain(GroupEntity entity);
 
     @Mapping(target = "id", source = "id")
@@ -34,6 +36,8 @@ public interface GroupEntityMapper {
     @Mapping(target = "description", source = "description")
     @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "roles", source = "roles")
+    @Mapping(target = "permissions", source = "permissions")
+    @Mapping(target = "users", ignore = true)
     GroupEntity toEntity(Group model);
 
     List<Group> toDomainList(List<GroupEntity> entities);

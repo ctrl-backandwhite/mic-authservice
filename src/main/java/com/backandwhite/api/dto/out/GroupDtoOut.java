@@ -36,6 +36,10 @@ public class GroupDtoOut {
     @ArraySchema(schema = @Schema(implementation = RoleDtoOut.class), arraySchema = @Schema(description = "Roles asociados a este grupo"))
     private List<RoleDtoOut> roles = new ArrayList<>();
 
+    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
+    @ArraySchema(schema = @Schema(implementation = PermissionDtoOut.class))
+    private List<PermissionDtoOut> permissions = new ArrayList<>();
+
     @Schema(description = "Fecha de creación del registro", example = "2026-02-16T10:15:30Z")
     private Instant createdAt;
 

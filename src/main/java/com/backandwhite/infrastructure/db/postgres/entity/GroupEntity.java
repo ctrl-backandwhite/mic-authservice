@@ -42,6 +42,13 @@ public class GroupEntity extends AuditableEntity {
     @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER)
     private List<UserEntity> users = new ArrayList<>();
 
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "group_permissions",
+        joinColumns = @JoinColumn(name = "group_id"),
+        inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private List<PermissionEntity> permissions = new ArrayList<>();
+
     @Override
     public boolean equals(Object object) {
         if (object == null || getClass() != object.getClass())

@@ -50,9 +50,13 @@ public class RedirectUriController implements BaseApi<RedirectUriDtoIn, Redirect
         return new ResponseEntity<>(mapper.toDtoOut(useCase.getById(id)), HttpStatus.OK);
     }
 
-    @Override
     @GetMapping
-    public ResponseEntity<List<RedirectUriDtoOut>> findAll() {
-        return new ResponseEntity<>(mapper.toDtoOutList(useCase.findAll()), HttpStatus.OK);
+    public ResponseEntity<List<RedirectUriDtoOut>> findAll(
+            @RequestParam(required = false) Boolean enabled) {
+        List<RedirectUri> redirectUris = useCase.findAll();
+        if (enabled != null) {
+            redirectUris = redirectUris.stream().filter(r -> enabled.equals(r.getEnabled())).toList();
+        }
+        return new ResponseEntity<>(mapper.toDtoOutList(redirectUris), HttpStatus.OK);
     }
 }

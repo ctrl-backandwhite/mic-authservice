@@ -1,10 +1,13 @@
 package com.backandwhite.api.dto.in;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+
+import java.util.List;
 
 @Data
 @With
@@ -29,4 +32,10 @@ public class RoleDtoIn {
     @NotNull(message = "El estado del rol no puede ser nulo")
     @Schema(description = "Indica si el rol está activo y disponible para asignar a usuarios", example = "true", defaultValue = "true")
     private Boolean enabled;
+
+    @ArraySchema(
+        schema = @Schema(description = "ID del permiso a asignar", example = "1", minimum = "1"),
+        arraySchema = @Schema(description = "Lista de IDs de permisos del rol", example = "[1, 2, 3]")
+    )
+    private List<Long> permissionIds;
 }

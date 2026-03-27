@@ -19,9 +19,12 @@ class GroupEntityMapperTest {
 
     @BeforeEach
     void setUp() {
-        mapper = Mappers.getMapper(GroupEntityMapper.class);
+        PermissionEntityMapper permissionEntityMapper = Mappers.getMapper(PermissionEntityMapper.class);
         RoleEntityMapper roleEntityMapper = Mappers.getMapper(RoleEntityMapper.class);
+        setField(roleEntityMapper, "permissionEntityMapper", permissionEntityMapper);
+        mapper = Mappers.getMapper(GroupEntityMapper.class);
         setField(mapper, "roleEntityMapper", roleEntityMapper);
+        setField(mapper, "permissionEntityMapper", permissionEntityMapper);
     }
 
     @Test

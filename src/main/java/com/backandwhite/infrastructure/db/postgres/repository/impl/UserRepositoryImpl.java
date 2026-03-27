@@ -88,9 +88,4 @@ public class UserRepositoryImpl implements UserRepository {
         return userEntityMapper.toDomainList(entities);
     }
 
-    @Override
-    public List<User> findByScopeId(Long scopeId) {
-        List<UserEntity> entities = userJpaRepositoryAdapter.findByScopesId(scopeId);
-        return userEntityMapper.toDomainList(entities);
-    }
 }

@@ -1,8 +1,6 @@
 package com.backandwhite.application.handler;
 
 import com.backandwhite.domain.model.User;
-import com.backandwhite.domain.model.Scope;
-import com.backandwhite.domain.repository.ScopeRepository;
 import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.repository.RoleRepository;
 import com.backandwhite.domain.model.Group;
@@ -20,30 +18,12 @@ import java.util.Objects;
 @AllArgsConstructor
 public class UserCommandHandler {
 
-    private final ScopeRepository scopeRepository;
     private final RoleRepository roleRepository;
     private final GroupRepository groupRepository;
 
     public void validate(User user) {
-        validateScope(user);
         validateRole(user);
         validateGroup(user);
-    }
-
-
-    private void validateScope(User user) {
-
-        if (Objects.isNull(user.getScopes()) || user.getScopes().isEmpty()) {
-            log.info("::> No scope to associate to user {}", user.getScopes());
-            return;
-        }
-
-        List<Scope> scopesList = new ArrayList<>();
-        user.getScopes().forEach(scope -> {
-            Scope response = scopeRepository.getById(scope.getId());
-            scopesList.add(response);
-        });
-        user.setScopes(scopesList);
     }
 
 

@@ -1,9 +1,13 @@
 package com.backandwhite.api.dto.out;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @With
@@ -27,6 +31,10 @@ public class RoleDtoOut {
 
     @Schema(description = "Indica si el rol está activo", example = "true")
     private Boolean enabled;
+
+    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
+    @ArraySchema(schema = @Schema(implementation = PermissionDtoOut.class))
+    private List<PermissionDtoOut> permissions = new ArrayList<>();
 
     @Schema(description = "Fecha de creación del registro", example = "2026-02-16T10:15:30Z")
     private Instant createdAt;

@@ -2,6 +2,8 @@ package com.backandwhite.infrastructure.db.postgres.mapper;
 
 import com.backandwhite.domain.model.Role;
 import com.backandwhite.infrastructure.db.postgres.entity.RoleEntity;
+import com.backandwhite.util.MapperTestUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -13,7 +15,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RoleEntityMapperTest {
 
-    private final RoleEntityMapper mapper = Mappers.getMapper(RoleEntityMapper.class);
+    private RoleEntityMapper mapper;
+
+    @BeforeEach
+    void setUp() {
+        PermissionEntityMapper permissionEntityMapper = Mappers.getMapper(PermissionEntityMapper.class);
+        mapper = Mappers.getMapper(RoleEntityMapper.class);
+        MapperTestUtils.setField(mapper, "permissionEntityMapper", permissionEntityMapper);
+    }
 
     @Test
     void toDomain_mapsEntityToDomain() {

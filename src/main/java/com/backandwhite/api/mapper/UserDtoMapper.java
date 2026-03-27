@@ -4,7 +4,6 @@ import com.backandwhite.api.dto.in.UserDtoIn;
 import com.backandwhite.api.dto.out.UserDtoOut;
 import com.backandwhite.domain.model.User;
 
-import com.backandwhite.domain.model.Scope;
 import org.mapstruct.Named;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -17,7 +16,6 @@ import org.mapstruct.Mapping;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {
-        ScopeDtoMapper.class,
         RoleDtoMapper.class,
         GroupDtoMapper.class,
 })
@@ -37,7 +35,6 @@ public interface UserDtoMapper {
     @Mapping(target = "accountNonExpired", source = "accountNonExpired")
     @Mapping(target = "accountNonLocked", source = "accountNonLocked")
     @Mapping(target = "credentialsNonExpired", source = "credentialsNonExpired")
-    @Mapping(target = "scopes", source = "scopes")
     @Mapping(target = "roles", source = "roles")
     @Mapping(target = "groups", source = "groups")
     UserDtoOut toDtoOut(User model);
@@ -53,7 +50,6 @@ public interface UserDtoMapper {
     @Mapping(target = "email", source = "email")
     @Mapping(target = "password", source = "password")
     @Mapping(target = "enabled", source = "enabled")
-    @Mapping(target = "scopes", source = "scopeIds", qualifiedByName = "mapUserScopeIds")
     @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapUserRoleIds")
     @Mapping(target = "groups", source = "groupIds", qualifiedByName = "mapUserGroupIds")
     User toDomain(UserDtoIn dtoIn);
@@ -61,16 +57,6 @@ public interface UserDtoMapper {
     List<User> toDomainList(List<UserDtoIn> dtos);
 
     List<UserDtoOut> toDtoOutList(List<User> models);
-
-    @Named("mapUserScopeIds")
-    default List<Scope> mapUserScopeIds(List<Long> scopeIds) {
-        if (scopeIds == null || scopeIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return scopeIds.stream()
-                .map(id -> Scope.builder().id(id).build())
-                .collect(Collectors.toList());
-    }
 
     @Named("mapUserRoleIds")
     default List<Role> mapUserRoleIds(List<Long> roleIds) {

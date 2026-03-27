@@ -18,6 +18,4 @@ public interface UserRepository extends BaseRepository<User, User, Long> {
     List<User> findByRoleId(Long roleId);
 
     List<User> findByGroupId(Long groupId);
-
-    List<User> findByScopeId(Long scopeId);
 }

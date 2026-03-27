@@ -200,6 +200,27 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         user.setActivationTokenExpiry(null);
         log.debug("::> User {} activated successfully", user.getEmail());
         userRepository.update(user);
+        sendWelcomeEmail(user);
+    }
+
+    private void sendWelcomeEmail(User user) {
+        notificationProducerService.ifPresent(producer -> {
+            String loginUrl = activationBaseUrl + "/login";
+
+            Map<String, String> variables = new HashMap<>();
+            variables.put("name", user.getName());
+            variables.put("loginUrl", loginUrl);
+
+            EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
+                    .setRecipient(user.getEmail())
+                    .setSubject("¡Bienvenido a NX036!")
+                    .setTemplateName("welcome-email")
+                    .setVariables(variables)
+                    .build();
+
+            producer.sendNotificationEvent(event);
+            log.debug("::> Welcome email event sent for user {}", user.getEmail());
+        });
     }
 
     @Override

@@ -1,5 +1,6 @@
 server:
   port: ${SERVER_PORT:6001}
+  forward-headers-strategy: FRAMEWORK
   ssl:
     enabled: ${SSL_ENABLED:false}
     key-store: ${SSL_KEY_STORE:classpath:keystore.p12}
@@ -8,8 +9,8 @@ server:
   servlet:
     session:
       cookie:
-        same-site: ${SERVER_COOKIE_SAME_SITE:none}
-        secure: ${SERVER_COOKIE_SECURE:true}
+        same-site: ${SERVER_COOKIE_SAME_SITE:lax}
+        secure: ${SERVER_COOKIE_SECURE:false}
         http-only: true
 
 spring:
@@ -40,16 +41,16 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:1}
       timeout: ${REDIS_TIMEOUT:60000}
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${ISSUER_URI:http://localhost:6001}
 app:
   security:
-    handler-url: ${HANDLER_URL:http://localhost:4200}
+    handler-url: ${HANDLER_URL:http://localhost:9000/nexa-auth}
+  activation:
+    base-url: ${ACTIVATION_BASE_URL:http://localhost:9000}
+  jwt:
+    secret: ${JWT_SECRET:local-secret-key-change-me-in-production-must-be-256-bits-long}
 
 logging:
   level:

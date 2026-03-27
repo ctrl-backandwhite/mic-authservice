@@ -48,10 +48,6 @@ public class UserDtoOut {
     private Boolean credentialsNonExpired;
 
     @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
-    @ArraySchema(schema = @Schema(implementation = ScopeDtoOut.class), arraySchema = @Schema(description = "Scopes directos asignados al usuario"))
-    private List<ScopeDtoOut> scopes = new ArrayList<>();
-
-    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
     @ArraySchema(schema = @Schema(implementation = RoleDtoOut.class), arraySchema = @Schema(description = "Roles directos asignados al usuario"))
     private List<RoleDtoOut> roles = new ArrayList<>();
 

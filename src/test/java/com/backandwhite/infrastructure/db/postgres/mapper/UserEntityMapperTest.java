@@ -13,8 +13,6 @@ import static com.backandwhite.provider.GroupProvider.group;
 import static com.backandwhite.provider.GroupProvider.groupEntity;
 import static com.backandwhite.provider.RoleProvider.role;
 import static com.backandwhite.provider.RoleProvider.roleEntity;
-import static com.backandwhite.provider.ScopeProvider.readScope;
-import static com.backandwhite.provider.ScopeProvider.scopeEntity;
 import static com.backandwhite.provider.UserProvider.USER_ACCOUNT_NON_EXPIRED;
 import static com.backandwhite.provider.UserProvider.USER_ACCOUNT_NON_LOCKED;
 import static com.backandwhite.provider.UserProvider.USER_CREDENTIALS_NON_EXPIRED;
@@ -38,13 +36,14 @@ class UserEntityMapperTest {
 
     @BeforeEach
     void setUp() {
-        ScopeEntityMapper scopeEntityMapper = Mappers.getMapper(ScopeEntityMapper.class);
+        PermissionEntityMapper permissionEntityMapper = Mappers.getMapper(PermissionEntityMapper.class);
         RoleEntityMapper roleEntityMapper = Mappers.getMapper(RoleEntityMapper.class);
+        setField(roleEntityMapper, "permissionEntityMapper", permissionEntityMapper);
         GroupEntityMapper groupEntityMapper = Mappers.getMapper(GroupEntityMapper.class);
         setField(groupEntityMapper, "roleEntityMapper", roleEntityMapper);
+        setField(groupEntityMapper, "permissionEntityMapper", permissionEntityMapper);
 
         mapper = Mappers.getMapper(UserEntityMapper.class);
-        setField(mapper, "scopeEntityMapper", scopeEntityMapper);
         setField(mapper, "roleEntityMapper", roleEntityMapper);
         setField(mapper, "groupEntityMapper", groupEntityMapper);
     }
@@ -69,10 +68,6 @@ class UserEntityMapperTest {
         assertThat(result.getAccountNonExpired()).isEqualTo(USER_ACCOUNT_NON_EXPIRED);
         assertThat(result.getAccountNonLocked()).isEqualTo(USER_ACCOUNT_NON_LOCKED);
         assertThat(result.getCredentialsNonExpired()).isEqualTo(USER_CREDENTIALS_NON_EXPIRED);
-        assertThat(result.getScopes()).hasSize(1);
-        assertThat(result.getScopes().get(0))
-                .usingRecursiveComparison()
-                .isEqualTo(readScope());
         assertThat(result.getRoles()).hasSize(1);
         assertThat(result.getRoles().get(0))
                 .usingRecursiveComparison()
@@ -96,7 +91,6 @@ class UserEntityMapperTest {
                 .accountNonExpired(USER_ACCOUNT_NON_EXPIRED)
                 .accountNonLocked(USER_ACCOUNT_NON_LOCKED)
                 .credentialsNonExpired(USER_CREDENTIALS_NON_EXPIRED)
-                .scopes(List.of(readScope()))
                 .roles(List.of(role()))
                 .groups(List.of(group()))
                 .build();
@@ -117,11 +111,6 @@ class UserEntityMapperTest {
         assertThat(result.getAccountNonExpired()).isEqualTo(USER_ACCOUNT_NON_EXPIRED);
         assertThat(result.getAccountNonLocked()).isEqualTo(USER_ACCOUNT_NON_LOCKED);
         assertThat(result.getCredentialsNonExpired()).isEqualTo(USER_CREDENTIALS_NON_EXPIRED);
-        assertThat(result.getScopes()).hasSize(1);
-        assertThat(result.getScopes().get(0))
-                .usingRecursiveComparison()
-                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
-                .isEqualTo(scopeEntity());
         assertThat(result.getRoles()).hasSize(1);
         assertThat(result.getRoles().get(0))
                 .usingRecursiveComparison()

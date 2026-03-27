@@ -1,4 +1,3 @@
 package com.backandwhite.api.validation;
 
-public interface UpdateValidation {
-}
+public interface UpdateValidation {}

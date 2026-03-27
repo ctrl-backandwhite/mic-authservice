@@ -15,7 +15,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
         "app.security.handler-url-1=http://localhost:4200",
-        "app.security.handler-url-2=http://localhost:4200"
+        "app.security.handler-url-2=http://localhost:4200",
+        "app.jwt.secret=local-secret-key-change-me-in-production-must-be-256-bits-long"
 })
 class SecurityConfigWebTest {
 

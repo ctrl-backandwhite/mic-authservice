@@ -5,6 +5,8 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @With
@@ -18,6 +20,8 @@ public class Role implements GrantedAuthority {
     private String uniqueName;
     private String description;
     private Boolean enabled;
+    @Builder.Default
+    private List<Permission> permissions = new ArrayList<>();
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;

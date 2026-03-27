@@ -35,10 +35,6 @@ public class ScopeEntity extends AuditableEntity {
     @Column(name = "enabled", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean enabled;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-
     @ManyToMany(mappedBy = "scopes", fetch = FetchType.EAGER)
     private List<OauthClientEntity> oauthClients = new ArrayList<>();
 
