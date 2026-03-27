@@ -46,6 +46,8 @@ app:
   security:
     handler-url-1: https://backandwhite.com/dashboard
     handler-url-2: https://webapp-production-68d2.up.railway.app
+  jwt:
+    secret: ${JWT_SECRET}
 
 logging:
   level:
