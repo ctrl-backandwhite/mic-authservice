@@ -72,7 +72,7 @@ logging:
 
 app:
   security:
-    handler-url: https://web-auth-des.up.railway.app
+    handler-url: https://gateway-service-des.up.railway.app/nexa-auth
   activation:
     base-url: ${ACTIVATION_BASE_URL:https://gateway-service-des.up.railway.app}
   jwt:
