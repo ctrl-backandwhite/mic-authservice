@@ -15,9 +15,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://caboose.proxy.rlwy.net:56135/railway
-    username: postgres
-    password: HzqtSlLQcwdwWbPaKSelEdvsnUuKbhSo
+    url: jdbc:postgresql://localhost:5401/db01
+    username: user01
+    password: pass01
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
