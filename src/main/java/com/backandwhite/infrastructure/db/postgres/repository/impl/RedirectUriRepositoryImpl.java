@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
-
 @Log4j2
 @Repository
 @AllArgsConstructor
@@ -46,7 +44,6 @@ public class RedirectUriRepositoryImpl implements RedirectUriRepository {
     @Override
     public RedirectUri getById(Long id) {
         RedirectUriEntity entity = redirectUriJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("RedirectUri", id);
-        return redirectUriEntityMapper.toDomain(entity);
+        return entity != null ? redirectUriEntityMapper.toDomain(entity) : null;
     }
 }

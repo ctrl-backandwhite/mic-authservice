@@ -19,6 +19,18 @@ public final class ScopeProvider {
     public static final String WRITE_DESCRIPTION = "Write scope";
     public static final Boolean WRITE_ENABLED = false;
 
+    public static final Long OPENID_ID = 3L;
+    public static final String OPENID_NAME = "OpenID";
+    public static final String OPENID_UNIQUE_NAME = "openid";
+    public static final String OPENID_DESCRIPTION = "OpenID Connect scope";
+    public static final Boolean OPENID_ENABLED = true;
+
+    public static final Long PROFILE_ID = 4L;
+    public static final String PROFILE_NAME = "Profile";
+    public static final String PROFILE_UNIQUE_NAME = "profile";
+    public static final String PROFILE_DESCRIPTION = "Profile scope";
+    public static final Boolean PROFILE_ENABLED = true;
+
     private ScopeProvider() {
         // Utility class.
     }
@@ -126,6 +138,92 @@ public final class ScopeProvider {
                 .uniqueName(WRITE_UNIQUE_NAME)
                 .description(WRITE_DESCRIPTION)
                 .enabled(WRITE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
+                .build();
+    }
+
+    // ── OAuth2 scopes (for OauthClient) ──
+
+    public static Scope openidScope() {
+        return Scope.builder()
+                .id(OPENID_ID)
+                .name(OPENID_NAME)
+                .uniqueName(OPENID_UNIQUE_NAME)
+                .description(OPENID_DESCRIPTION)
+                .enabled(OPENID_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
+                .build();
+    }
+
+    public static Scope profileScope() {
+        return Scope.builder()
+                .id(PROFILE_ID)
+                .name(PROFILE_NAME)
+                .uniqueName(PROFILE_UNIQUE_NAME)
+                .description(PROFILE_DESCRIPTION)
+                .enabled(PROFILE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
+                .build();
+    }
+
+    public static ScopeEntity openidScopeEntity() {
+        return ScopeEntity.builder()
+                .id(OPENID_ID)
+                .name(OPENID_NAME)
+                .uniqueName(OPENID_UNIQUE_NAME)
+                .description(OPENID_DESCRIPTION)
+                .enabled(OPENID_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
+                .build();
+    }
+
+    public static ScopeEntity profileScopeEntity() {
+        return ScopeEntity.builder()
+                .id(PROFILE_ID)
+                .name(PROFILE_NAME)
+                .uniqueName(PROFILE_UNIQUE_NAME)
+                .description(PROFILE_DESCRIPTION)
+                .enabled(PROFILE_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
+                .build();
+    }
+
+    public static ScopeDtoOut openidScopeDtoOut(Long id) {
+        return ScopeDtoOut.builder()
+                .id(id)
+                .name(OPENID_NAME)
+                .uniqueName(OPENID_UNIQUE_NAME)
+                .description(OPENID_DESCRIPTION)
+                .enabled(OPENID_ENABLED)
+                .createdAt(AuditProvider.CREATED_AT)
+                .updatedAt(AuditProvider.UPDATED_AT)
+                .createdBy(AuditProvider.CREATED_BY)
+                .updatedBy(AuditProvider.UPDATED_BY)
+                .build();
+    }
+
+    public static ScopeDtoOut profileScopeDtoOut(Long id) {
+        return ScopeDtoOut.builder()
+                .id(id)
+                .name(PROFILE_NAME)
+                .uniqueName(PROFILE_UNIQUE_NAME)
+                .description(PROFILE_DESCRIPTION)
+                .enabled(PROFILE_ENABLED)
                 .createdAt(AuditProvider.CREATED_AT)
                 .updatedAt(AuditProvider.UPDATED_AT)
                 .createdBy(AuditProvider.CREATED_BY)

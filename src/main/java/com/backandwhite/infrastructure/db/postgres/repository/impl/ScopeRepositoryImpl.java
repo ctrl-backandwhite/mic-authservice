@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
-
 @Log4j2
 @Repository
 @AllArgsConstructor
@@ -46,7 +44,6 @@ public class ScopeRepositoryImpl implements ScopeRepository {
     @Override
     public Scope getById(Long id) {
         ScopeEntity entity = scopeJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("Scope", id);
-        return scopeEntityMapper.toDomain(entity);
+        return entity != null ? scopeEntityMapper.toDomain(entity) : null;
     }
 }

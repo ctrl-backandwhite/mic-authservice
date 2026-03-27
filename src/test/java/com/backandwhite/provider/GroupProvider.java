@@ -4,9 +4,11 @@ import com.backandwhite.api.dto.in.GroupDtoIn;
 import com.backandwhite.api.dto.out.GroupDtoOut;
 import com.backandwhite.domain.model.Group;
 import com.backandwhite.infrastructure.db.postgres.entity.GroupEntity;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public final class GroupProvider {
 
     public static final Long ADMIN_ID = 1L;
@@ -27,9 +29,7 @@ public final class GroupProvider {
     public static final String GROUP_DESCRIPTION = "Support group";
     public static final Boolean GROUP_ENABLED = true;
 
-    private GroupProvider() {
-    }
-
+    
     public static Group adminGroup() {
         return Group.builder()
                 .id(ADMIN_ID)

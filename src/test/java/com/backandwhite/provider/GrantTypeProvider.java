@@ -4,7 +4,9 @@ import com.backandwhite.api.dto.in.GrantTypeDtoIn;
 import com.backandwhite.api.dto.out.GrantTypeDtoOut;
 import com.backandwhite.domain.model.GrantType;
 import com.backandwhite.infrastructure.db.postgres.entity.GrantTypeEntity;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public final class GrantTypeProvider {
 
     public static final Long GRANT_TYPE_ID = 1L;
@@ -14,10 +16,6 @@ public final class GrantTypeProvider {
     public static final Long OTHER_GRANT_TYPE_ID = 2L;
     public static final String OTHER_GRANT_TYPE_VALUE = "client_credentials";
     public static final Boolean OTHER_GRANT_TYPE_ENABLED = false;
-
-    private GrantTypeProvider() {
-        // Utility class.
-    }
 
     public static GrantType grantType() {
         return GrantType.builder()

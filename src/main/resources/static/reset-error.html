@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Error al restablecer contraseña</title>
+    <title data-i18n="resetError.pageTitle">Error al restablecer contraseña</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -24,20 +24,46 @@
             </div>
         </div>
         <div class="status-card__body">
-            <h1>Error al restablecer</h1>
-            <p>No fue posible restablecer tu contraseña. Es posible que el enlace haya expirado o ya haya sido
+            <h1 data-i18n="resetError.title">Error al restablecer</h1>
+            <p data-i18n="resetError.message">No fue posible restablecer tu contraseña. Es posible que el enlace haya expirado o ya haya sido
                 utilizado.</p>
             <div class="error-detail" id="error-detail"></div>
             <div class="progress-bar">
                 <div class="progress-bar__fill progress-bar__fill--error"></div>
             </div>
-            <p class="countdown countdown--error">Redirigiendo al login en <span id="seconds">5</span> segundos...</p>
-            <a class="btn--status" href="/login.html">Ir al login ahora</a>
+            <p class="countdown countdown--error" id="countdown-text">Redirigiendo al login en <span id="seconds">5</span> segundos...</p>
+            <a class="btn--status" href="/login.html" data-i18n="resetError.goToLogin">Ir al login ahora</a>
         </div>
     </div>
 
     <script>
         (function () {
+            var translations = {
+                es: {
+                    "resetError.pageTitle": "Error al restablecer contraseña",
+                    "resetError.title": "Error al restablecer",
+                    "resetError.message": "No fue posible restablecer tu contraseña. Es posible que el enlace haya expirado o ya haya sido utilizado.",
+                    "resetError.countdown": "Redirigiendo al login en {s} segundos...",
+                    "resetError.goToLogin": "Ir al login ahora"
+                },
+                en: {
+                    "resetError.pageTitle": "Password reset error",
+                    "resetError.title": "Reset error",
+                    "resetError.message": "We couldn't reset your password. The link may have expired or has already been used.",
+                    "resetError.countdown": "Redirecting to login in {s} seconds...",
+                    "resetError.goToLogin": "Go to login now"
+                }
+            };
+
+            var currentLang = localStorage.getItem('lang') || 'es';
+            var dict = translations[currentLang] || translations.es;
+
+            document.documentElement.setAttribute('lang', currentLang);
+            document.querySelectorAll('[data-i18n]').forEach(function (el) {
+                var key = el.getAttribute('data-i18n');
+                if (dict[key]) el.textContent = dict[key];
+            });
+
             var params = new URLSearchParams(window.location.search);
             var msg = params.get('message');
             var el = document.getElementById('error-detail');
@@ -48,10 +74,15 @@
             }
 
             var t = 5;
-            var sec = document.getElementById('seconds');
+            var countdownEl = document.getElementById('countdown-text');
+            function updateCountdown() {
+                var tmpl = dict['resetError.countdown'] || 'Redirigiendo al login en {s} segundos...';
+                countdownEl.innerHTML = tmpl.replace('{s}', '<span id="seconds">' + t + '</span>');
+            }
+            updateCountdown();
             var interval = setInterval(function () {
                 t--;
-                sec.textContent = t;
+                updateCountdown();
                 if (t <= 0) { clearInterval(interval); window.location.href = '/login.html'; }
             }, 1000);
         })();

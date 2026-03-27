@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
-
 @Log4j2
 @Repository
 @AllArgsConstructor
@@ -46,7 +44,6 @@ public class RoleRepositoryImpl implements RoleRepository {
     @Override
     public Role getById(Long id) {
         RoleEntity entity = roleJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("Role", id);
-        return roleEntityMapper.toDomain(entity);
+        return entity != null ? roleEntityMapper.toDomain(entity) : null;
     }
 }
