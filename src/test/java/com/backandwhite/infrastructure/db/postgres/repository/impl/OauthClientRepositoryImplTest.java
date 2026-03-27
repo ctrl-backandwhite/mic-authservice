@@ -110,12 +110,10 @@ class OauthClientRepositoryImplTest {
     @Test
     void getById_missingEntity_returnsNull() {
         when(oauthClientJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(oauthClientEntityMapper.toDomain(null)).thenReturn(null);
 
         OauthClient result = oauthClientRepository.getById(5L);
 
         assertThat(result).isNull();
         verify(oauthClientJpaRepositoryAdapter).findById(5L);
-        verify(oauthClientEntityMapper).toDomain(null);
     }
 }

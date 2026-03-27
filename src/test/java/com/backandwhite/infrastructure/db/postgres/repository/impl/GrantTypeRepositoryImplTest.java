@@ -110,12 +110,10 @@ class GrantTypeRepositoryImplTest {
     @Test
     void getById_missingEntity_returnsNull() {
         when(grantTypeJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(grantTypeEntityMapper.toDomain(null)).thenReturn(null);
 
         GrantType result = grantTypeRepository.getById(5L);
 
         assertThat(result).isNull();
         verify(grantTypeJpaRepositoryAdapter).findById(5L);
-        verify(grantTypeEntityMapper).toDomain(null);
     }
 }

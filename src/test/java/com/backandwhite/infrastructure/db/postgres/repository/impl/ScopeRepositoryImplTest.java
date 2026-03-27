@@ -110,12 +110,10 @@ class ScopeRepositoryImplTest {
     @Test
     void getById_missingEntity_returnsNull() {
         when(scopeJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(scopeEntityMapper.toDomain(null)).thenReturn(null);
 
         Scope result = scopeRepository.getById(5L);
 
         assertThat(result).isNull();
         verify(scopeJpaRepositoryAdapter).findById(5L);
-        verify(scopeEntityMapper).toDomain(null);
     }
 }

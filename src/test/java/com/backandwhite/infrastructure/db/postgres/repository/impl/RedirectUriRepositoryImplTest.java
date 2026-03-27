@@ -110,12 +110,10 @@ class RedirectUriRepositoryImplTest {
     @Test
     void getById_missingEntity_returnsNull() {
         when(redirectUriJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(redirectUriEntityMapper.toDomain(null)).thenReturn(null);
 
         RedirectUri result = redirectUriRepository.getById(5L);
 
         assertThat(result).isNull();
         verify(redirectUriJpaRepositoryAdapter).findById(5L);
-        verify(redirectUriEntityMapper).toDomain(null);
     }
 }

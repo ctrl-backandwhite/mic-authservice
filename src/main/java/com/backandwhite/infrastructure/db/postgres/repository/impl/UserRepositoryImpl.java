@@ -1,5 +1,6 @@
 package com.backandwhite.infrastructure.db.postgres.repository.impl;
 
+import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.repository.UserRepository;
 import com.backandwhite.infrastructure.db.postgres.entity.UserEntity;
@@ -49,7 +50,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User getById(Long id) {
-        UserEntity entity = userJpaRepositoryAdapter.findById(id).orElse(null);
+        UserEntity entity = userJpaRepositoryAdapter.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("US001", "User not found with id: " + id));
         return userEntityMapper.toDomain(entity);
     }
 

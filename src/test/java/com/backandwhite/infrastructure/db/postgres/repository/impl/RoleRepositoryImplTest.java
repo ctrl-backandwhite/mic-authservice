@@ -110,12 +110,10 @@ class RoleRepositoryImplTest {
     @Test
     void getById_missingEntity_returnsNull() {
         when(roleJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(roleEntityMapper.toDomain(null)).thenReturn(null);
 
         Role result = roleRepository.getById(5L);
 
         assertThat(result).isNull();
         verify(roleJpaRepositoryAdapter).findById(5L);
-        verify(roleEntityMapper).toDomain(null);
     }
 }

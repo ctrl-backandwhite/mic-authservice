@@ -110,12 +110,10 @@ class GroupRepositoryImplTest {
     @Test
     void getById_missingEntity_returnsNull() {
         when(groupJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(groupEntityMapper.toDomain(null)).thenReturn(null);
 
         Group result = groupRepository.getById(5L);
 
         assertThat(result).isNull();
         verify(groupJpaRepositoryAdapter).findById(5L);
-        verify(groupEntityMapper).toDomain(null);
     }
 }

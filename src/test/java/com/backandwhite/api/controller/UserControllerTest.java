@@ -42,15 +42,15 @@ class UserControllerTest {
         UserDtoOut dtoOut = userDtoOut(USER_ID);
 
         when(mapper.toDomain(dtoIn)).thenReturn(model);
-        when(useCase.save(model)).thenReturn(model);
+        when(useCase.save(model, "es")).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<UserDtoOut> response = controller.create(dtoIn);
+        ResponseEntity<UserDtoOut> response = controller.create(dtoIn, "es");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(dtoOut);
         verify(mapper).toDomain(dtoIn);
-        verify(useCase).save(model);
+        verify(useCase).save(model, "es");
         verify(mapper).toDtoOut(model);
     }
 
