@@ -72,10 +72,12 @@ logging:
 
 app:
   security:
-    handler-url-1: https://web-auth-des.up.railway.app
-    handler-url-2: https://web-auth-des.up.railway.app
+    handler-url: https://web-auth-des.up.railway.app
   activation:
     base-url: ${ACTIVATION_BASE_URL:https://gateway-service-des.up.railway.app}
+  jwt:
+    secret: ${JWT_SECRET}
+
 #logging:
 #  level:
 #    root: INFO
