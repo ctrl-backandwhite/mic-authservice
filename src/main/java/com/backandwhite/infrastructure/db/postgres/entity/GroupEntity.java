@@ -35,16 +35,10 @@ public class GroupEntity extends AuditableEntity {
     @Column(name = "enabled", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean enabled;
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "group_roles", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<RoleEntity> roles = new ArrayList<>();
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "group_permissions", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private List<PermissionEntity> permissions = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER)
-    private List<UserEntity> users = new ArrayList<>();
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
@@ -52,6 +46,10 @@ public class GroupEntity extends AuditableEntity {
         joinColumns = @JoinColumn(name = "group_id"),
         inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<PermissionEntity> permissions = new ArrayList<>();
+
+    @Builder.Default
+    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER)
+    private List<UserEntity> users = new ArrayList<>();
 
     @Override
     public boolean equals(Object object) {

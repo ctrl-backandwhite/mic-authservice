@@ -38,6 +38,11 @@ public class User implements UserDetails {
     private String createdBy;
     private String updatedBy;
 
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
