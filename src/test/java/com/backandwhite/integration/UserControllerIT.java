@@ -1,5 +1,8 @@
 package com.backandwhite.integration;
 
+import com.backandwhite.api.dto.OperationResponseDtoOut;
+import com.backandwhite.api.dto.in.ForgotPasswordDtoIn;
+import com.backandwhite.api.dto.in.ResetPasswordDtoIn;
 import com.backandwhite.api.dto.in.UserDtoIn;
 import com.backandwhite.api.dto.out.UserDtoOut;
 import com.backandwhite.config.BaseIntegration;
@@ -14,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static com.backandwhite.provider.GroupProvider.adminGroupEntity;
@@ -201,5 +206,103 @@ class UserControllerIT extends BaseIntegration {
                                 .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME)))
                                 .exchange()
                                 .expectStatus().isNotFound();
+        }
+
+        @Test
+        void forgotPassword_returnsOk() {
+                ForgotPasswordDtoIn dto = ForgotPasswordDtoIn.builder()
+                                .email("nonexistent@example.com")
+                                .build();
+
+                OperationResponseDtoOut response = webTestClient
+                                .post()
+                                .uri(PATH + "/forgot-password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(dto)
+                                .exchange()
+                                .expectStatus().isOk()
+                                .expectBody(OperationResponseDtoOut.class)
+                                .returnResult()
+                                .getResponseBody();
+
+                assertThat(response).isNotNull();
+                assertThat(response.getCode()).isEqualTo("OK");
+                assertThat(response.getMessage()).contains("Si el correo");
+        }
+
+        @Test
+        void forgotPassword_whenEmailBlank_returnsBadRequest() {
+                ForgotPasswordDtoIn dto = ForgotPasswordDtoIn.builder()
+                                .email("")
+                                .build();
+
+                webTestClient
+                                .post()
+                                .uri(PATH + "/forgot-password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(dto)
+                                .exchange()
+                                .expectStatus().isBadRequest();
+        }
+
+        @Test
+        void forgotPassword_whenInvalidEmailFormat_returnsBadRequest() {
+                ForgotPasswordDtoIn dto = ForgotPasswordDtoIn.builder()
+                                .email("not-an-email")
+                                .build();
+
+                webTestClient
+                                .post()
+                                .uri(PATH + "/forgot-password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(dto)
+                                .exchange()
+                                .expectStatus().isBadRequest();
+        }
+
+        @Test
+        void resetPassword_whenInvalidToken_redirectsToError() {
+                ResetPasswordDtoIn dto = ResetPasswordDtoIn.builder()
+                                .token("non-existent-token")
+                                .newPassword("NewPass1")
+                                .build();
+
+                webTestClient
+                                .post()
+                                .uri(PATH + "/reset-password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(dto)
+                                .exchange()
+                                .expectStatus().isFound()
+                                .expectHeader().value("Location",
+                                                location -> assertThat(location).contains("/reset-error.html"));
+        }
+
+        @Test
+        void resetPassword_whenValidToken_redirectsToSuccess() {
+                String resetToken = "test-reset-token-abc123";
+                repository.save(userEntity()
+                                .withId(null)
+                                .withNickName("reset.test")
+                                .withEmail("reset.test@example.com")
+                                .withPasswordResetToken(resetToken)
+                                .withPasswordResetTokenExpiry(Instant.now().plus(30, ChronoUnit.MINUTES))
+                                .withRoles(List.of())
+                                .withGroups(List.of()));
+
+                ResetPasswordDtoIn dto = ResetPasswordDtoIn.builder()
+                                .token(resetToken)
+                                .newPassword("NewPass1")
+                                .build();
+
+                webTestClient
+                                .post()
+                                .uri(PATH + "/reset-password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(dto)
+                                .exchange()
+                                .expectStatus().isFound()
+                                .expectHeader().value("Location",
+                                                location -> assertThat(location).endsWith("/reset-success.html"));
         }
 }

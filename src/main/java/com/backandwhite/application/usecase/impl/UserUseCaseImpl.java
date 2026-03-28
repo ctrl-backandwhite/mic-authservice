@@ -226,15 +226,16 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Override
     @Transactional
     public void requestPasswordReset(String email) {
-        log.debug("::> Password reset requested for email: {}", email);
-        User user = userRepository.findUserByEmail(email);
+        String normalizedEmail = email == null ? null : email.trim().toLowerCase();
+        log.debug("::> Password reset requested for email: {}", normalizedEmail);
+        User user = userRepository.findUserByEmail(normalizedEmail);
         if (user == null) {
             // Don't reveal if the email exists — just return silently
-            log.warn("::> Password reset requested for non-existent email: {}", email);
+            log.warn("::> Password reset requested for non-existent email: {}", normalizedEmail);
             return;
         }
         if (!Boolean.TRUE.equals(user.getEnabled())) {
-            log.warn("::> Password reset requested for disabled account: {}", email);
+            log.warn("::> Password reset requested for disabled account: {}", normalizedEmail);
             return;
         }
 
@@ -292,10 +293,11 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "user", key = "#username")
+    @Cacheable(value = "user", key = "#username.trim().toLowerCase()")
     public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
-        log.debug("::> Loading user by username: {}", username);
-        User user = userRepository.findUserByEmail(username);
+        String normalizedUsername = username.trim().toLowerCase();
+        log.debug("::> Loading user by username: {}", normalizedUsername);
+        User user = userRepository.findUserByEmail(normalizedUsername);
         if (Objects.isNull(user)) {
             log.warn("::> User not found: {}", username);
             throw ENTITY_NOT_FOUND.toEntityNotFound("User", username);

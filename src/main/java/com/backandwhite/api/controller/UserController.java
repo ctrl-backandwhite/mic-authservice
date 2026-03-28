@@ -1,6 +1,9 @@
 package com.backandwhite.api.controller;
 
 import com.backandwhite.api.BaseApi;
+import com.backandwhite.api.dto.OperationResponseDtoOut;
+import com.backandwhite.api.dto.in.ForgotPasswordDtoIn;
+import com.backandwhite.api.dto.in.ResetPasswordDtoIn;
 import com.backandwhite.api.dto.in.UserDtoIn;
 import com.backandwhite.api.dto.out.UserDtoOut;
 import com.backandwhite.api.mapper.UserDtoMapper;
@@ -10,10 +13,10 @@ import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.common.exception.ArgumentException;
 import com.backandwhite.domain.model.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import jakarta.validation.groups.Default;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,8 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Log4j2
 @RestController
@@ -110,32 +113,24 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<Map<String, String>> forgotPassword(
-            @RequestBody Map<String, String> body,
+    public ResponseEntity<OperationResponseDtoOut> forgotPassword(
+            @Valid @RequestBody ForgotPasswordDtoIn dto,
             @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
-        String email = body.get("email");
-        if (email == null || email.isBlank()) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("message", "El correo es obligatorio."));
-        }
-        useCase.requestPasswordReset(email.trim(), lang);
+        useCase.requestPasswordReset(dto.getEmail(), lang);
         // Always return success to not reveal if the email exists
-        return ResponseEntity.ok(Map.of("message",
-                "Si el correo está registrado, recibirás un enlace para restablecer tu contraseña."));
+        return ResponseEntity.ok(
+                OperationResponseDtoOut.builder()
+                        .code("OK")
+                        .message("Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.")
+                        .details(List.of())
+                        .dateTime(ZonedDateTime.now())
+                        .build());
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<Void> resetPassword(@RequestBody Map<String, String> body) {
-        String token = body.get("token");
-        String newPassword = body.get("newPassword");
-        if (token == null || token.isBlank() || newPassword == null || newPassword.isBlank()) {
-            String msg = URLEncoder.encode("Datos incompletos.", StandardCharsets.UTF_8);
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("/reset-error.html?message=" + msg))
-                    .build();
-        }
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordDtoIn dto) {
         try {
-            useCase.resetPassword(token.trim(), newPassword);
+            useCase.resetPassword(dto.getToken().trim(), dto.getNewPassword());
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create("/reset-success.html"))
                     .build();

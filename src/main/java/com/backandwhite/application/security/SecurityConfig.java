@@ -93,7 +93,7 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-ui.html",
-            "/api/v1/**"};
+            "/api/v1/**" };
 
     @Bean
     @Order(1)

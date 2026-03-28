@@ -47,7 +47,7 @@ public interface UserDtoMapper {
     @Mapping(target = "name", source = "name")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "nickName", source = "nickName")
-    @Mapping(target = "email", source = "email")
+    @Mapping(target = "email", source = "email", qualifiedByName = "normalizeEmail")
     @Mapping(target = "password", source = "password")
     @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapUserRoleIds")
@@ -57,6 +57,11 @@ public interface UserDtoMapper {
     List<User> toDomainList(List<UserDtoIn> dtos);
 
     List<UserDtoOut> toDtoOutList(List<User> models);
+
+    @Named("normalizeEmail")
+    default String normalizeEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase();
+    }
 
     @Named("mapUserRoleIds")
     default List<Role> mapUserRoleIds(List<Long> roleIds) {
