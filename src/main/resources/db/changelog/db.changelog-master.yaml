@@ -11,6 +11,7 @@ databaseChangeLog:
           id: "2"
           author: NX036-ALFA
           context: local,dev
+          runOnChange: true
           changes:
               - sqlFile:
                     path: db.changelog-1.1.sql

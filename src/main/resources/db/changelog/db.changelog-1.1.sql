@@ -32,10 +32,6 @@ BEGIN
         ALTER TABLE oauthclient_scopes ADD CONSTRAINT fk_oauthclient_scopes_oauthclient_id FOREIGN KEY (oauthclient_id) REFERENCES oauth_clients;
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_scopes_user_id') THEN
-        ALTER TABLE scopes ADD CONSTRAINT fk_scopes_user_id FOREIGN KEY (user_id) REFERENCES users;
-    END IF;
-
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_user_groups_group_id') THEN
         ALTER TABLE user_groups ADD CONSTRAINT fk_user_groups_group_id FOREIGN KEY (group_id) REFERENCES groups;
     END IF;
