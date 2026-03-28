@@ -9,8 +9,6 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 
-import java.util.UUID;
-
 /**
  * Repositorio personalizado que mapea los clientes OAuth de las entidades
  * personalizadas
@@ -30,8 +28,15 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
 
     @Override
     public RegisteredClient findById(String id) {
-        // No implementar - no se usa en este contexto
-        return null;
+        try {
+            OauthClient oauthClient = oauthClientRepository.getById(Long.parseLong(id));
+            if (oauthClient == null) {
+                return null;
+            }
+            return mapToRegisteredClient(oauthClient);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     @Override
@@ -48,7 +53,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
      */
     private RegisteredClient mapToRegisteredClient(OauthClient oauthClient) {
         RegisteredClient.Builder builder = RegisteredClient
-                .withId(UUID.randomUUID().toString())
+                .withId(String.valueOf(oauthClient.getId()))
                 .clientId(oauthClient.getClientId())
                 .clientSecret(oauthClient.getClientSecret())
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)

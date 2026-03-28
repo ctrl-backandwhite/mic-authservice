@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -52,7 +51,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Configuration
@@ -62,9 +60,6 @@ public class SecurityConfig {
     private static final String LOGIN_PATH = "/login";
 
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private Environment env;
 
     public SecurityConfig(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -160,14 +155,8 @@ public class SecurityConfig {
     @Bean
     public SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler() {
         SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
-        String activeProfile = env.getProperty("spring.profiles.active");
-        if (Objects.equals(activeProfile, "pro")) {
-            handlerUrl = env.getProperty("app.security.handler-url-1", handlerUrl);
-        } else {
-            handlerUrl = env.getProperty("app.security.handler-url-2", handlerUrl);
-        }
         handler.setDefaultTargetUrl(handlerUrl);
-        handler.setAlwaysUseDefaultTargetUrl(true);
+        handler.setAlwaysUseDefaultTargetUrl(false);
         return handler;
     }
 
