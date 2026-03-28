@@ -295,14 +295,19 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Transactional(readOnly = true)
     @Cacheable(value = "user", key = "#username.trim().toLowerCase()")
     public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
-        String normalizedUsername = username.trim().toLowerCase();
-        log.debug("::> Loading user by username: {}", normalizedUsername);
-        User user = userRepository.findUserByEmail(normalizedUsername);
+        String normalized = username.trim().toLowerCase();
+        log.debug("::> Loading user by identifier: {}", normalized);
+
+        // Try email first, then nickName
+        User user = userRepository.findUserByEmail(normalized);
         if (Objects.isNull(user)) {
-            log.warn("::> User not found: {}", username);
-            throw ENTITY_NOT_FOUND.toEntityNotFound("User", username);
+            user = userRepository.findUserByNickName(normalized);
         }
-        log.debug("::> User loaded successfully: {} with {} roles", username,
+        if (Objects.isNull(user)) {
+            log.warn("::> User not found for identifier: {}", normalized);
+            throw ENTITY_NOT_FOUND.toEntityNotFound("User", normalized);
+        }
+        log.debug("::> User loaded successfully: {} with {} roles", normalized,
                 user.getRoles() != null ? user.getRoles().size() : 0);
         return user;
     }

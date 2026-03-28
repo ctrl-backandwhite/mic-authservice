@@ -11,6 +11,8 @@ public interface UserRepository extends BaseRepository<User, User, Long> {
 
     User findUserByEmail(String email);
 
+    User findUserByNickName(String nickName);
+
     User findByActivationToken(String activationToken);
 
     User findByPasswordResetToken(String token);

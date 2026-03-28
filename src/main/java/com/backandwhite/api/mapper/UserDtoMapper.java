@@ -46,7 +46,7 @@ public interface UserDtoMapper {
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "name", source = "name")
     @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "nickName", source = "nickName")
+    @Mapping(target = "nickName", source = "nickName", qualifiedByName = "normalizeNickName")
     @Mapping(target = "email", source = "email", qualifiedByName = "normalizeEmail")
     @Mapping(target = "password", source = "password")
     @Mapping(target = "enabled", source = "enabled")
@@ -61,6 +61,11 @@ public interface UserDtoMapper {
     @Named("normalizeEmail")
     default String normalizeEmail(String email) {
         return email == null ? null : email.trim().toLowerCase();
+    }
+
+    @Named("normalizeNickName")
+    default String normalizeNickName(String nickName) {
+        return nickName == null ? null : nickName.trim().toLowerCase();
     }
 
     @Named("mapUserRoleIds")

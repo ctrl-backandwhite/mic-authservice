@@ -62,6 +62,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public User findUserByNickName(String nickName) {
+        UserEntity userEntity = userJpaRepositoryAdapter.findByNickName(nickName);
+        return userEntityMapper.toDomain(userEntity);
+    }
+
+    @Override
     public User findByActivationToken(String activationToken) {
         UserEntity entity = userJpaRepositoryAdapter.findByActivationToken(activationToken);
         return userEntityMapper.toDomain(entity);
