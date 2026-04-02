@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-
 @Log4j2
 @Configuration
 @RequiredArgsConstructor
@@ -49,6 +48,7 @@ public class UserTokenCustomizer {
                         .toList();
                 List<String> groups = getGetGroups(user.getGroups());
                 context.getClaims().claim("id", user.getId());
+                context.getClaims().claim("email", user.getEmail());
                 context.getClaims().claim("firstName", user.getName());
                 context.getClaims().claim("lastName", user.getLastName());
                 context.getClaims().claim("roles", roles);

@@ -15,9 +15,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5401/db01
-    username: user01
-    password: pass01
+    url: ${AUTH_DATA_BASE:jdbc:postgresql://localhost:5401/db01}
+    username: ${AUTH_DATA_USER:user01}
+    password: ${AUTH_DATA_PASSWORD:pass01}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

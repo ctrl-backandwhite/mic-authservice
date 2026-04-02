@@ -45,7 +45,7 @@ class RoleControllerTest {
         when(useCase.save(model)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<RoleDtoOut> response = controller.create(dtoIn);
+        ResponseEntity<RoleDtoOut> response = controller.create("test-nx-token", dtoIn);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -64,7 +64,7 @@ class RoleControllerTest {
         when(useCase.update(model, ROLE_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<RoleDtoOut> response = controller.update(dtoIn, ROLE_ID);
+        ResponseEntity<RoleDtoOut> response = controller.update("test-nx-token", dtoIn, ROLE_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -75,7 +75,7 @@ class RoleControllerTest {
 
     @Test
     void delete_returnsNoContent() {
-        ResponseEntity<Void> response = controller.delete(ROLE_ID);
+        ResponseEntity<Void> response = controller.delete("test-nx-token", ROLE_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(useCase).delete(ROLE_ID);
@@ -89,7 +89,7 @@ class RoleControllerTest {
         when(useCase.getById(ROLE_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<RoleDtoOut> response = controller.getById(ROLE_ID);
+        ResponseEntity<RoleDtoOut> response = controller.getById("test-nx-token", ROLE_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -105,7 +105,7 @@ class RoleControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<RoleDtoOut>> response = controller.findAll(null);
+        ResponseEntity<List<RoleDtoOut>> response = controller.findAll("test-nx-token", null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
@@ -123,7 +123,7 @@ class RoleControllerTest {
         when(useCase.findAll()).thenReturn(List.of(enabledRole, disabledRole));
         when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<RoleDtoOut>> response = controller.findAll(Boolean.TRUE);
+        ResponseEntity<List<RoleDtoOut>> response = controller.findAll("test-nx-token", Boolean.TRUE);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);

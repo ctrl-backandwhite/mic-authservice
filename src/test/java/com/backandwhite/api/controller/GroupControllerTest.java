@@ -45,7 +45,7 @@ class GroupControllerTest {
         when(useCase.save(model)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<GroupDtoOut> response = controller.create(dtoIn);
+        ResponseEntity<GroupDtoOut> response = controller.create("test-nx-token", dtoIn);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -64,7 +64,7 @@ class GroupControllerTest {
         when(useCase.update(model, ADMIN_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<GroupDtoOut> response = controller.update(dtoIn, ADMIN_ID);
+        ResponseEntity<GroupDtoOut> response = controller.update("test-nx-token", dtoIn, ADMIN_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -75,7 +75,7 @@ class GroupControllerTest {
 
     @Test
     void delete_returnsNoContent() {
-        ResponseEntity<Void> response = controller.delete(ADMIN_ID);
+        ResponseEntity<Void> response = controller.delete("test-nx-token", ADMIN_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(useCase).delete(ADMIN_ID);
@@ -89,7 +89,7 @@ class GroupControllerTest {
         when(useCase.getById(ADMIN_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<GroupDtoOut> response = controller.getById(ADMIN_ID);
+        ResponseEntity<GroupDtoOut> response = controller.getById("test-nx-token", ADMIN_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -105,7 +105,7 @@ class GroupControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<GroupDtoOut>> response = controller.findAll(null);
+        ResponseEntity<List<GroupDtoOut>> response = controller.findAll("test-nx-token", null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
@@ -123,7 +123,7 @@ class GroupControllerTest {
         when(useCase.findAll()).thenReturn(List.of(enabledGroup, disabledGroup));
         when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<GroupDtoOut>> response = controller.findAll(Boolean.TRUE);
+        ResponseEntity<List<GroupDtoOut>> response = controller.findAll("test-nx-token", Boolean.TRUE);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);

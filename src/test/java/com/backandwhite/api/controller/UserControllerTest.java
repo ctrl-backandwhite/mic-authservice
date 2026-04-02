@@ -53,7 +53,7 @@ class UserControllerTest {
         when(useCase.save(model, "es")).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<UserDtoOut> response = controller.create(dtoIn, "es");
+        ResponseEntity<UserDtoOut> response = controller.create(dtoIn, "es", "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -72,7 +72,7 @@ class UserControllerTest {
         when(useCase.update(model, USER_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<UserDtoOut> response = controller.update(dtoIn, USER_ID);
+        ResponseEntity<UserDtoOut> response = controller.update(dtoIn, USER_ID, "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -83,7 +83,7 @@ class UserControllerTest {
 
     @Test
     void delete_returnsNoContent() {
-        ResponseEntity<Void> response = controller.delete(USER_ID);
+        ResponseEntity<Void> response = controller.delete(USER_ID, "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(useCase).delete(USER_ID);
@@ -97,7 +97,7 @@ class UserControllerTest {
         when(useCase.getById(USER_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<UserDtoOut> response = controller.getById(USER_ID);
+        ResponseEntity<UserDtoOut> response = controller.getById(USER_ID, "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -113,7 +113,7 @@ class UserControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<UserDtoOut>> response = controller.findAll();
+        ResponseEntity<List<UserDtoOut>> response = controller.findAll("test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
@@ -129,7 +129,7 @@ class UserControllerTest {
         when(useCase.toggleEnabled(USER_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<UserDtoOut> response = controller.toggleEnabled(USER_ID);
+        ResponseEntity<UserDtoOut> response = controller.toggleEnabled(USER_ID, "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -141,7 +141,7 @@ class UserControllerTest {
     void deleteAll_returnsNoContent() {
         List<Long> ids = List.of(USER_ID, OTHER_USER_ID);
 
-        ResponseEntity<Void> response = controller.deleteAll(ids);
+        ResponseEntity<Void> response = controller.deleteAll(ids, "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(useCase).deleteAll(ids);
@@ -152,7 +152,7 @@ class UserControllerTest {
         ForgotPasswordDtoIn dto = ForgotPasswordDtoIn.builder().email(USER_EMAIL).build();
         doNothing().when(useCase).requestPasswordReset(USER_EMAIL, "es");
 
-        ResponseEntity<OperationResponseDtoOut> response = controller.forgotPassword(dto, "es");
+        ResponseEntity<OperationResponseDtoOut> response = controller.forgotPassword(dto, "es", "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
@@ -169,7 +169,7 @@ class UserControllerTest {
                 .build();
         doNothing().when(useCase).resetPassword("valid-token", "NewPass1");
 
-        ResponseEntity<Void> response = controller.resetPassword(dto);
+        ResponseEntity<Void> response = controller.resetPassword(dto, "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(response.getHeaders().getLocation()).isNotNull();
@@ -186,7 +186,7 @@ class UserControllerTest {
         doThrow(VALIDATION_ERROR.toArgumentException("El enlace de recuperación es inválido o ya fue utilizado."))
                 .when(useCase).resetPassword("bad-token", "NewPass1");
 
-        ResponseEntity<Void> response = controller.resetPassword(dto);
+        ResponseEntity<Void> response = controller.resetPassword(dto, "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(response.getHeaders().getLocation()).isNotNull();

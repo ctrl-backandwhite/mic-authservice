@@ -11,11 +11,11 @@ services:
       SSL_ENABLED: "false"
       SERVER_COOKIE_SECURE: "false"
       SERVER_COOKIE_SAME_SITE: lax
-      AUTH_DATA_BASE: jdbc:postgresql://host.docker.internal:5401/db01
-      AUTH_DATA_USER: user01
-      AUTH_DATA_PASSWORD: pass01
-      ISSUER_URI: http://localhost:6001
-      HANDLER_URL: http://localhost:4200
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5401/db01
+      SPRING_DATASOURCE_USERNAME: user01
+      SPRING_DATASOURCE_PASSWORD: pass01
+      ISSUER_URI: http://localhost:9000
+      HANDLER_URL: http://localhost:9000/nexa-auth
       REDIS_HOST: host.docker.internal
       REDIS_PORT: 6379
       REDIS_DATABASE: 1

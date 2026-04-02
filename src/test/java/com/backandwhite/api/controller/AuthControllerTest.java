@@ -40,7 +40,7 @@ class AuthControllerTest {
         when(authorization.getRegisteredClientId()).thenReturn("client-id");
         when(authorizationService.findByToken("token", OAuth2TokenType.ACCESS_TOKEN)).thenReturn(authorization);
 
-        ResponseEntity<Void> response = controller.revokeToken("token", "access_token");
+        ResponseEntity<Void> response = controller.revokeToken("token", "access_token", "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(authorizationService).remove(authorization);
@@ -50,7 +50,7 @@ class AuthControllerTest {
     void revokeToken_whenNotFound_returnsNotFound() {
         when(authorizationService.findByToken("token", OAuth2TokenType.ACCESS_TOKEN)).thenReturn(null);
 
-        ResponseEntity<Void> response = controller.revokeToken("token", "access_token");
+        ResponseEntity<Void> response = controller.revokeToken("token", "access_token", "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         verify(authorizationService, never()).remove(any());
@@ -61,7 +61,7 @@ class AuthControllerTest {
         when(authorizationService.findByToken("token", OAuth2TokenType.ACCESS_TOKEN))
                 .thenThrow(new RuntimeException("boom"));
 
-        ResponseEntity<Void> response = controller.revokeToken("token", "access_token");
+        ResponseEntity<Void> response = controller.revokeToken("token", "access_token", "test-nx-token");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -77,7 +77,7 @@ class AuthControllerTest {
         when(request.getSession(false)).thenReturn(null);
         when(request.getCookies()).thenReturn(new Cookie[] { new Cookie("foo", "bar") });
 
-        ResponseEntity<Void> result = controller.logout(request, response, null);
+        ResponseEntity<Void> result = controller.logout(request, response, null, "test-nx-token");
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(response, atLeast(3)).addCookie(any(Cookie.class));
