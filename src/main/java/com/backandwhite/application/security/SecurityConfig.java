@@ -63,7 +63,7 @@ public class SecurityConfig {
     private final SessionRevokingLogoutHandler sessionRevokingLogoutHandler;
 
     public SecurityConfig(PasswordEncoder passwordEncoder,
-                          SessionRevokingLogoutHandler sessionRevokingLogoutHandler) {
+            SessionRevokingLogoutHandler sessionRevokingLogoutHandler) {
         this.passwordEncoder = passwordEncoder;
         this.sessionRevokingLogoutHandler = sessionRevokingLogoutHandler;
     }

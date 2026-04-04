@@ -27,14 +27,14 @@ public class SessionRevokingLogoutHandler implements LogoutHandler {
     private final UserSessionRepository userSessionRepository;
 
     public SessionRevokingLogoutHandler(@Lazy JwtDecoder jwtDecoder,
-                                        UserSessionRepository userSessionRepository) {
+            UserSessionRepository userSessionRepository) {
         this.jwtDecoder = jwtDecoder;
         this.userSessionRepository = userSessionRepository;
     }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response,
-                       Authentication authentication) {
+            Authentication authentication) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             log.debug("::> Logout without Bearer token – skipping session revocation");
