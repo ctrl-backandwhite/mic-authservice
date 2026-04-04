@@ -25,6 +25,10 @@ public interface UserUseCase extends BaseUseCase<User, User, Long> {
 
     void resetPassword(String token, String newPassword);
 
+    void requestPasswordChange(String email, String currentPassword, String newPassword, String confirmPassword);
+
+    void confirmPasswordChange(String email, String code);
+
     default User save(User model, String lang) {
         return save(model);
     }

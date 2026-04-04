@@ -17,6 +17,8 @@ public interface UserRepository extends BaseRepository<User, User, Long> {
 
     User findByPasswordResetToken(String token);
 
+    User findByPasswordChangeCode(String code);
+
     List<User> findByRoleId(Long roleId);
 
     List<User> findByGroupId(Long groupId);

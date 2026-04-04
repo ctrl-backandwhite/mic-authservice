@@ -15,6 +15,8 @@ public interface UserJpaRepositoryAdapter extends JpaRepository<UserEntity, Long
 
     UserEntity findByPasswordResetToken(String passwordResetToken);
 
+    UserEntity findByPasswordChangeCode(String passwordChangeCode);
+
     List<UserEntity> findByRolesId(Long roleId);
 
     List<UserEntity> findByGroupsId(Long groupId);

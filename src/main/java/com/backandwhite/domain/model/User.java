@@ -31,6 +31,8 @@ public class User implements UserDetails {
     private Instant activationTokenExpiry;
     private String passwordResetToken;
     private Instant passwordResetTokenExpiry;
+    private String passwordChangeCode;
+    private Instant passwordChangeCodeExpiry;
     private List<Role> roles;
     private List<Group> groups;
     private Instant createdAt;

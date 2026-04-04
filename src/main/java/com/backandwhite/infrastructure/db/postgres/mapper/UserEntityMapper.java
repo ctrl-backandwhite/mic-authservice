@@ -31,6 +31,8 @@ public interface UserEntityMapper {
     @Mapping(target = "activationTokenExpiry", source = "activationTokenExpiry")
     @Mapping(target = "passwordResetToken", source = "passwordResetToken")
     @Mapping(target = "passwordResetTokenExpiry", source = "passwordResetTokenExpiry")
+    @Mapping(target = "passwordChangeCode", source = "passwordChangeCode")
+    @Mapping(target = "passwordChangeCodeExpiry", source = "passwordChangeCodeExpiry")
     @Mapping(target = "roles", source = "roles")
     @Mapping(target = "groups", source = "groups")
     User toDomain(UserEntity entity);
@@ -53,6 +55,8 @@ public interface UserEntityMapper {
     @Mapping(target = "activationTokenExpiry", source = "activationTokenExpiry")
     @Mapping(target = "passwordResetToken", source = "passwordResetToken")
     @Mapping(target = "passwordResetTokenExpiry", source = "passwordResetTokenExpiry")
+    @Mapping(target = "passwordChangeCode", source = "passwordChangeCode")
+    @Mapping(target = "passwordChangeCodeExpiry", source = "passwordChangeCodeExpiry")
     @Mapping(target = "roles", source = "roles")
     @Mapping(target = "groups", source = "groups")
     UserEntity toEntity(User model);

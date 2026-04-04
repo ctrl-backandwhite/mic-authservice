@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
 @Log4j2
 @Repository
 @AllArgsConstructor
@@ -76,6 +75,12 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User findByPasswordResetToken(String token) {
         UserEntity entity = userJpaRepositoryAdapter.findByPasswordResetToken(token);
+        return userEntityMapper.toDomain(entity);
+    }
+
+    @Override
+    public User findByPasswordChangeCode(String code) {
+        UserEntity entity = userJpaRepositoryAdapter.findByPasswordChangeCode(code);
         return userEntityMapper.toDomain(entity);
     }
 

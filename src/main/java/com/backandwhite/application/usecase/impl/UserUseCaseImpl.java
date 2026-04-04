@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -289,6 +290,126 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         user.setPasswordResetTokenExpiry(null);
         userRepository.update(user);
         log.debug("::> Password reset successfully for user {}", user.getEmail());
+    }
+
+    // ─── Change-password flow (authenticated user) ────────────────────────
+
+    @Override
+    @Transactional
+    public void requestPasswordChange(String email, String currentPassword,
+            String newPassword, String confirmPassword) {
+        log.debug("::> Password change requested for email: {}", email);
+        User user = userRepository.findUserByEmail(email);
+        if (user == null) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Usuario no encontrado.");
+        }
+
+        // 1. Verify current password
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "La contraseña actual es incorrecta.");
+        }
+
+        // 2. Verify new passwords match
+        if (!newPassword.equals(confirmPassword)) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Las nuevas contraseñas no coinciden.");
+        }
+
+        // 3. Generate unique 6-digit code
+        String code = generateUniqueCode();
+
+        // 4. Persist code with 3-minute expiry + store encoded new password temporarily
+        user.setPasswordChangeCode(code);
+        user.setPasswordChangeCodeExpiry(Instant.now().plus(3, ChronoUnit.MINUTES));
+        // Store the encoded new password temporarily in passwordResetToken
+        user.setPasswordResetToken(passwordEncoder.encode(newPassword));
+        user.setPasswordResetTokenExpiry(null);
+        userRepository.update(user);
+
+        // 5. Send code via email
+        sendPasswordChangeCodeEmail(user, code);
+        log.debug("::> Password change code generated for user {}", email);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = { "user_all", "user" }, allEntries = true)
+    public void confirmPasswordChange(String email, String code) {
+        log.debug("::> Confirming password change for email: {}", email);
+        User user = userRepository.findUserByEmail(email);
+        if (user == null) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Usuario no encontrado.");
+        }
+
+        // Validate code
+        if (user.getPasswordChangeCode() == null || !user.getPasswordChangeCode().equals(code.trim())) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(),
+                    "El código de verificación es inválido.");
+        }
+
+        // Validate expiry
+        if (user.getPasswordChangeCodeExpiry() != null
+                && Instant.now().isAfter(user.getPasswordChangeCodeExpiry())) {
+            // Clear expired code
+            user.setPasswordChangeCode(null);
+            user.setPasswordChangeCodeExpiry(null);
+            userRepository.update(user);
+            throw new ArgumentException(VALIDATION_ERROR.getCode(),
+                    "El código de verificación ha expirado. Solicita uno nuevo.");
+        }
+
+        // Code is valid — the new password was already validated and stored temporarily
+        // We need the newPassword here. Let's store it encoded when requesting.
+        // Actually, we should store the new password (encoded) at request time and
+        // apply it on confirm.
+        // But current flow: request stores code + we need newPassword at confirm.
+        // Better approach: store newPassword (already encoded) along with code at
+        // request time.
+        // Let me refactor: store encoded new password in the password_reset_token field
+        // temporarily.
+
+        // Clear the code (one-time use)
+        user.setPasswordChangeCode(null);
+        user.setPasswordChangeCodeExpiry(null);
+
+        // The new encoded password was stored in passwordResetToken during
+        // requestPasswordChange
+        if (user.getPasswordResetToken() != null && user.getPasswordResetToken().startsWith("$2a$")) {
+            user.setPassword(user.getPasswordResetToken());
+            user.setPasswordResetToken(null);
+            user.setPasswordResetTokenExpiry(null);
+        }
+
+        userRepository.update(user);
+        log.debug("::> Password changed successfully for user {}", email);
+    }
+
+    private String generateUniqueCode() {
+        SecureRandom random = new SecureRandom();
+        String code;
+        int attempts = 0;
+        do {
+            code = String.format("%06d", random.nextInt(1_000_000));
+            attempts++;
+        } while (userRepository.findByPasswordChangeCode(code) != null && attempts < 10);
+        return code;
+    }
+
+    private void sendPasswordChangeCodeEmail(User user, String code) {
+        notificationProducerService.ifPresent(producer -> {
+            Map<String, String> variables = new HashMap<>();
+            variables.put("name", user.getName());
+            variables.put("code", code);
+
+            EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
+                    .setRecipient(user.getEmail())
+                    .setSubject("Código de verificación para cambio de contraseña")
+                    .setTemplateName("password-change-code")
+                    .setVariables(variables)
+                    .build();
+
+            producer.sendNotificationEvent(event);
+            log.debug("::> Password change code email sent for user {}", user.getEmail());
+        });
     }
 
     @Override

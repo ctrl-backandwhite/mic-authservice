@@ -4,6 +4,8 @@ import com.backandwhite.api.BaseApi;
 import com.backandwhite.api.dto.OperationResponseDtoOut;
 import com.backandwhite.api.dto.in.ForgotPasswordDtoIn;
 import com.backandwhite.api.dto.in.ResetPasswordDtoIn;
+import com.backandwhite.api.dto.in.ChangePasswordRequestDtoIn;
+import com.backandwhite.api.dto.in.ConfirmPasswordChangeDtoIn;
 import com.backandwhite.api.dto.in.UserDtoIn;
 import com.backandwhite.api.dto.out.UserDtoOut;
 import com.backandwhite.api.mapper.UserDtoMapper;
@@ -141,5 +143,37 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
                     .location(URI.create("/reset-error.html?message=" + encodedMsg))
                     .build();
         }
+    }
+
+    @PostMapping("/change-password/request")
+    public ResponseEntity<OperationResponseDtoOut> requestPasswordChange(
+            @Valid @RequestBody ChangePasswordRequestDtoIn dto,
+            @RequestHeader(value = "X-Auth-Email") String email) {
+        useCase.requestPasswordChange(
+                email.trim().toLowerCase(),
+                dto.getCurrentPassword(),
+                dto.getNewPassword(),
+                dto.getConfirmPassword());
+        return ResponseEntity.ok(
+                OperationResponseDtoOut.builder()
+                        .code("OK")
+                        .message("Se ha enviado un código de verificación a tu correo electrónico.")
+                        .details(List.of())
+                        .dateTime(ZonedDateTime.now())
+                        .build());
+    }
+
+    @PostMapping("/change-password/confirm")
+    public ResponseEntity<OperationResponseDtoOut> confirmPasswordChange(
+            @Valid @RequestBody ConfirmPasswordChangeDtoIn dto,
+            @RequestHeader(value = "X-Auth-Email") String email) {
+        useCase.confirmPasswordChange(email.trim().toLowerCase(), dto.getCode());
+        return ResponseEntity.ok(
+                OperationResponseDtoOut.builder()
+                        .code("OK")
+                        .message("Tu contraseña ha sido actualizada correctamente.")
+                        .details(List.of())
+                        .dateTime(ZonedDateTime.now())
+                        .build());
     }
 }

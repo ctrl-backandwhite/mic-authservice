@@ -63,6 +63,12 @@ public class UserEntity extends AuditableEntity {
     @Column(name = "password_reset_token_expiry")
     private Instant passwordResetTokenExpiry;
 
+    @Column(name = "password_change_code", length = 6)
+    private String passwordChangeCode;
+
+    @Column(name = "password_change_code_expiry")
+    private Instant passwordChangeCodeExpiry;
+
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -91,13 +97,16 @@ public class UserEntity extends AuditableEntity {
                 && Objects.equals(activationToken, that.activationToken)
                 && Objects.equals(activationTokenExpiry, that.activationTokenExpiry)
                 && Objects.equals(passwordResetToken, that.passwordResetToken)
-                && Objects.equals(passwordResetTokenExpiry, that.passwordResetTokenExpiry);
+                && Objects.equals(passwordResetTokenExpiry, that.passwordResetTokenExpiry)
+                && Objects.equals(passwordChangeCode, that.passwordChangeCode)
+                && Objects.equals(passwordChangeCodeExpiry, that.passwordChangeCodeExpiry);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name, lastName, nickName, email, password, enabled, accountNonExpired, accountNonLocked,
                 credentialsNonExpired, activationToken, activationTokenExpiry,
-                passwordResetToken, passwordResetTokenExpiry);
+                passwordResetToken, passwordResetTokenExpiry,
+                passwordChangeCode, passwordChangeCodeExpiry);
     }
 }
