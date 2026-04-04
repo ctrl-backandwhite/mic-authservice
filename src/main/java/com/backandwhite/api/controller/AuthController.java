@@ -1,5 +1,6 @@
 package com.backandwhite.api.controller;
 
+import com.backandwhite.domain.repository.UserSessionRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
@@ -7,10 +8,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
@@ -25,6 +30,10 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final OAuth2AuthorizationService authorizationService;
+    private final JwtDecoder jwtDecoder;
+    private final UserSessionRepository userSessionRepository;
+
+    private static final String BEARER_PREFIX = "Bearer ";
 
     @PostMapping("/logout")
     @Operation(summary = "Cerrar sesión y revocar tokens", description = "Invalida la sesión del usuario y revoca todos los tokens OAuth2 asociados")
@@ -37,6 +46,9 @@ public class AuthController {
         log.info("::> Logout request received from: {}", request.getRemoteAddr());
         log.info("::> Session ID: {}",
                 request.getSession(false) != null ? request.getSession(false).getId() : "No session");
+
+        // ── Revocar sesión activa usando el sid del JWT ──────────────
+        revokeCurrentSession(request);
 
         // Obtener la autenticación actual
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -173,6 +185,46 @@ public class AuthController {
             }
         } catch (Exception e) {
             log.error("::> Error revoking token during logout", e);
+        }
+    }
+
+    /**
+     * Extrae el session id (sid) del JWT en el header Authorization y revoca
+     * la sesión en la tabla user_sessions. También elimina la autorización
+     * OAuth2 de la memoria para invalidar el refresh token.
+     */
+    private void revokeCurrentSession(HttpServletRequest request) {
+        try {
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+                log.debug("::> No Bearer token in logout request — skipping session revocation");
+                return;
+            }
+
+            String tokenValue = authHeader.substring(BEARER_PREFIX.length());
+            Jwt jwt = jwtDecoder.decode(tokenValue);
+            String sessionId = jwt.getClaimAsString("sid");
+
+            if (sessionId == null || sessionId.isBlank()) {
+                log.debug("::> No sid claim in JWT — skipping session revocation");
+                return;
+            }
+
+            // Revocar la sesión en la base de datos
+            userSessionRepository.revokeSession(sessionId);
+            log.info("::> Session {} revoked during logout", sessionId);
+
+            // Revocar el access token en el in-memory authorization service
+            OAuth2Authorization authorization = authorizationService.findByToken(
+                    tokenValue, OAuth2TokenType.ACCESS_TOKEN);
+            if (authorization != null) {
+                authorizationService.remove(authorization);
+                log.info("::> OAuth2 authorization removed for session {}", sessionId);
+            }
+        } catch (JwtException e) {
+            log.debug("::> JWT decode failed during logout: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("::> Error revoking session during logout", e);
         }
     }
 }
