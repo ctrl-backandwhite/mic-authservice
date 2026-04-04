@@ -60,9 +60,12 @@ public class SecurityConfig {
     private static final String LOGIN_PATH = "/login";
 
     private final PasswordEncoder passwordEncoder;
+    private final SessionRevokingLogoutHandler sessionRevokingLogoutHandler;
 
-    public SecurityConfig(PasswordEncoder passwordEncoder) {
+    public SecurityConfig(PasswordEncoder passwordEncoder,
+                          SessionRevokingLogoutHandler sessionRevokingLogoutHandler) {
         this.passwordEncoder = passwordEncoder;
+        this.sessionRevokingLogoutHandler = sessionRevokingLogoutHandler;
     }
 
     @Value("${app.security.handler-url:http://localhost:4200}")
@@ -139,6 +142,7 @@ public class SecurityConfig {
                         "/logout"))
                 .logout(logout -> logout
                         .logoutUrl("/logout")
+                        .addLogoutHandler(sessionRevokingLogoutHandler)
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
