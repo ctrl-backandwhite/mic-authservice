@@ -6,8 +6,10 @@ import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.common.exception.ArgumentException;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.model.Role;
+import com.backandwhite.domain.model.UserSession;
 import com.backandwhite.domain.repository.UserRepository;
 import com.backandwhite.domain.repository.RoleRepository;
+import com.backandwhite.domain.repository.UserSessionRepository;
 
 import com.backandwhite.application.handler.UserCommandHandler;
 
@@ -23,6 +25,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +48,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     private final RoleRepository roleRepository;
     private final UserCommandHandler userCommandHandler;
     private final Optional<NotificationProducerService> notificationProducerService;
+    private final UserSessionRepository userSessionRepository;
+    private final OAuth2AuthorizationService authorizationService;
 
     @Value("${app.activation.base-url:http://localhost:6001}")
     private String activationBaseUrl;
@@ -431,5 +437,134 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         log.debug("::> User loaded successfully: {} with {} roles", normalized,
                 user.getRoles() != null ? user.getRoles().size() : 0);
         return user;
+    }
+
+    // ─── Session management ──────────────────────────────────────────────────
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserSession> getActiveSessions(String email) {
+        log.debug("::> Getting active sessions for: {}", email);
+        User user = userRepository.findUserByEmail(email);
+        if (user == null) {
+            return List.of();
+        }
+        return userSessionRepository.findActiveByUserId(user.getId());
+    }
+
+    @Override
+    @Transactional
+    public void requestSessionRevoke(String email, String sessionId) {
+        log.debug("::> Session revoke requested for email: {}, session: {}", email, sessionId);
+        User user = userRepository.findUserByEmail(email);
+        if (user == null) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Usuario no encontrado.");
+        }
+
+        // Verify the session belongs to this user
+        UserSession session = userSessionRepository.findBySessionId(sessionId);
+        if (session == null || !session.getUserId().equals(user.getId())) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Sesión no encontrada.");
+        }
+        if (Boolean.TRUE.equals(session.getRevoked())) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "La sesión ya fue cerrada.");
+        }
+
+        // Generate unique 6‐digit code
+        String code = generateUniqueSessionRevokeCode();
+
+        // Store code + expiry + target session
+        user.setSessionRevokeCode(code);
+        user.setSessionRevokeCodeExpiry(Instant.now().plus(3, ChronoUnit.MINUTES));
+        user.setSessionToRevoke(sessionId);
+        userRepository.update(user);
+
+        // Send code via email
+        sendSessionRevokeCodeEmail(user, code);
+        log.debug("::> Session revoke code generated for user {}", email);
+    }
+
+    @Override
+    @Transactional
+    public void confirmSessionRevoke(String email, String code) {
+        log.debug("::> Confirming session revoke for email: {}", email);
+        User user = userRepository.findUserByEmail(email);
+        if (user == null) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Usuario no encontrado.");
+        }
+
+        // Validate code
+        if (user.getSessionRevokeCode() == null
+                || !user.getSessionRevokeCode().equals(code.trim())) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(),
+                    "El código de verificación es inválido.");
+        }
+
+        // Validate expiry
+        if (user.getSessionRevokeCodeExpiry() != null
+                && Instant.now().isAfter(user.getSessionRevokeCodeExpiry())) {
+            user.setSessionRevokeCode(null);
+            user.setSessionRevokeCodeExpiry(null);
+            user.setSessionToRevoke(null);
+            userRepository.update(user);
+            throw new ArgumentException(VALIDATION_ERROR.getCode(),
+                    "El código de verificación ha expirado. Solicita uno nuevo.");
+        }
+
+        String sessionId = user.getSessionToRevoke();
+
+        // Clear code fields
+        user.setSessionRevokeCode(null);
+        user.setSessionRevokeCodeExpiry(null);
+        user.setSessionToRevoke(null);
+        userRepository.update(user);
+
+        if (sessionId != null) {
+            // Mark session as revoked in DB
+            UserSession session = userSessionRepository.findBySessionId(sessionId);
+            if (session != null) {
+                userSessionRepository.revokeSession(sessionId);
+
+                // Try to remove OAuth2 authorization from in-memory service
+                if (session.getAuthorizationId() != null) {
+                    try {
+                        OAuth2Authorization auth = authorizationService.findById(
+                                session.getAuthorizationId());
+                        if (auth != null) {
+                            authorizationService.remove(auth);
+                            log.info("::> OAuth2 authorization revoked for session {}", sessionId);
+                        }
+                    } catch (Exception e) {
+                        log.warn("::> Could not revoke OAuth2 authorization for session {}",
+                                sessionId, e);
+                    }
+                }
+            }
+            log.info("::> Session {} revoked for user {}", sessionId, email);
+        }
+    }
+
+    private String generateUniqueSessionRevokeCode() {
+        SecureRandom random = new SecureRandom();
+        // Simple 6-digit code (no uniqueness check needed since it's per-user)
+        return String.format("%06d", random.nextInt(1_000_000));
+    }
+
+    private void sendSessionRevokeCodeEmail(User user, String code) {
+        notificationProducerService.ifPresent(producer -> {
+            Map<String, String> variables = new HashMap<>();
+            variables.put("name", user.getName());
+            variables.put("code", code);
+
+            EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
+                    .setRecipient(user.getEmail())
+                    .setSubject("Código de verificación para cerrar sesión")
+                    .setTemplateName("session-revoke-code")
+                    .setVariables(variables)
+                    .build();
+
+            producer.sendNotificationEvent(event);
+            log.debug("::> Session revoke code email sent for user {}", user.getEmail());
+        });
     }
 }

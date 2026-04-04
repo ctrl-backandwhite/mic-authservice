@@ -6,13 +6,17 @@ import com.backandwhite.api.dto.in.ForgotPasswordDtoIn;
 import com.backandwhite.api.dto.in.ResetPasswordDtoIn;
 import com.backandwhite.api.dto.in.ChangePasswordRequestDtoIn;
 import com.backandwhite.api.dto.in.ConfirmPasswordChangeDtoIn;
+import com.backandwhite.api.dto.in.RevokeSessionRequestDtoIn;
+import com.backandwhite.api.dto.in.ConfirmRevokeSessionDtoIn;
 import com.backandwhite.api.dto.in.UserDtoIn;
 import com.backandwhite.api.dto.out.UserDtoOut;
+import com.backandwhite.api.dto.out.UserSessionDtoOut;
 import com.backandwhite.api.mapper.UserDtoMapper;
 import com.backandwhite.api.validation.CreateValidation;
 import com.backandwhite.api.validation.UpdateValidation;
 import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.common.exception.ArgumentException;
+import com.backandwhite.domain.model.UserSession;
 import com.backandwhite.domain.model.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -172,6 +176,52 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
                 OperationResponseDtoOut.builder()
                         .code("OK")
                         .message("Tu contraseña ha sido actualizada correctamente.")
+                        .details(List.of())
+                        .dateTime(ZonedDateTime.now())
+                        .build());
+    }
+
+    // ─── Session management ─────────────────────────────────────────
+
+    @GetMapping("/sessions")
+    public ResponseEntity<List<UserSessionDtoOut>> getActiveSessions(
+            @RequestHeader(value = "X-Auth-Email") String email) {
+        List<UserSession> sessions = useCase.getActiveSessions(email.trim().toLowerCase());
+        List<UserSessionDtoOut> dtos = sessions.stream()
+                .map(s -> UserSessionDtoOut.builder()
+                        .sessionId(s.getSessionId())
+                        .deviceInfo(s.getDeviceInfo())
+                        .ipAddress(s.getIpAddress())
+                        .createdAt(s.getCreatedAt())
+                        .lastActiveAt(s.getLastActiveAt())
+                        .build())
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    @PostMapping("/sessions/revoke/request")
+    public ResponseEntity<OperationResponseDtoOut> requestSessionRevoke(
+            @Valid @RequestBody RevokeSessionRequestDtoIn dto,
+            @RequestHeader(value = "X-Auth-Email") String email) {
+        useCase.requestSessionRevoke(email.trim().toLowerCase(), dto.getSessionId());
+        return ResponseEntity.ok(
+                OperationResponseDtoOut.builder()
+                        .code("OK")
+                        .message("Se ha enviado un código de verificación a tu correo electrónico.")
+                        .details(List.of())
+                        .dateTime(ZonedDateTime.now())
+                        .build());
+    }
+
+    @PostMapping("/sessions/revoke/confirm")
+    public ResponseEntity<OperationResponseDtoOut> confirmSessionRevoke(
+            @Valid @RequestBody ConfirmRevokeSessionDtoIn dto,
+            @RequestHeader(value = "X-Auth-Email") String email) {
+        useCase.confirmSessionRevoke(email.trim().toLowerCase(), dto.getCode());
+        return ResponseEntity.ok(
+                OperationResponseDtoOut.builder()
+                        .code("OK")
+                        .message("La sesión ha sido cerrada correctamente.")
                         .details(List.of())
                         .dateTime(ZonedDateTime.now())
                         .build());

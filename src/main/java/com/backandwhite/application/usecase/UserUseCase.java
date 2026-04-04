@@ -2,6 +2,9 @@ package com.backandwhite.application.usecase;
 
 import com.backandwhite.common.application.BaseUseCase;
 import com.backandwhite.domain.model.User;
+import com.backandwhite.domain.model.UserSession;
+
+import java.util.List;
 
 public interface UserUseCase extends BaseUseCase<User, User, Long> {
 
@@ -32,4 +35,12 @@ public interface UserUseCase extends BaseUseCase<User, User, Long> {
     default User save(User model, String lang) {
         return save(model);
     }
+
+    // ─── Session management ────────────────────────────────────────
+
+    List<UserSession> getActiveSessions(String email);
+
+    void requestSessionRevoke(String email, String sessionId);
+
+    void confirmSessionRevoke(String email, String code);
 }

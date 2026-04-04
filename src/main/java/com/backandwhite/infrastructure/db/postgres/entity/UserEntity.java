@@ -69,6 +69,15 @@ public class UserEntity extends AuditableEntity {
     @Column(name = "password_change_code_expiry")
     private Instant passwordChangeCodeExpiry;
 
+    @Column(name = "session_revoke_code", length = 6)
+    private String sessionRevokeCode;
+
+    @Column(name = "session_revoke_code_expiry")
+    private Instant sessionRevokeCodeExpiry;
+
+    @Column(name = "session_to_revoke", length = 64)
+    private String sessionToRevoke;
+
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -99,7 +108,10 @@ public class UserEntity extends AuditableEntity {
                 && Objects.equals(passwordResetToken, that.passwordResetToken)
                 && Objects.equals(passwordResetTokenExpiry, that.passwordResetTokenExpiry)
                 && Objects.equals(passwordChangeCode, that.passwordChangeCode)
-                && Objects.equals(passwordChangeCodeExpiry, that.passwordChangeCodeExpiry);
+                && Objects.equals(passwordChangeCodeExpiry, that.passwordChangeCodeExpiry)
+                && Objects.equals(sessionRevokeCode, that.sessionRevokeCode)
+                && Objects.equals(sessionRevokeCodeExpiry, that.sessionRevokeCodeExpiry)
+                && Objects.equals(sessionToRevoke, that.sessionToRevoke);
     }
 
     @Override
@@ -107,6 +119,7 @@ public class UserEntity extends AuditableEntity {
         return Objects.hash(id, name, lastName, nickName, email, password, enabled, accountNonExpired, accountNonLocked,
                 credentialsNonExpired, activationToken, activationTokenExpiry,
                 passwordResetToken, passwordResetTokenExpiry,
-                passwordChangeCode, passwordChangeCodeExpiry);
+                passwordChangeCode, passwordChangeCodeExpiry,
+                sessionRevokeCode, sessionRevokeCodeExpiry, sessionToRevoke);
     }
 }
