@@ -16,7 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
- * Interceptor que valida que la sesión (claim "sid" del JWT) no haya sido revocada.
+ * Interceptor que valida que la sesión (claim "sid" del JWT) no haya sido
+ * revocada.
  * Si la sesión fue revocada, devuelve 401 inmediatamente para forzar el cierre
  * en el navegador del usuario.
  */
@@ -32,7 +33,7 @@ public class SessionValidationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-                             Object handler) throws Exception {
+            Object handler) throws Exception {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
