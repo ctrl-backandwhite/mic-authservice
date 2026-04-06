@@ -43,6 +43,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
@@ -61,11 +62,14 @@ public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
     private final SessionRevokingLogoutHandler sessionRevokingLogoutHandler;
+    private final RateLimitFilter rateLimitFilter;
 
     public SecurityConfig(PasswordEncoder passwordEncoder,
-            SessionRevokingLogoutHandler sessionRevokingLogoutHandler) {
+            SessionRevokingLogoutHandler sessionRevokingLogoutHandler,
+            RateLimitFilter rateLimitFilter) {
         this.passwordEncoder = passwordEncoder;
         this.sessionRevokingLogoutHandler = sessionRevokingLogoutHandler;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Value("${app.security.handler-url:http://localhost:4200}")
@@ -152,7 +156,8 @@ public class SecurityConfig {
                         .loginPage(LOGIN_PATH)
                         .successHandler(authenticationSuccessHandler())
                         .failureHandler(new CustomAuthenticationFailureHandler())
-                        .permitAll());
+                        .permitAll())
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -202,8 +207,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService authorizationService() {
-        return new org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService();
+    public org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService authorizationService(
+            org.springframework.jdbc.core.JdbcOperations jdbcOperations,
+            RegisteredClientRepository registeredClientRepository) {
+        return new org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService(
+                jdbcOperations, registeredClientRepository);
     }
 
     @Bean

@@ -1,5 +1,6 @@
 package com.backandwhite.api.dto.out;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,6 +33,7 @@ public class UserDtoOut {
     @Schema(description = "Dirección de correo electrónico del usuario", example = "juan.perez@ejemplo.com")
     private String email;
 
+    @JsonIgnore
     @Schema(description = "Contraseña del usuario (no se retorna en respuestas por seguridad)", example = "***", hidden = true)
     private String password;
 

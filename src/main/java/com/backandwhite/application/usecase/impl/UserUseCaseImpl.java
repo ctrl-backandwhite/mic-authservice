@@ -1,5 +1,6 @@
 package com.backandwhite.application.usecase.impl;
 
+import com.backandwhite.application.service.CustomerEventProducerService;
 import com.backandwhite.application.service.NotificationProducerService;
 import com.backandwhite.core.kafka.avro.EmailNotificationEvent;
 import com.backandwhite.application.usecase.UserUseCase;
@@ -48,6 +49,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     private final RoleRepository roleRepository;
     private final UserCommandHandler userCommandHandler;
     private final Optional<NotificationProducerService> notificationProducerService;
+    private final Optional<CustomerEventProducerService> customerEventProducer;
     private final UserSessionRepository userSessionRepository;
     private final OAuth2AuthorizationService authorizationService;
 
@@ -91,6 +93,12 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
         // Send activation email via Kafka
         sendActivationEmail(savedUser, activationToken);
+
+        // Publish customer.registered event (M-13) — userdetailservice can auto-create
+        // profile
+        customerEventProducer.ifPresent(p -> p.publishCustomerRegistered(
+                savedUser.getId().toString(), savedUser.getEmail(),
+                savedUser.getName(), savedUser.getLastName()));
 
         return savedUser;
     }

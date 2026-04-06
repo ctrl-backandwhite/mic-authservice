@@ -30,7 +30,7 @@ public interface UserDtoMapper {
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "nickName", source = "nickName")
     @Mapping(target = "email", source = "email")
-    @Mapping(target = "password", source = "password")
+    @Mapping(target = "password", ignore = true)
     @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "accountNonExpired", source = "accountNonExpired")
     @Mapping(target = "accountNonLocked", source = "accountNonLocked")

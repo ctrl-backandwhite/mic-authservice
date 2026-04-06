@@ -114,3 +114,10 @@ databaseChangeLog:
                     - sqlFile:
                             path: db.changelog-1.14.sql
                             relativeToChangelogFile: true
+      - changeSet:
+              id: "16"
+              author: NX036-ALFA
+              changes:
+                    - sqlFile:
+                            path: db.changelog-1.15.sql
+                            relativeToChangelogFile: true
