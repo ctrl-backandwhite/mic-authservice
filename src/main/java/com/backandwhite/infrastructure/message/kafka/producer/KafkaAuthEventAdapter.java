@@ -1,5 +1,6 @@
-package com.backandwhite.application.service;
+package com.backandwhite.infrastructure.message.kafka.producer;
 
+import com.backandwhite.application.port.out.AuthEventPort;
 import com.backandwhite.common.constants.AppConstants;
 import com.backandwhite.core.kafka.avro.CustomerRegisteredEvent;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +19,17 @@ import java.time.Instant;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "spring.kafka.enabled", havingValue = "true")
-public class CustomerEventProducerService {
+public class KafkaAuthEventAdapter implements AuthEventPort {
 
     private final KafkaTemplate<String, SpecificRecord> kafkaTemplate;
 
     /**
      * Publishes a customer.registered event after user registration (M-13).
      */
+    @Override
     public void publishCustomerRegistered(String userId, String email,
             String firstName, String lastName) {
-        var event = CustomerRegisteredEvent.newBuilder()
+        CustomerRegisteredEvent event = CustomerRegisteredEvent.newBuilder()
                 .setUserId(userId)
                 .setEmail(email)
                 .setFirstName(firstName)

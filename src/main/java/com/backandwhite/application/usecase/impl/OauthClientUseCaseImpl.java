@@ -1,5 +1,6 @@
 package com.backandwhite.application.usecase.impl;
 
+import com.backandwhite.application.mapper.OauthClientUpdateMapper;
 import com.backandwhite.application.usecase.OauthClientUseCase;
 import com.backandwhite.domain.model.OauthClient;
 import com.backandwhite.domain.repository.OauthClientRepository;
@@ -8,7 +9,6 @@ import com.backandwhite.application.handler.OauthClientCommandHandler;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,9 +23,9 @@ import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 @AllArgsConstructor
 public class OauthClientUseCaseImpl implements OauthClientUseCase {
 
-private final OauthClientRepository oauthClientRepository;
-private final OauthClientCommandHandler oauthClientCommandHandler;
-
+    private final OauthClientRepository oauthClientRepository;
+    private final OauthClientCommandHandler oauthClientCommandHandler;
+    private final OauthClientUpdateMapper oauthClientUpdateMapper;
 
     @Override
     @Transactional
@@ -62,14 +62,14 @@ private final OauthClientCommandHandler oauthClientCommandHandler;
     public OauthClient update(OauthClient model, Long id) {
         log.debug("::> Updating oauthclient {}", model);
         OauthClient existing = this.getById(id);
-        BeanUtils.copyProperties(model, existing, "id", "createdAt", "updatedAt", "createdBy", "updatedBy");
+        oauthClientUpdateMapper.updateFromModel(model, existing);
         oauthClientCommandHandler.validate(existing);
         return oauthClientRepository.update(existing);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = {"oauthClient_all", "oauthClient"}, allEntries = true)
+    @CacheEvict(value = { "oauthClient_all", "oauthClient" }, allEntries = true)
     public void delete(Long id) {
         this.getById(id);
         log.debug("::> Deleting oauthclient with id {}", id);

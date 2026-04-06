@@ -1,5 +1,6 @@
 package com.backandwhite.application.usecase.impl;
 
+import com.backandwhite.application.mapper.PermissionUpdateMapper;
 import com.backandwhite.application.usecase.PermissionUseCase;
 import com.backandwhite.domain.model.Permission;
 import com.backandwhite.domain.repository.PermissionRepository;
@@ -8,7 +9,6 @@ import com.backandwhite.application.handler.PermissionCommandHandler;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,6 +25,7 @@ public class PermissionUseCaseImpl implements PermissionUseCase {
 
     private final PermissionRepository permissionRepository;
     private final PermissionCommandHandler permissionCommandHandler;
+    private final PermissionUpdateMapper permissionUpdateMapper;
 
     @Override
     @Transactional
@@ -61,13 +62,13 @@ public class PermissionUseCaseImpl implements PermissionUseCase {
     public Permission update(Permission model, Long id) {
         log.debug("::> Updating permission {}", model);
         Permission existing = this.getById(id);
-        BeanUtils.copyProperties(model, existing, "id");
+        permissionUpdateMapper.updateFromModel(model, existing);
         return permissionRepository.update(existing);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = {"permission_all", "permission"}, allEntries = true)
+    @CacheEvict(value = { "permission_all", "permission" }, allEntries = true)
     public void delete(Long id) {
         this.getById(id);
         log.debug("::> Deleting permission with id {}", id);

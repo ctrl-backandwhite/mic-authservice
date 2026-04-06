@@ -1,7 +1,8 @@
 package com.backandwhite.application.usecase.impl;
 
-import com.backandwhite.application.service.CustomerEventProducerService;
-import com.backandwhite.application.service.NotificationProducerService;
+import com.backandwhite.application.mapper.UserUpdateMapper;
+import com.backandwhite.application.port.out.AuthEventPort;
+import com.backandwhite.application.port.out.NotificationEventPort;
 import com.backandwhite.core.kafka.avro.EmailNotificationEvent;
 import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.common.exception.ArgumentException;
@@ -17,7 +18,6 @@ import com.backandwhite.application.handler.UserCommandHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.NonNull;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -48,10 +48,11 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserCommandHandler userCommandHandler;
-    private final Optional<NotificationProducerService> notificationProducerService;
-    private final Optional<CustomerEventProducerService> customerEventProducer;
+    private final NotificationEventPort notificationEventPort;
+    private final AuthEventPort authEventPort;
     private final UserSessionRepository userSessionRepository;
     private final OAuth2AuthorizationService authorizationService;
+    private final UserUpdateMapper userUpdateMapper;
 
     @Value("${app.activation.base-url:http://localhost:6001}")
     private String activationBaseUrl;
@@ -96,31 +97,29 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
         // Publish customer.registered event (M-13) — userdetailservice can auto-create
         // profile
-        customerEventProducer.ifPresent(p -> p.publishCustomerRegistered(
+        authEventPort.publishCustomerRegistered(
                 savedUser.getId().toString(), savedUser.getEmail(),
-                savedUser.getName(), savedUser.getLastName()));
+                savedUser.getName(), savedUser.getLastName());
 
         return savedUser;
     }
 
     private void sendActivationEmail(User user, String activationToken) {
-        notificationProducerService.ifPresent(producer -> {
-            String activationUrl = activationBaseUrl + "/api/v1/users/activate?token=" + activationToken;
+        String activationUrl = activationBaseUrl + "/api/v1/users/activate?token=" + activationToken;
 
-            Map<String, String> variables = new HashMap<>();
-            variables.put("name", user.getName());
-            variables.put("activationUrl", activationUrl);
+        Map<String, String> variables = new HashMap<>();
+        variables.put("name", user.getName());
+        variables.put("activationUrl", activationUrl);
 
-            EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
-                    .setRecipient(user.getEmail())
-                    .setSubject("Activa tu cuenta en Nexa")
-                    .setTemplateName("account-activation")
-                    .setVariables(variables)
-                    .build();
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
+                .setRecipient(user.getEmail())
+                .setSubject("Activa tu cuenta en Nexa")
+                .setTemplateName("account-activation")
+                .setVariables(variables)
+                .build();
 
-            producer.sendNotificationEvent(event);
-            log.debug("::> Activation email event sent for user {}", user.getEmail());
-        });
+        notificationEventPort.sendNotificationEvent(event);
+        log.debug("::> Activation email event sent for user {}", user.getEmail());
     }
 
     private Role findGuestRole() {
@@ -162,7 +161,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     public User update(User model, Long id) {
         log.debug("::> Updating user {}", model);
         User existing = this.getById(id);
-        BeanUtils.copyProperties(model, existing, "id", "password");
+        userUpdateMapper.updateFromModel(model, existing);
         userCommandHandler.validate(existing);
         return userRepository.update(existing);
     }
@@ -219,23 +218,21 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     }
 
     private void sendWelcomeEmail(User user) {
-        notificationProducerService.ifPresent(producer -> {
-            String loginUrl = activationBaseUrl + "/login";
+        String loginUrl = activationBaseUrl + "/login";
 
-            Map<String, String> variables = new HashMap<>();
-            variables.put("name", user.getName());
-            variables.put("loginUrl", loginUrl);
+        Map<String, String> variables = new HashMap<>();
+        variables.put("name", user.getName());
+        variables.put("loginUrl", loginUrl);
 
-            EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
-                    .setRecipient(user.getEmail())
-                    .setSubject("¡Bienvenido a NX036!")
-                    .setTemplateName("welcome-email")
-                    .setVariables(variables)
-                    .build();
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
+                .setRecipient(user.getEmail())
+                .setSubject("¡Bienvenido a NX036!")
+                .setTemplateName("welcome-email")
+                .setVariables(variables)
+                .build();
 
-            producer.sendNotificationEvent(event);
-            log.debug("::> Welcome email event sent for user {}", user.getEmail());
-        });
+        notificationEventPort.sendNotificationEvent(event);
+        log.debug("::> Welcome email event sent for user {}", user.getEmail());
     }
 
     @Override
@@ -264,23 +261,21 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     }
 
     private void sendPasswordResetEmail(User user, String resetToken) {
-        notificationProducerService.ifPresent(producer -> {
-            String resetUrl = activationBaseUrl + "/reset-password.html?token=" + resetToken;
+        String resetUrl = activationBaseUrl + "/reset-password.html?token=" + resetToken;
 
-            Map<String, String> variables = new HashMap<>();
-            variables.put("name", user.getName());
-            variables.put("resetUrl", resetUrl);
+        Map<String, String> variables = new HashMap<>();
+        variables.put("name", user.getName());
+        variables.put("resetUrl", resetUrl);
 
-            EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
-                    .setRecipient(user.getEmail())
-                    .setSubject("Recupera tu contraseña en Nexa")
-                    .setTemplateName("password-reset")
-                    .setVariables(variables)
-                    .build();
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
+                .setRecipient(user.getEmail())
+                .setSubject("Recupera tu contraseña en Nexa")
+                .setTemplateName("password-reset")
+                .setVariables(variables)
+                .build();
 
-            producer.sendNotificationEvent(event);
-            log.debug("::> Password reset email event sent for user {}", user.getEmail());
-        });
+        notificationEventPort.sendNotificationEvent(event);
+        log.debug("::> Password reset email event sent for user {}", user.getEmail());
     }
 
     @Override
@@ -409,21 +404,19 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     }
 
     private void sendPasswordChangeCodeEmail(User user, String code) {
-        notificationProducerService.ifPresent(producer -> {
-            Map<String, String> variables = new HashMap<>();
-            variables.put("name", user.getName());
-            variables.put("code", code);
+        Map<String, String> variables = new HashMap<>();
+        variables.put("name", user.getName());
+        variables.put("code", code);
 
-            EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
-                    .setRecipient(user.getEmail())
-                    .setSubject("Código de verificación para cambio de contraseña")
-                    .setTemplateName("password-change-code")
-                    .setVariables(variables)
-                    .build();
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
+                .setRecipient(user.getEmail())
+                .setSubject("Código de verificación para cambio de contraseña")
+                .setTemplateName("password-change-code")
+                .setVariables(variables)
+                .build();
 
-            producer.sendNotificationEvent(event);
-            log.debug("::> Password change code email sent for user {}", user.getEmail());
-        });
+        notificationEventPort.sendNotificationEvent(event);
+        log.debug("::> Password change code email sent for user {}", user.getEmail());
     }
 
     @Override
@@ -559,20 +552,18 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     }
 
     private void sendSessionRevokeCodeEmail(User user, String code) {
-        notificationProducerService.ifPresent(producer -> {
-            Map<String, String> variables = new HashMap<>();
-            variables.put("name", user.getName());
-            variables.put("code", code);
+        Map<String, String> variables = new HashMap<>();
+        variables.put("name", user.getName());
+        variables.put("code", code);
 
-            EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
-                    .setRecipient(user.getEmail())
-                    .setSubject("Código de verificación para cerrar sesión")
-                    .setTemplateName("session-revoke-code")
-                    .setVariables(variables)
-                    .build();
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
+                .setRecipient(user.getEmail())
+                .setSubject("Código de verificación para cerrar sesión")
+                .setTemplateName("session-revoke-code")
+                .setVariables(variables)
+                .build();
 
-            producer.sendNotificationEvent(event);
-            log.debug("::> Session revoke code email sent for user {}", user.getEmail());
-        });
+        notificationEventPort.sendNotificationEvent(event);
+        log.debug("::> Session revoke code email sent for user {}", user.getEmail());
     }
 }

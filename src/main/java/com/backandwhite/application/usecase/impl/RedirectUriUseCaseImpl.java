@@ -1,5 +1,6 @@
 package com.backandwhite.application.usecase.impl;
 
+import com.backandwhite.application.mapper.RedirectUriUpdateMapper;
 import com.backandwhite.application.usecase.RedirectUriUseCase;
 import com.backandwhite.domain.model.RedirectUri;
 import com.backandwhite.domain.repository.RedirectUriRepository;
@@ -8,7 +9,6 @@ import com.backandwhite.application.handler.RedirectUriCommandHandler;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,9 +23,9 @@ import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 @AllArgsConstructor
 public class RedirectUriUseCaseImpl implements RedirectUriUseCase {
 
-private final RedirectUriRepository redirectUriRepository;
-private final RedirectUriCommandHandler redirectUriCommandHandler;
-
+    private final RedirectUriRepository redirectUriRepository;
+    private final RedirectUriCommandHandler redirectUriCommandHandler;
+    private final RedirectUriUpdateMapper redirectUriUpdateMapper;
 
     @Override
     @Transactional
@@ -62,13 +62,13 @@ private final RedirectUriCommandHandler redirectUriCommandHandler;
     public RedirectUri update(RedirectUri model, Long id) {
         log.debug("::> Updating redirecturi {}", model);
         RedirectUri existing = this.getById(id);
-        BeanUtils.copyProperties(model, existing, "id");
+        redirectUriUpdateMapper.updateFromModel(model, existing);
         return redirectUriRepository.update(existing);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = {"redirectUri_all", "redirectUri"}, allEntries = true)
+    @CacheEvict(value = { "redirectUri_all", "redirectUri" }, allEntries = true)
     public void delete(Long id) {
         this.getById(id);
         log.debug("::> Deleting redirecturi with id {}", id);

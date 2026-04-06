@@ -1,5 +1,6 @@
 package com.backandwhite.application.usecase.impl;
 
+import com.backandwhite.application.mapper.ScopeUpdateMapper;
 import com.backandwhite.application.usecase.ScopeUseCase;
 import com.backandwhite.domain.model.Scope;
 import com.backandwhite.domain.repository.ScopeRepository;
@@ -8,7 +9,6 @@ import com.backandwhite.application.handler.ScopeCommandHandler;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,6 +25,7 @@ public class ScopeUseCaseImpl implements ScopeUseCase {
 
     private final ScopeRepository scopeRepository;
     private final ScopeCommandHandler scopeCommandHandler;
+    private final ScopeUpdateMapper scopeUpdateMapper;
 
     @Override
     @Transactional
@@ -61,7 +62,7 @@ public class ScopeUseCaseImpl implements ScopeUseCase {
     public Scope update(Scope model, Long id) {
         log.debug("::> Updating scope {}", model);
         Scope existing = this.getById(id);
-        BeanUtils.copyProperties(model, existing, "id");
+        scopeUpdateMapper.updateFromModel(model, existing);
         return scopeRepository.update(existing);
     }
 

@@ -1,5 +1,6 @@
 package com.backandwhite.application.usecase.impl;
 
+import com.backandwhite.application.mapper.GroupUpdateMapper;
 import com.backandwhite.application.usecase.GroupUseCase;
 import com.backandwhite.domain.model.Group;
 import com.backandwhite.domain.repository.GroupRepository;
@@ -8,7 +9,6 @@ import com.backandwhite.application.handler.GroupCommandHandler;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,9 +23,9 @@ import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 @AllArgsConstructor
 public class GroupUseCaseImpl implements GroupUseCase {
 
-private final GroupRepository groupRepository;
-private final GroupCommandHandler groupCommandHandler;
-
+    private final GroupRepository groupRepository;
+    private final GroupCommandHandler groupCommandHandler;
+    private final GroupUpdateMapper groupUpdateMapper;
 
     @Override
     @Transactional
@@ -62,14 +62,14 @@ private final GroupCommandHandler groupCommandHandler;
     public Group update(Group model, Long id) {
         log.debug("::> Updating group {}", model);
         Group existing = this.getById(id);
-        BeanUtils.copyProperties(model, existing, "id", "createdAt", "updatedAt", "createdBy", "updatedBy");
+        groupUpdateMapper.updateFromModel(model, existing);
         groupCommandHandler.validate(existing);
         return groupRepository.update(existing);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = {"group_all", "group"}, allEntries = true)
+    @CacheEvict(value = { "group_all", "group" }, allEntries = true)
     public void delete(Long id) {
         this.getById(id);
         log.debug("::> Deleting group with id {}", id);
