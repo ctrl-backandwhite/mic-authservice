@@ -124,6 +124,7 @@ public class SecurityConfig {
 
         http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .with(authorizationServerConfigurer,
                         authorizationServer -> authorizationServer
                                 .oidc(Customizer.withDefaults())
@@ -147,8 +148,7 @@ public class SecurityConfig {
                         .requestMatchers(GET_PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/oauth2/**", LOGIN_PATH,
-                        "/logout"))
+                .csrf(AbstractHttpConfigurer::disable)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .addLogoutHandler(sessionRevokingLogoutHandler)
