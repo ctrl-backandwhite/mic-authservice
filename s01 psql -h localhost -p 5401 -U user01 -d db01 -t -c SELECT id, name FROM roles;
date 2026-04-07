@@ -1,5 +1,0 @@
- enabled | id | name  | unique_name | description |          created_at           | updated_at | created_by | updated_by 
----------+----+-------+-------------+-------------+-------------------------------+------------+------------+------------
- t       |  4 | Guest | ROLE_GUEST  | Guest role  | 2026-03-30 11:33:14.207237+00 |            |            | 
-(1 row)
-
