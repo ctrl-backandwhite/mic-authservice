@@ -38,6 +38,7 @@ src/main/resources/application-local.yaml
 
 ### Docker (local only) ###
 docker-compose.yml
+Dockerfile
 
 ### Archivos temporales ###
 *.args
