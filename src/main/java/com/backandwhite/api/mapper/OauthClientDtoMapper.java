@@ -2,25 +2,18 @@ package com.backandwhite.api.mapper;
 
 import com.backandwhite.api.dto.in.OauthClientDtoIn;
 import com.backandwhite.api.dto.out.OauthClientDtoOut;
-import com.backandwhite.domain.model.OauthClient;
-
-import com.backandwhite.domain.model.Scope;
-import org.mapstruct.Named;
-import java.util.Collections;
-import java.util.stream.Collectors;
-import com.backandwhite.domain.model.RedirectUri;
 import com.backandwhite.domain.model.GrantType;
-
+import com.backandwhite.domain.model.OauthClient;
+import com.backandwhite.domain.model.RedirectUri;
+import com.backandwhite.domain.model.Scope;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-        ScopeDtoMapper.class,
-        RedirectUriDtoMapper.class,
-        GrantTypeDtoMapper.class,
-})
+@Mapper(componentModel = "spring", uses = {ScopeDtoMapper.class, RedirectUriDtoMapper.class, GrantTypeDtoMapper.class,})
 public interface OauthClientDtoMapper {
 
     @Mapping(target = "id", source = "id")
@@ -53,9 +46,7 @@ public interface OauthClientDtoMapper {
         if (scopeIds == null || scopeIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return scopeIds.stream()
-                .map(id -> Scope.builder().id(id).build())
-                .collect(Collectors.toList());
+        return scopeIds.stream().map(id -> Scope.builder().id(id).build()).collect(Collectors.toList());
     }
 
     @Named("mapRedirectUriIds")
@@ -63,9 +54,7 @@ public interface OauthClientDtoMapper {
         if (redirectUriIds == null || redirectUriIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return redirectUriIds.stream()
-                .map(id -> RedirectUri.builder().id(id).build())
-                .collect(Collectors.toList());
+        return redirectUriIds.stream().map(id -> RedirectUri.builder().id(id).build()).collect(Collectors.toList());
     }
 
     @Named("mapGrantTypeIds")
@@ -73,8 +62,6 @@ public interface OauthClientDtoMapper {
         if (grantTypeIds == null || grantTypeIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return grantTypeIds.stream()
-                .map(id -> GrantType.builder().id(id).build())
-                .collect(Collectors.toList());
+        return grantTypeIds.stream().map(id -> GrantType.builder().id(id).build()).collect(Collectors.toList());
     }
 }

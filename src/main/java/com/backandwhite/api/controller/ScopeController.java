@@ -7,12 +7,11 @@ import com.backandwhite.api.mapper.ScopeDtoMapper;
 import com.backandwhite.application.usecase.ScopeUseCase;
 import com.backandwhite.domain.model.Scope;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,9 +49,12 @@ public class ScopeController implements BaseApi<ScopeDtoIn, ScopeDtoOut, Long> {
         return new ResponseEntity<>(mapper.toDtoOut(useCase.getById(id)), HttpStatus.OK);
     }
 
-    @Override
     @GetMapping
-    public ResponseEntity<List<ScopeDtoOut>> findAll() {
-        return new ResponseEntity<>(mapper.toDtoOutList(useCase.findAll()), HttpStatus.OK);
+    public ResponseEntity<List<ScopeDtoOut>> findAll(@RequestParam(required = false) Boolean enabled) {
+        List<Scope> scopes = useCase.findAll();
+        if (enabled != null) {
+            scopes = scopes.stream().filter(s -> enabled.equals(s.getEnabled())).toList();
+        }
+        return new ResponseEntity<>(mapper.toDtoOutList(scopes), HttpStatus.OK);
     }
 }

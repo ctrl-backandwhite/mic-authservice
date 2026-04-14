@@ -1,12 +1,16 @@
 package com.backandwhite.application.usecase.impl;
 
 import com.backandwhite.application.handler.UserCommandHandler;
-import com.backandwhite.application.service.NotificationProducerService;
+import com.backandwhite.application.mapper.UserUpdateMapper;
+import com.backandwhite.application.port.out.AuthEventPort;
+import com.backandwhite.application.port.out.NotificationEventPort;
+import com.backandwhite.domain.repository.UserSessionRepository;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.repository.UserRepository;
 import com.backandwhite.domain.repository.RoleRepository;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import com.backandwhite.provider.UserProvider;
 import com.backandwhite.provider.RoleProvider;
 import org.junit.jupiter.api.Test;
@@ -18,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.backandwhite.provider.UserProvider.otherUser;
 import static com.backandwhite.provider.UserProvider.user;
@@ -27,9 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.beans.BeanUtils;
 
 @ExtendWith(MockitoExtension.class)
 class UserUseCaseImplTest {
@@ -46,8 +52,20 @@ class UserUseCaseImplTest {
     @Mock
     private UserCommandHandler userCommandHandler;
 
-    @Spy
-    private Optional<NotificationProducerService> notificationProducerService = Optional.empty();
+    @Mock
+    private NotificationEventPort notificationEventPort;
+
+    @Mock
+    private AuthEventPort authEventPort;
+
+    @Mock
+    private UserSessionRepository userSessionRepository;
+
+    @Mock
+    private OAuth2AuthorizationService authorizationService;
+
+    @Mock
+    private UserUpdateMapper userUpdateMapper;
 
     @InjectMocks
     private UserUseCaseImpl userUseCase;
@@ -125,11 +143,13 @@ class UserUseCaseImplTest {
         User update = otherUser().withId(99L);
 
         when(userRepository.getById(10L)).thenReturn(existing);
+        doAnswer(inv -> { BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id", "password", "authorities"); return null; })
+                .when(userUpdateMapper).updateFromModel(any(User.class), any(User.class));
         when(userRepository.update(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         User result = userUseCase.update(update, 10L);
 
-        verify(userCommandHandler).validate(any(User.class));
+        verify(userCommandHandler).validate(argThat(u -> u.getId().equals(10L)));
         verify(userRepository).update(any(User.class));
         assertThat(result)
                 .usingRecursiveComparison()

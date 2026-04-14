@@ -7,12 +7,11 @@ import com.backandwhite.api.mapper.OauthClientDtoMapper;
 import com.backandwhite.application.usecase.OauthClientUseCase;
 import com.backandwhite.domain.model.OauthClient;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

@@ -7,12 +7,11 @@ import com.backandwhite.api.mapper.GrantTypeDtoMapper;
 import com.backandwhite.application.usecase.GrantTypeUseCase;
 import com.backandwhite.domain.model.GrantType;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,9 +49,12 @@ public class GrantTypeController implements BaseApi<GrantTypeDtoIn, GrantTypeDto
         return new ResponseEntity<>(mapper.toDtoOut(useCase.getById(id)), HttpStatus.OK);
     }
 
-    @Override
     @GetMapping
-    public ResponseEntity<List<GrantTypeDtoOut>> findAll() {
-        return new ResponseEntity<>(mapper.toDtoOutList(useCase.findAll()), HttpStatus.OK);
+    public ResponseEntity<List<GrantTypeDtoOut>> findAll(@RequestParam(required = false) Boolean enabled) {
+        List<GrantType> grantTypes = useCase.findAll();
+        if (enabled != null) {
+            grantTypes = grantTypes.stream().filter(g -> enabled.equals(g.getEnabled())).toList();
+        }
+        return new ResponseEntity<>(mapper.toDtoOutList(grantTypes), HttpStatus.OK);
     }
 }

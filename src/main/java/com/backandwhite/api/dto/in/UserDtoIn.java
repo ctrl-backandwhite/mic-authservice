@@ -1,16 +1,14 @@
 package com.backandwhite.api.dto.in;
 
+import com.backandwhite.api.validation.CreateValidation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-
-import com.backandwhite.api.validation.CreateValidation;
-
 import java.util.List;
+import lombok.*;
 
 @Data
 @With
@@ -21,55 +19,55 @@ import java.util.List;
 public class UserDtoIn {
 
     @NotEmpty
-    @Schema(description = "Nombre del usuario", example = "Juan", minLength = 2, maxLength = 100)
+    @Schema(description = "First name of the user", example = "John", minLength = 2, maxLength = 100)
     private String name;
 
     @NotEmpty
-    @Schema(description = "Apellido del usuario", example = "Pérez García", minLength = 2, maxLength = 100)
+    @Schema(description = "Last name of the user", example = "Smith", minLength = 2, maxLength = 100)
     private String lastName;
 
-    @Schema(description = "Nombre de usuario único para login. Solo letras, números y guiones", example = "juan.perez", minLength = 3, maxLength = 50)
+    @Schema(description = "Unique username for login. Letters, numbers and hyphens only", example = "john.smith", minLength = 3, maxLength = 50)
     private String nickName;
 
     @NotEmpty
     @Email
-    @Schema(description = "Dirección de correo electrónico del usuario (debe ser única)", example = "juan.perez@ejemplo.com")
+    @Schema(description = "User's email address (must be unique)", example = "john.smith@example.com")
     private String email;
 
-    @Schema(description = "Contraseña del usuario (mínimo 8 caracteres, debe contener mayúsculas, minúsculas y números)", example = "MiPassword123!", minLength = 8, maxLength = 255)
-    @NotEmpty(message = "La contraseña es obligatoria", groups = CreateValidation.class)
+    @Schema(description = "User password (minimum 8 characters, must contain uppercase, lowercase and numbers)", example = "MyPassword123!", minLength = 8, maxLength = 255)
+    @NotEmpty(message = "Password is required", groups = CreateValidation.class)
     private String password;
 
-    @Schema(description = "Contraseña del usuario (mínimo 8 caracteres, debe contener mayúsculas, minúsculas y números)", example = "MiPassword123!", minLength = 8, maxLength = 255)
-    @NotEmpty(message = "La confirmación de contraseña es obligatoria", groups = CreateValidation.class)
+    @Schema(description = "User password confirmation (minimum 8 characters, must contain uppercase, lowercase and numbers)", example = "MyPassword123!", minLength = 8, maxLength = 255)
+    @NotEmpty(message = "Password confirmation is required", groups = CreateValidation.class)
     private String confirmPassword;
 
     @NotNull
-    @Schema(description = "Indica si la cuenta del usuario está habilitada y activa", example = "true", defaultValue = "true")
+    @Schema(description = "Indicates whether the user account is enabled and active", example = "true", defaultValue = "true")
     private Boolean enabled;
 
-    @NotNull(message = "El campo accountNonExpired no puede ser nulo")
-    @Schema(description = "Indica si la cuenta del usuario no ha expirado", example = "true", defaultValue = "true")
+    @NotNull(message = "The accountNonExpired field cannot be null")
+    @Schema(description = "Indicates whether the user account has not expired", example = "true", defaultValue = "true")
     private Boolean accountNonExpired;
 
-    @NotNull(message = "El campo accountNonLocked no puede ser nulo")
-    @Schema(description = "Indica si la cuenta del usuario no está bloqueada", example = "true", defaultValue = "true")
+    @NotNull(message = "The accountNonLocked field cannot be null")
+    @Schema(description = "Indicates whether the user account is not locked", example = "true", defaultValue = "true")
     private Boolean accountNonLocked;
 
-    @NotNull(message = "El campo credentialsNonExpired no puede ser nulo")
-    @Schema(description = "Indica si las credenciales (contraseña) del usuario no han expirado", example = "true", defaultValue = "true")
+    @NotNull(message = "The credentialsNonExpired field cannot be null")
+    @Schema(description = "Indicates whether the user credentials have not expired", example = "true", defaultValue = "true")
     private Boolean credentialsNonExpired;
 
-    @ArraySchema(schema = @Schema(description = "ID del scope", example = "1", minimum = "1"), arraySchema = @Schema(description = "Lista de IDs de scopes asignados al usuario", example = "[1, 2, 3]"))
+    @ArraySchema(schema = @Schema(description = "Scope ID", example = "1", minimum = "1"), arraySchema = @Schema(description = "List of scope IDs assigned to the user", example = "[1, 2, 3]"))
     private List<Long> scopeIds;
 
-    @ArraySchema(schema = @Schema(description = "ID del rol", example = "1", minimum = "1"), arraySchema = @Schema(description = "Lista de IDs de roles asignados directamente al usuario", example = "[1, 2]"))
+    @ArraySchema(schema = @Schema(description = "Role ID", example = "1", minimum = "1"), arraySchema = @Schema(description = "List of role IDs directly assigned to the user", example = "[1, 2]"))
     private List<Long> roleIds;
 
-    @ArraySchema(schema = @Schema(description = "ID del grupo", example = "1", minimum = "1"), arraySchema = @Schema(description = "Lista de IDs de grupos a los que pertenece el usuario", example = "[1]"))
+    @ArraySchema(schema = @Schema(description = "Group ID", example = "1", minimum = "1"), arraySchema = @Schema(description = "List of group IDs the user belongs to", example = "[1]"))
     private List<Long> groupIds;
 
-    @AssertTrue(message = "La contraseña y su confirmación no coinciden", groups = CreateValidation.class)
+    @AssertTrue(message = "Password and confirmation do not match", groups = CreateValidation.class)
     public boolean isPasswordConfirmed() {
         if (password == null || confirmPassword == null) {
             return false;

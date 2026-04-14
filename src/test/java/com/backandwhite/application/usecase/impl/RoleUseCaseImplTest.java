@@ -3,6 +3,7 @@ package com.backandwhite.application.usecase.impl;
 import com.backandwhite.application.handler.RoleCommandHandler;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.Role;
+import com.backandwhite.application.mapper.RoleUpdateMapper;
 import com.backandwhite.domain.repository.RoleRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,8 +19,10 @@ import static com.backandwhite.provider.RoleProvider.adminRole;
 import static com.backandwhite.provider.RoleProvider.userRole;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.beans.BeanUtils;
 
 @ExtendWith(MockitoExtension.class)
 class RoleUseCaseImplTest {
@@ -29,6 +32,9 @@ class RoleUseCaseImplTest {
 
     @Mock
     private RoleCommandHandler roleCommandHandler;
+
+    @Mock
+    private RoleUpdateMapper roleUpdateMapper;
 
     @InjectMocks
     private RoleUseCaseImpl roleUseCase;
@@ -87,6 +93,8 @@ class RoleUseCaseImplTest {
         Role update = userRole().withId(99L);
 
         when(roleRepository.getById(10L)).thenReturn(existing);
+        doAnswer(inv -> { BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id"); return null; })
+                .when(roleUpdateMapper).updateFromModel(any(Role.class), any(Role.class));
         when(roleRepository.update(any(Role.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Role result = roleUseCase.update(update, 10L);

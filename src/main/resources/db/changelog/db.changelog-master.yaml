@@ -1,77 +1,130 @@
 databaseChangeLog:
         - changeSet:
-                  id: 1
-                  author: Jesus.Finol
+                  id: "1"
+                  author: NX036-ALFA
                   context: local,dev
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.0.sql
-                                    relativeToChangelogFile: "true"
+                                    relativeToChangelogFile: true
         - changeSet:
-                  id: 2
-                  author: Jesus.Finol
+                  id: "2"
+                  author: NX036-ALFA
                   context: local,dev
+                  runOnChange: true
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.1.sql
-                                    relativeToChangelogFile: "true"
+                                    relativeToChangelogFile: true
+                                    splitStatements: false
         - changeSet:
-                  id: 3
-                  author: Jesus.Finol
+                  id: "3"
+                  author: NX036-ALFA
                   context: local,dev
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.2.sql
-                                    relativeToChangelogFile: "true"
+                                    relativeToChangelogFile: true
+                                    splitStatements: false
         - changeSet:
-                  id: 4
-                  author: Jesus.Finol
+                  id: "4"
+                  author: NX036-ALFA
                   context: local,dev
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.3.sql
-                                    relativeToChangelogFile: "true"
+                                    relativeToChangelogFile: true
         - changeSet:
-                  id: 5
-                  author: Jesus.Finol
+                  id: "5"
+                  author: NX036-ALFA
                   context: local,dev
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.4.sql
-                                    relativeToChangelogFile: "true"
+                                    relativeToChangelogFile: true
         - changeSet:
-                  id: 6
-                  author: Jesus.Finol
+                  id: "6"
+                  author: NX036-ALFA
                   context: local,dev
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.5.sql
-                                    relativeToChangelogFile: "true"
+                                    relativeToChangelogFile: true
         - changeSet:
                   id: "7"
-                  author: Jesus.Finol
+                  author: NX036-ALFA
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.6.sql
-                                    relativeToChangelogFile: "true"
+                                    relativeToChangelogFile: true
         - changeSet:
                   id: "8"
-                  author: Jesus.Finol
+                  author: NX036-ALFA
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.7.sql
-                                    relativeToChangelogFile: "true"
+                                    relativeToChangelogFile: true
         - changeSet:
                   id: "9"
-                  author: Jesus.Finol
+                  author: NX036-ALFA
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.8.sql
-                                    relativeToChangelogFile: "true"
+                                    relativeToChangelogFile: true
         - changeSet:
                   id: "10"
-                  author: Jesus.Finol
+                  author: NX036-ALFA
                   changes:
                           - sqlFile:
                                     path: db.changelog-1.9.sql
-                                    relativeToChangelogFile: "true"
+                                    relativeToChangelogFile: true
+        - changeSet:
+                  id: "11"
+                  author: NX036-ALFA
+                  context: local,dev
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.10.sql
+                                    relativeToChangelogFile: true
+        - changeSet:
+                  id: "12"
+                  author: NX036-ALFA
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.11.sql
+                                    relativeToChangelogFile: true
+        - changeSet:
+                  id: "13"
+                  author: NX036-ALFA
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.12.sql
+                                    relativeToChangelogFile: true
+        - changeSet:
+                  id: "14"
+                  author: NX036-ALFA
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.13.sql
+                                    relativeToChangelogFile: true
+        - changeSet:
+                  id: "15"
+                  author: NX036-ALFA
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.14.sql
+                                    relativeToChangelogFile: true
+        - changeSet:
+                  id: "16"
+                  author: NX036-ALFA
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.15.sql
+                                    relativeToChangelogFile: true
+        - changeSet:
+                  id: "17"
+                  author: NX036-ALFA
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.16.sql
+                                    relativeToChangelogFile: true

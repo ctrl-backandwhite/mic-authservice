@@ -1,5 +1,9 @@
 package com.backandwhite.api.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,10 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
@@ -75,7 +75,7 @@ class AuthControllerTest {
         when(request.getScheme()).thenReturn("http");
         when(request.isSecure()).thenReturn(false);
         when(request.getSession(false)).thenReturn(null);
-        when(request.getCookies()).thenReturn(new Cookie[] { new Cookie("foo", "bar") });
+        when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("foo", "bar")});
 
         ResponseEntity<Void> result = controller.logout(request, response, null);
 

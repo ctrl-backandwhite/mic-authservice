@@ -5,13 +5,10 @@ import com.backandwhite.domain.repository.RedirectUriRepository;
 import com.backandwhite.infrastructure.db.postgres.entity.RedirectUriEntity;
 import com.backandwhite.infrastructure.db.postgres.mapper.RedirectUriEntityMapper;
 import com.backandwhite.infrastructure.db.postgres.repository.RedirectUriJpaRepositoryAdapter;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
 @Log4j2
 @Repository
@@ -46,7 +43,6 @@ public class RedirectUriRepositoryImpl implements RedirectUriRepository {
     @Override
     public RedirectUri getById(Long id) {
         RedirectUriEntity entity = redirectUriJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("RedirectUri", id);
-        return redirectUriEntityMapper.toDomain(entity);
+        return entity != null ? redirectUriEntityMapper.toDomain(entity) : null;
     }
 }

@@ -2,13 +2,11 @@ package com.backandwhite.infrastructure.db.postgres.mapper;
 
 import com.backandwhite.domain.model.RedirectUri;
 import com.backandwhite.infrastructure.db.postgres.entity.RedirectUriEntity;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-})
+@Mapper(componentModel = "spring", uses = {})
 public interface RedirectUriEntityMapper {
 
     @Mapping(target = "id", source = "id")

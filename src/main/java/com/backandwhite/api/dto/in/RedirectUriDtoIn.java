@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-
-
 @Data
 @With
 @Builder
@@ -16,26 +14,14 @@ import lombok.*;
 public class RedirectUriDtoIn {
 
     @NotEmpty
-    @Schema(
-        description = "Nombre descriptivo del URI de redirección (ej: Producción, Desarrollo, Testing)",
-        example = "Redirect URI Producción",
-        maxLength = 100
-    )
+    @Schema(description = "Descriptive name of the redirect URI (e.g.: Production, Development, Testing)", example = "Redirect URI Production", maxLength = 100)
     private String name;
 
     @NotEmpty
-    @Schema(
-        description = "URI completa de redirección autorizada por OAuth2. Debe ser HTTPS en producción",
-        example = "https://miapp.ejemplo.com/oauth/callback",
-        maxLength = 500
-    )
+    @Schema(description = "Full redirect URI authorized by OAuth2. Must be HTTPS in production", example = "https://myapp.example.com/oauth/callback", maxLength = 500)
     private String value;
 
-    @NotNull(message = "El estado del URI de redirección no puede ser nulo")
-    @Schema(
-        description = "Indica si este URI de redirección está habilitado para ser utilizado",
-        example = "true",
-        defaultValue = "true"
-    )
+    @NotNull(message = "The redirect URI status cannot be null")
+    @Schema(description = "Indicates whether this redirect URI is enabled for use", example = "true", defaultValue = "true")
     private Boolean enabled;
 }

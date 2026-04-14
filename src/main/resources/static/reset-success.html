@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Contraseña restablecida</title>
+    <title data-i18n="resetSuccess.pageTitle">Contraseña restablecida</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -14,7 +14,7 @@
 <body class="status-page">
     <div class="status-card">
         <div class="status-card__header status-card__header--success">
-            <div class="logo">NEXA</div>
+            <div class="logo">NX036</div>
             <div class="icon-circle">
                 <svg viewBox="0 0 24 24">
                     <polyline points="20 6 9 17 4 12"></polyline>
@@ -22,24 +22,55 @@
             </div>
         </div>
         <div class="status-card__body">
-            <h1>¡Contraseña restablecida!</h1>
-            <p>Tu contraseña ha sido actualizada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.</p>
+            <h1 data-i18n="resetSuccess.title">¡Contraseña restablecida!</h1>
+            <p data-i18n="resetSuccess.message">Tu contraseña ha sido actualizada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.</p>
             <div class="progress-bar">
                 <div class="progress-bar__fill progress-bar__fill--success"></div>
             </div>
-            <p class="countdown countdown--success">Redirigiendo al login en <span id="seconds">3</span> segundos...
+            <p class="countdown countdown--success" id="countdown-text">Redirigiendo al login en <span id="seconds">3</span> segundos...
             </p>
-            <a class="btn--status" href="/login.html">Ir al login ahora</a>
+            <a class="btn--status" href="/login.html" data-i18n="resetSuccess.goToLogin">Ir al login ahora</a>
         </div>
     </div>
 
     <script>
         (function () {
+            var translations = {
+                es: {
+                    "resetSuccess.pageTitle": "Contraseña restablecida",
+                    "resetSuccess.title": "¡Contraseña restablecida!",
+                    "resetSuccess.message": "Tu contraseña ha sido actualizada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.",
+                    "resetSuccess.countdown": "Redirigiendo al login en {s} segundos...",
+                    "resetSuccess.goToLogin": "Ir al login ahora"
+                },
+                en: {
+                    "resetSuccess.pageTitle": "Password reset",
+                    "resetSuccess.title": "Password reset!",
+                    "resetSuccess.message": "Your password has been updated successfully. You can now sign in with your new password.",
+                    "resetSuccess.countdown": "Redirecting to login in {s} seconds...",
+                    "resetSuccess.goToLogin": "Go to login now"
+                }
+            };
+
+            var currentLang = localStorage.getItem('lang') || 'es';
+            var dict = translations[currentLang] || translations.es;
+
+            document.documentElement.setAttribute('lang', currentLang);
+            document.querySelectorAll('[data-i18n]').forEach(function (el) {
+                var key = el.getAttribute('data-i18n');
+                if (dict[key]) el.textContent = dict[key];
+            });
+
             var t = 3;
-            var el = document.getElementById('seconds');
+            var countdownEl = document.getElementById('countdown-text');
+            function updateCountdown() {
+                var tmpl = dict['resetSuccess.countdown'] || 'Redirigiendo al login en {s} segundos...';
+                countdownEl.innerHTML = tmpl.replace('{s}', '<span id="seconds">' + t + '</span>');
+            }
+            updateCountdown();
             var interval = setInterval(function () {
                 t--;
-                el.textContent = t;
+                updateCountdown();
                 if (t <= 0) { clearInterval(interval); window.location.href = '/login.html'; }
             }, 1000);
         })();

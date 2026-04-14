@@ -14,7 +14,8 @@ ON CONFLICT (unique_name) DO NOTHING;
 INSERT INTO redirect_uris (name, value, enabled) VALUES 
 ('localhost admin', 'http://localhost:4200/admin', true),
 ('localhost callback', 'http://localhost:4200/auth/callback', true),
-('oauth debugger', 'https://oauthdebugger.com/debug', true)
+('oauth debugger', 'https://oauthdebugger.com/debug', true),
+('oauth-web', 'https://auth-service-des.up.railway.app/auth/callback', true)
 ON CONFLICT (value) DO NOTHING;
 
 --changeset authservice:1.4_insert_oauth_client
@@ -47,7 +48,7 @@ INSERT INTO oauthclient_redirecturis (oauthclient_id, redirecturi_id)
 SELECT c.id, r.id FROM oauth_clients c, redirect_uris r 
 WHERE c.client_id = 'oidc-client' 
   AND r.value IN ('http://localhost:4200/admin', 'http://localhost:4200/auth/callback',
-                    'https://oauthdebugger.com/debug')
+                    'https://oauthdebugger.com/debug', 'https://auth-service-des.up.railway.app/auth/callback')
   AND NOT EXISTS (
     SELECT 1 FROM oauthclient_redirecturis 
     WHERE oauthclient_id = c.id AND redirecturi_id = r.id

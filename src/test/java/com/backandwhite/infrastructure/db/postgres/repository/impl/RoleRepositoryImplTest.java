@@ -1,24 +1,23 @@
 package com.backandwhite.infrastructure.db.postgres.repository.impl;
 
-import com.backandwhite.domain.model.Role;
-import com.backandwhite.infrastructure.db.postgres.entity.RoleEntity;
-import com.backandwhite.infrastructure.db.postgres.mapper.RoleEntityMapper;
-import com.backandwhite.infrastructure.db.postgres.repository.RoleJpaRepositoryAdapter;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
-
 import static com.backandwhite.provider.RoleProvider.role;
 import static com.backandwhite.provider.RoleProvider.roleEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.domain.model.Role;
+import com.backandwhite.infrastructure.db.postgres.entity.RoleEntity;
+import com.backandwhite.infrastructure.db.postgres.mapper.RoleEntityMapper;
+import com.backandwhite.infrastructure.db.postgres.repository.RoleJpaRepositoryAdapter;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class RoleRepositoryImplTest {
@@ -110,12 +109,10 @@ class RoleRepositoryImplTest {
     @Test
     void getById_missingEntity_returnsNull() {
         when(roleJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(roleEntityMapper.toDomain(null)).thenReturn(null);
 
         Role result = roleRepository.getById(5L);
 
         assertThat(result).isNull();
         verify(roleJpaRepositoryAdapter).findById(5L);
-        verify(roleEntityMapper).toDomain(null);
     }
 }

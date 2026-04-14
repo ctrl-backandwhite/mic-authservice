@@ -1,24 +1,23 @@
 package com.backandwhite.infrastructure.db.postgres.repository.impl;
 
-import com.backandwhite.domain.model.Scope;
-import com.backandwhite.infrastructure.db.postgres.entity.ScopeEntity;
-import com.backandwhite.infrastructure.db.postgres.mapper.ScopeEntityMapper;
-import com.backandwhite.infrastructure.db.postgres.repository.ScopeJpaRepositoryAdapter;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
-
 import static com.backandwhite.provider.ScopeProvider.scope;
 import static com.backandwhite.provider.ScopeProvider.scopeEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.domain.model.Scope;
+import com.backandwhite.infrastructure.db.postgres.entity.ScopeEntity;
+import com.backandwhite.infrastructure.db.postgres.mapper.ScopeEntityMapper;
+import com.backandwhite.infrastructure.db.postgres.repository.ScopeJpaRepositoryAdapter;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ScopeRepositoryImplTest {
@@ -110,12 +109,10 @@ class ScopeRepositoryImplTest {
     @Test
     void getById_missingEntity_returnsNull() {
         when(scopeJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(scopeEntityMapper.toDomain(null)).thenReturn(null);
 
         Scope result = scopeRepository.getById(5L);
 
         assertThat(result).isNull();
         verify(scopeJpaRepositoryAdapter).findById(5L);
-        verify(scopeEntityMapper).toDomain(null);
     }
 }

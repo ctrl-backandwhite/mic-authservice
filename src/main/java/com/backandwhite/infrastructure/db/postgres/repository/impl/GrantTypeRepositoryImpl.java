@@ -5,13 +5,10 @@ import com.backandwhite.domain.repository.GrantTypeRepository;
 import com.backandwhite.infrastructure.db.postgres.entity.GrantTypeEntity;
 import com.backandwhite.infrastructure.db.postgres.mapper.GrantTypeEntityMapper;
 import com.backandwhite.infrastructure.db.postgres.repository.GrantTypeJpaRepositoryAdapter;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
 @Log4j2
 @Repository
@@ -46,7 +43,6 @@ public class GrantTypeRepositoryImpl implements GrantTypeRepository {
     @Override
     public GrantType getById(Long id) {
         GrantTypeEntity entity = grantTypeJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("GrantType", id);
-        return grantTypeEntityMapper.toDomain(entity);
+        return entity != null ? grantTypeEntityMapper.toDomain(entity) : null;
     }
 }

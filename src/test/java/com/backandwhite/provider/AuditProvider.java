@@ -1,7 +1,9 @@
 package com.backandwhite.provider;
 
 import java.time.Instant;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public final class AuditProvider {
 
     public static final Instant CREATED_AT = Instant.parse("2026-02-16T10:15:30Z");
@@ -9,6 +11,4 @@ public final class AuditProvider {
     public static final String CREATED_BY = "admin@dominio.com";
     public static final String UPDATED_BY = "usuario@dominio.com";
 
-    private AuditProvider() {
-    }
 }

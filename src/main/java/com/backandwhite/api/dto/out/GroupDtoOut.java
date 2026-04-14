@@ -3,11 +3,10 @@ package com.backandwhite.api.dto.out;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
 import java.time.Instant;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import lombok.*;
 
 @Data
 @With
@@ -17,34 +16,38 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class GroupDtoOut {
 
-    @Schema(description = "Identificador único del grupo", example = "1", minimum = "1")
+    @Schema(description = "Unique identifier of the group", example = "1", minimum = "1")
     private Long id;
 
-    @Schema(description = "Nombre del grupo", example = "Gerentes de Ventas", minLength = 3, maxLength = 100)
+    @Schema(description = "Name of the group", example = "Sales Managers", minLength = 3, maxLength = 100)
     private String name;
 
-    @Schema(description = "Nombre único del grupo en formato snake_case", example = "SALES_MANAGERS", minLength = 3, maxLength = 100)
+    @Schema(description = "Unique name of the group in snake_case format", example = "SALES_MANAGERS", minLength = 3, maxLength = 100)
     private String uniqueName;
 
-    @Schema(description = "Descripción del grupo", example = "Grupo de usuarios con permiso de gestión de ventas", maxLength = 500)
+    @Schema(description = "Description of the group", example = "Group of users with permission to manage sales", maxLength = 500)
     private String description;
 
-    @Schema(description = "Indica si el grupo está activo", example = "true")
+    @Schema(description = "Indicates whether the group is active", example = "true")
     private Boolean enabled;
 
-    @JsonIgnoreProperties({ "createdAt", "updatedAt", "createdBy", "updatedBy" })
-    @ArraySchema(schema = @Schema(implementation = RoleDtoOut.class), arraySchema = @Schema(description = "Roles asociados a este grupo"))
+    @JsonIgnoreProperties({"createdAt", "updatedAt", "createdBy", "updatedBy"})
+    @ArraySchema(schema = @Schema(implementation = RoleDtoOut.class), arraySchema = @Schema(description = "Roles associated with this group"))
     private List<RoleDtoOut> roles = new ArrayList<>();
 
-    @Schema(description = "Fecha de creación del registro", example = "2026-02-16T10:15:30Z")
+    @JsonIgnoreProperties({"createdAt", "updatedAt", "createdBy", "updatedBy"})
+    @ArraySchema(schema = @Schema(implementation = PermissionDtoOut.class))
+    private List<PermissionDtoOut> permissions = new ArrayList<>();
+
+    @Schema(description = "Record creation date", example = "2026-02-16T10:15:30Z")
     private Instant createdAt;
 
-    @Schema(description = "Fecha de última actualización del registro", example = "2026-02-16T11:05:00Z")
+    @Schema(description = "Record last update date", example = "2026-02-16T11:05:00Z")
     private Instant updatedAt;
 
-    @Schema(description = "Usuario que creó el registro", example = "admin@dominio.com")
+    @Schema(description = "User who created the record", example = "admin@domain.com")
     private String createdBy;
 
-    @Schema(description = "Usuario que realizó la última actualización", example = "usuario@dominio.com")
+    @Schema(description = "User who performed the last update", example = "user@domain.com")
     private String updatedBy;
 }

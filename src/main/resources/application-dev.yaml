@@ -28,7 +28,7 @@ spring:
     properties:
       schema.registry.url: ${SCHEMA_REGISTRY_URL:http://schema-registry-sbs4.railway.internal:8081}
       basic.auth.credentials.source: USER_INFO
-      basic.auth.user.info: ${SCHEMA_REGISTRY_AUTH:admin:admin123}
+      basic.auth.user.info: ${SCHEMA_REGISTRY_AUTH}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
@@ -43,7 +43,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${ISSUER_URI}
+          issuer-uri: ${ISSUER_URI:https://gateway-service-des.up.railway.app}
   data:
     redis:
       host: ${REDIS_HOST}
@@ -72,10 +72,12 @@ logging:
 
 app:
   security:
-    handler-url-1: https://web-auth-des.up.railway.app
-    handler-url-2: https://web-auth-des.up.railway.app
+    handler-url: https://nx036.com/nexa-auth
   activation:
-    base-url: ${ACTIVATION_BASE_URL:https://auth-service-des.up.railway.app}
+    base-url: ${ACTIVATION_BASE_URL:https://nx036.com}
+  jwt:
+    secret: ${JWT_SECRET}
+
 #logging:
 #  level:
 #    root: INFO

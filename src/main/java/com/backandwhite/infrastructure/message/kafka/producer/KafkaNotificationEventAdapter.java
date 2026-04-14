@@ -1,5 +1,6 @@
-package com.backandwhite.application.service;
+package com.backandwhite.infrastructure.message.kafka.producer;
 
+import com.backandwhite.application.port.out.NotificationEventPort;
 import com.backandwhite.common.constants.AppConstants;
 import com.backandwhite.core.kafka.avro.EmailNotificationEvent;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,11 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "spring.kafka.enabled", havingValue = "true")
-public class NotificationProducerService {
+public class KafkaNotificationEventAdapter implements NotificationEventPort {
 
     private final KafkaTemplate<String, SpecificRecord> kafkaTemplate;
 
+    @Override
     public void sendNotificationEvent(EmailNotificationEvent event) {
         log.debug("::> Publishing notification event to topic '{}' for recipient: {}",
                 AppConstants.KAFKA_TOPIC_NOTIFICATION_EMAIL, event.getRecipient());

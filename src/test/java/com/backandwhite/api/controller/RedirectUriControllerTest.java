@@ -1,20 +1,5 @@
 package com.backandwhite.api.controller;
 
-import com.backandwhite.api.dto.in.RedirectUriDtoIn;
-import com.backandwhite.api.dto.out.RedirectUriDtoOut;
-import com.backandwhite.api.mapper.RedirectUriDtoMapper;
-import com.backandwhite.application.usecase.RedirectUriUseCase;
-import com.backandwhite.domain.model.RedirectUri;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
 import static com.backandwhite.provider.RedirectUriProvider.REDIRECT_URI_ID;
 import static com.backandwhite.provider.RedirectUriProvider.redirectUri;
 import static com.backandwhite.provider.RedirectUriProvider.redirectUriDtoIn;
@@ -22,6 +7,20 @@ import static com.backandwhite.provider.RedirectUriProvider.redirectUriDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.api.dto.in.RedirectUriDtoIn;
+import com.backandwhite.api.dto.out.RedirectUriDtoOut;
+import com.backandwhite.api.mapper.RedirectUriDtoMapper;
+import com.backandwhite.application.usecase.RedirectUriUseCase;
+import com.backandwhite.domain.model.RedirectUri;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class RedirectUriControllerTest {
@@ -105,11 +104,29 @@ class RedirectUriControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<RedirectUriDtoOut>> response = controller.findAll();
+        ResponseEntity<List<RedirectUriDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
         verify(useCase).findAll();
         verify(mapper).toDtoOutList(models);
+    }
+
+    @Test
+    void findAll_withEnabledFilter_returnsOnlyEnabled() {
+        RedirectUri enabledUri = RedirectUri.builder().enabled(Boolean.TRUE).build();
+        RedirectUri disabledUri = RedirectUri.builder().enabled(Boolean.FALSE).build();
+        List<RedirectUri> onlyEnabled = List.of(enabledUri);
+        List<RedirectUriDtoOut> dtoOuts = List.of(redirectUriDtoOut(REDIRECT_URI_ID));
+
+        when(useCase.findAll()).thenReturn(List.of(enabledUri, disabledUri));
+        when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
+
+        ResponseEntity<List<RedirectUriDtoOut>> response = controller.findAll(Boolean.TRUE);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(dtoOuts);
+        verify(useCase).findAll();
+        verify(mapper).toDtoOutList(onlyEnabled);
     }
 }

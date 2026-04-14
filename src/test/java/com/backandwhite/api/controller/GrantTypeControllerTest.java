@@ -1,20 +1,5 @@
 package com.backandwhite.api.controller;
 
-import com.backandwhite.api.dto.in.GrantTypeDtoIn;
-import com.backandwhite.api.dto.out.GrantTypeDtoOut;
-import com.backandwhite.api.mapper.GrantTypeDtoMapper;
-import com.backandwhite.application.usecase.GrantTypeUseCase;
-import com.backandwhite.domain.model.GrantType;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
 import static com.backandwhite.provider.GrantTypeProvider.GRANT_TYPE_ID;
 import static com.backandwhite.provider.GrantTypeProvider.grantType;
 import static com.backandwhite.provider.GrantTypeProvider.grantTypeDtoIn;
@@ -22,6 +7,20 @@ import static com.backandwhite.provider.GrantTypeProvider.grantTypeDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.api.dto.in.GrantTypeDtoIn;
+import com.backandwhite.api.dto.out.GrantTypeDtoOut;
+import com.backandwhite.api.mapper.GrantTypeDtoMapper;
+import com.backandwhite.application.usecase.GrantTypeUseCase;
+import com.backandwhite.domain.model.GrantType;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class GrantTypeControllerTest {
@@ -105,11 +104,29 @@ class GrantTypeControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<GrantTypeDtoOut>> response = controller.findAll();
+        ResponseEntity<List<GrantTypeDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
         verify(useCase).findAll();
         verify(mapper).toDtoOutList(models);
+    }
+
+    @Test
+    void findAll_withEnabledFilter_returnsOnlyEnabled() {
+        GrantType enabledGt = GrantType.builder().enabled(Boolean.TRUE).build();
+        GrantType disabledGt = GrantType.builder().enabled(Boolean.FALSE).build();
+        List<GrantType> onlyEnabled = List.of(enabledGt);
+        List<GrantTypeDtoOut> dtoOuts = List.of(grantTypeDtoOut(GRANT_TYPE_ID));
+
+        when(useCase.findAll()).thenReturn(List.of(enabledGt, disabledGt));
+        when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
+
+        ResponseEntity<List<GrantTypeDtoOut>> response = controller.findAll(Boolean.TRUE);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(dtoOuts);
+        verify(useCase).findAll();
+        verify(mapper).toDtoOutList(onlyEnabled);
     }
 }

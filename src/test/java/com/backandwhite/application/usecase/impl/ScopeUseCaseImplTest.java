@@ -3,6 +3,7 @@ package com.backandwhite.application.usecase.impl;
 import com.backandwhite.application.handler.ScopeCommandHandler;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.Scope;
+import com.backandwhite.application.mapper.ScopeUpdateMapper;
 import com.backandwhite.domain.repository.ScopeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,8 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.beans.BeanUtils;
 
 @ExtendWith(MockitoExtension.class)
 class ScopeUseCaseImplTest {
@@ -29,6 +32,9 @@ class ScopeUseCaseImplTest {
 
     @Mock
     private ScopeCommandHandler scopeCommandHandler;
+
+    @Mock
+    private ScopeUpdateMapper scopeUpdateMapper;
 
     @InjectMocks
     private ScopeUseCaseImpl scopeUseCase;
@@ -87,6 +93,8 @@ class ScopeUseCaseImplTest {
         Scope update = writeScope().withId(99L);
 
         when(scopeRepository.getById(10L)).thenReturn(existing);
+        doAnswer(inv -> { BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id"); return null; })
+                .when(scopeUpdateMapper).updateFromModel(any(Scope.class), any(Scope.class));
         when(scopeRepository.update(any(Scope.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Scope result = scopeUseCase.update(update, 10L);

@@ -1,20 +1,5 @@
 package com.backandwhite.api.controller;
 
-import com.backandwhite.api.dto.in.OauthClientDtoIn;
-import com.backandwhite.api.dto.out.OauthClientDtoOut;
-import com.backandwhite.api.mapper.OauthClientDtoMapper;
-import com.backandwhite.application.usecase.OauthClientUseCase;
-import com.backandwhite.domain.model.OauthClient;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
 import static com.backandwhite.provider.OauthClientProvider.CLIENT_ID;
 import static com.backandwhite.provider.OauthClientProvider.oauthClient;
 import static com.backandwhite.provider.OauthClientProvider.oauthClientDtoIn;
@@ -22,6 +7,20 @@ import static com.backandwhite.provider.OauthClientProvider.oauthClientDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.api.dto.in.OauthClientDtoIn;
+import com.backandwhite.api.dto.out.OauthClientDtoOut;
+import com.backandwhite.api.mapper.OauthClientDtoMapper;
+import com.backandwhite.application.usecase.OauthClientUseCase;
+import com.backandwhite.domain.model.OauthClient;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class OauthClientControllerTest {

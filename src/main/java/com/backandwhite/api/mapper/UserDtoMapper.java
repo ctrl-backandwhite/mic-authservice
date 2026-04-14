@@ -2,25 +2,17 @@ package com.backandwhite.api.mapper;
 
 import com.backandwhite.api.dto.in.UserDtoIn;
 import com.backandwhite.api.dto.out.UserDtoOut;
-import com.backandwhite.domain.model.User;
-
-import com.backandwhite.domain.model.Scope;
-import org.mapstruct.Named;
-import java.util.Collections;
-import java.util.stream.Collectors;
-import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.model.Group;
-
+import com.backandwhite.domain.model.Role;
+import com.backandwhite.domain.model.User;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-        ScopeDtoMapper.class,
-        RoleDtoMapper.class,
-        GroupDtoMapper.class,
-})
+@Mapper(componentModel = "spring", uses = {RoleDtoMapper.class, GroupDtoMapper.class,})
 public interface UserDtoMapper {
 
     @Mapping(target = "id", source = "id")
@@ -32,12 +24,11 @@ public interface UserDtoMapper {
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "nickName", source = "nickName")
     @Mapping(target = "email", source = "email")
-    @Mapping(target = "password", source = "password")
+    @Mapping(target = "password", ignore = true)
     @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "accountNonExpired", source = "accountNonExpired")
     @Mapping(target = "accountNonLocked", source = "accountNonLocked")
     @Mapping(target = "credentialsNonExpired", source = "credentialsNonExpired")
-    @Mapping(target = "scopes", source = "scopes")
     @Mapping(target = "roles", source = "roles")
     @Mapping(target = "groups", source = "groups")
     UserDtoOut toDtoOut(User model);
@@ -49,11 +40,10 @@ public interface UserDtoMapper {
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "name", source = "name")
     @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "nickName", source = "nickName")
-    @Mapping(target = "email", source = "email")
+    @Mapping(target = "nickName", source = "nickName", qualifiedByName = "normalizeNickName")
+    @Mapping(target = "email", source = "email", qualifiedByName = "normalizeEmail")
     @Mapping(target = "password", source = "password")
     @Mapping(target = "enabled", source = "enabled")
-    @Mapping(target = "scopes", source = "scopeIds", qualifiedByName = "mapUserScopeIds")
     @Mapping(target = "roles", source = "roleIds", qualifiedByName = "mapUserRoleIds")
     @Mapping(target = "groups", source = "groupIds", qualifiedByName = "mapUserGroupIds")
     User toDomain(UserDtoIn dtoIn);
@@ -62,14 +52,14 @@ public interface UserDtoMapper {
 
     List<UserDtoOut> toDtoOutList(List<User> models);
 
-    @Named("mapUserScopeIds")
-    default List<Scope> mapUserScopeIds(List<Long> scopeIds) {
-        if (scopeIds == null || scopeIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return scopeIds.stream()
-                .map(id -> Scope.builder().id(id).build())
-                .collect(Collectors.toList());
+    @Named("normalizeEmail")
+    default String normalizeEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase();
+    }
+
+    @Named("normalizeNickName")
+    default String normalizeNickName(String nickName) {
+        return nickName == null ? null : nickName.trim().toLowerCase();
     }
 
     @Named("mapUserRoleIds")
@@ -77,9 +67,7 @@ public interface UserDtoMapper {
         if (roleIds == null || roleIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return roleIds.stream()
-                .map(id -> Role.builder().id(id).build())
-                .collect(Collectors.toList());
+        return roleIds.stream().map(id -> Role.builder().id(id).build()).collect(Collectors.toList());
     }
 
     @Named("mapUserGroupIds")
@@ -87,8 +75,6 @@ public interface UserDtoMapper {
         if (groupIds == null || groupIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return groupIds.stream()
-                .map(id -> Group.builder().id(id).build())
-                .collect(Collectors.toList());
+        return groupIds.stream().map(id -> Group.builder().id(id).build()).collect(Collectors.toList());
     }
 }

@@ -2,14 +2,11 @@ package com.backandwhite.infrastructure.db.postgres.mapper;
 
 import com.backandwhite.domain.model.Group;
 import com.backandwhite.infrastructure.db.postgres.entity.GroupEntity;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-        RoleEntityMapper.class
-})
+@Mapper(componentModel = "spring", uses = {RoleEntityMapper.class, PermissionEntityMapper.class})
 public interface GroupEntityMapper {
 
     @Mapping(target = "id", source = "id")
@@ -22,6 +19,7 @@ public interface GroupEntityMapper {
     @Mapping(target = "description", source = "description")
     @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "roles", source = "roles")
+    @Mapping(target = "permissions", source = "permissions")
     Group toDomain(GroupEntity entity);
 
     @Mapping(target = "id", source = "id")
@@ -34,6 +32,8 @@ public interface GroupEntityMapper {
     @Mapping(target = "description", source = "description")
     @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "roles", source = "roles")
+    @Mapping(target = "permissions", source = "permissions")
+    @Mapping(target = "users", ignore = true)
     GroupEntity toEntity(Group model);
 
     List<Group> toDomainList(List<GroupEntity> entities);

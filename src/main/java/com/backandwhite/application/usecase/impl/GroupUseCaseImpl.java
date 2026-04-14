@@ -1,21 +1,21 @@
 package com.backandwhite.application.usecase.impl;
 
+import com.backandwhite.application.handler.GroupCommandHandler;
+import com.backandwhite.application.mapper.GroupUpdateMapper;
 import com.backandwhite.application.usecase.GroupUseCase;
 import com.backandwhite.domain.model.Group;
 import com.backandwhite.domain.repository.GroupRepository;
-
-import com.backandwhite.application.handler.GroupCommandHandler;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Objects;
+
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
 @Log4j2
@@ -23,9 +23,9 @@ import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 @AllArgsConstructor
 public class GroupUseCaseImpl implements GroupUseCase {
 
-private final GroupRepository groupRepository;
-private final GroupCommandHandler groupCommandHandler;
-
+    private final GroupRepository groupRepository;
+    private final GroupCommandHandler groupCommandHandler;
+    private final GroupUpdateMapper groupUpdateMapper;
 
     @Override
     @Transactional
@@ -57,12 +57,13 @@ private final GroupCommandHandler groupCommandHandler;
 
     @Override
     @Transactional
-    @CachePut(value = "group", key = "#id") // actualiza cache individual
-    @CacheEvict(value = "group_all", allEntries = true) // limpia cache de lista
+    @CachePut(value = "group", key = "#id")
+    @CacheEvict(value = "group_all", allEntries = true)
     public Group update(Group model, Long id) {
         log.debug("::> Updating group {}", model);
         Group existing = this.getById(id);
-        BeanUtils.copyProperties(model, existing, "id");
+        groupUpdateMapper.updateFromModel(model, existing);
+        groupCommandHandler.validate(existing);
         return groupRepository.update(existing);
     }
 

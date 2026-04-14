@@ -7,12 +7,11 @@ import com.backandwhite.api.mapper.RoleDtoMapper;
 import com.backandwhite.application.usecase.RoleUseCase;
 import com.backandwhite.domain.model.Role;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,9 +49,12 @@ public class RoleController implements BaseApi<RoleDtoIn, RoleDtoOut, Long> {
         return new ResponseEntity<>(mapper.toDtoOut(useCase.getById(id)), HttpStatus.OK);
     }
 
-    @Override
     @GetMapping
-    public ResponseEntity<List<RoleDtoOut>> findAll() {
-        return new ResponseEntity<>(mapper.toDtoOutList(useCase.findAll()), HttpStatus.OK);
+    public ResponseEntity<List<RoleDtoOut>> findAll(@RequestParam(required = false) Boolean enabled) {
+        List<Role> roles = useCase.findAll();
+        if (enabled != null) {
+            roles = roles.stream().filter(r -> enabled.equals(r.getEnabled())).toList();
+        }
+        return new ResponseEntity<>(mapper.toDtoOutList(roles), HttpStatus.OK);
     }
 }

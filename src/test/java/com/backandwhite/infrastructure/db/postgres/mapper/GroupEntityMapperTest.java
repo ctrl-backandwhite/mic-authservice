@@ -1,17 +1,16 @@
 package com.backandwhite.infrastructure.db.postgres.mapper;
 
-import com.backandwhite.domain.model.Group;
-import com.backandwhite.infrastructure.db.postgres.entity.GroupEntity;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-
-import java.lang.reflect.Field;
-import java.util.List;
-
 import static com.backandwhite.provider.GroupProvider.group;
 import static com.backandwhite.provider.GroupProvider.groupEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.backandwhite.domain.model.Group;
+import com.backandwhite.infrastructure.db.postgres.entity.GroupEntity;
+import java.lang.reflect.Field;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class GroupEntityMapperTest {
 
@@ -19,9 +18,12 @@ class GroupEntityMapperTest {
 
     @BeforeEach
     void setUp() {
-        mapper = Mappers.getMapper(GroupEntityMapper.class);
+        PermissionEntityMapper permissionEntityMapper = Mappers.getMapper(PermissionEntityMapper.class);
         RoleEntityMapper roleEntityMapper = Mappers.getMapper(RoleEntityMapper.class);
+        setField(roleEntityMapper, "permissionEntityMapper", permissionEntityMapper);
+        mapper = Mappers.getMapper(GroupEntityMapper.class);
         setField(mapper, "roleEntityMapper", roleEntityMapper);
+        setField(mapper, "permissionEntityMapper", permissionEntityMapper);
     }
 
     @Test
@@ -30,9 +32,7 @@ class GroupEntityMapperTest {
 
         Group result = mapper.toDomain(entity);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(group());
+        assertThat(result).usingRecursiveComparison().isEqualTo(group());
     }
 
     @Test
@@ -41,8 +41,7 @@ class GroupEntityMapperTest {
 
         GroupEntity result = mapper.toEntity(model);
 
-        assertThat(result)
-                .usingRecursiveComparison()
+        assertThat(result).usingRecursiveComparison()
                 .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
                 .isEqualTo(groupEntity());
     }
@@ -53,9 +52,7 @@ class GroupEntityMapperTest {
 
         List<Group> result = mapper.toDomainList(entities);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(List.of(group()));
+        assertThat(result).usingRecursiveComparison().isEqualTo(List.of(group()));
     }
 
     private static void setField(Object target, String fieldName, Object value) {

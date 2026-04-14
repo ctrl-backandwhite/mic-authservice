@@ -32,4 +32,20 @@ build/
 ### VS Code ###
 .vscode/
 /src/main/resources/compose/.env
+application-local.yaml
+src/main/resources/application-local.yaml
 .claude/
+
+### Docker (local only) ###
+docker-compose.yml
+Dockerfile
+
+### Archivos temporales ###
+*.args
+*.py
+*.bak
+*.tmp
+*.orig
+*.log
+.dockerignore
+.gitattributes

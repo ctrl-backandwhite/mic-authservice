@@ -1,20 +1,5 @@
 package com.backandwhite.api.controller;
 
-import com.backandwhite.api.dto.in.ScopeDtoIn;
-import com.backandwhite.api.dto.out.ScopeDtoOut;
-import com.backandwhite.api.mapper.ScopeDtoMapper;
-import com.backandwhite.application.usecase.ScopeUseCase;
-import com.backandwhite.domain.model.Scope;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
 import static com.backandwhite.provider.ScopeProvider.READ_ID;
 import static com.backandwhite.provider.ScopeProvider.readScope;
 import static com.backandwhite.provider.ScopeProvider.readScopeDtoIn;
@@ -22,6 +7,20 @@ import static com.backandwhite.provider.ScopeProvider.readScopeDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.api.dto.in.ScopeDtoIn;
+import com.backandwhite.api.dto.out.ScopeDtoOut;
+import com.backandwhite.api.mapper.ScopeDtoMapper;
+import com.backandwhite.application.usecase.ScopeUseCase;
+import com.backandwhite.domain.model.Scope;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class ScopeControllerTest {
@@ -105,11 +104,29 @@ class ScopeControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<ScopeDtoOut>> response = controller.findAll();
+        ResponseEntity<List<ScopeDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
         verify(useCase).findAll();
         verify(mapper).toDtoOutList(models);
+    }
+
+    @Test
+    void findAll_withEnabledFilter_returnsOnlyEnabled() {
+        Scope enabledScope = Scope.builder().enabled(Boolean.TRUE).build();
+        Scope disabledScope = Scope.builder().enabled(Boolean.FALSE).build();
+        List<Scope> onlyEnabled = List.of(enabledScope);
+        List<ScopeDtoOut> dtoOuts = List.of(readScopeDtoOut(READ_ID));
+
+        when(useCase.findAll()).thenReturn(List.of(enabledScope, disabledScope));
+        when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
+
+        ResponseEntity<List<ScopeDtoOut>> response = controller.findAll(Boolean.TRUE);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(dtoOuts);
+        verify(useCase).findAll();
+        verify(mapper).toDtoOutList(onlyEnabled);
     }
 }

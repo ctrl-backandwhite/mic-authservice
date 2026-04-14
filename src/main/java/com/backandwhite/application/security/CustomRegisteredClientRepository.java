@@ -9,12 +9,9 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 
-import java.util.UUID;
-
 /**
- * Repositorio personalizado que mapea los clientes OAuth de las entidades
- * personalizadas
- * del proyecto a la interfaz RegisteredClientRepository de Spring OAuth2
+ * Custom repository that maps OAuth clients from the project's custom entities
+ * to the RegisteredClientRepository interface of Spring OAuth2
  */
 @RequiredArgsConstructor
 public class CustomRegisteredClientRepository implements RegisteredClientRepository {
@@ -23,15 +20,21 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
 
     @Override
     public void save(RegisteredClient registeredClient) {
-        // No implementar - los clientes se gestionan a través de las entidades
-        // personalizadas
+        // Not implemented - clients are managed through custom entities
         throw new UnsupportedOperationException("Use OauthClientRepository to manage OAuth2 clients");
     }
 
     @Override
     public RegisteredClient findById(String id) {
-        // No implementar - no se usa en este contexto
-        return null;
+        try {
+            OauthClient oauthClient = oauthClientRepository.getById(Long.parseLong(id));
+            if (oauthClient == null) {
+                return null;
+            }
+            return mapToRegisteredClient(oauthClient);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     @Override
@@ -44,17 +47,14 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
     }
 
     /**
-     * Mapea una entidad OauthClient a un RegisteredClient de Spring OAuth2
+     * Maps an OauthClient entity to a Spring OAuth2 RegisteredClient
      */
     private RegisteredClient mapToRegisteredClient(OauthClient oauthClient) {
-        RegisteredClient.Builder builder = RegisteredClient
-                .withId(UUID.randomUUID().toString())
-                .clientId(oauthClient.getClientId())
-                .clientSecret(oauthClient.getClientSecret())
-                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
-                .clientName(oauthClient.getClientId());
+        RegisteredClient.Builder builder = RegisteredClient.withId(String.valueOf(oauthClient.getId()))
+                .clientId(oauthClient.getClientId()).clientSecret(oauthClient.getClientSecret())
+                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE).clientName(oauthClient.getClientId());
 
-        // Agregar grant types
+        // Add grant types
         if (oauthClient.getGrantTypes() != null) {
             oauthClient.getGrantTypes().forEach(grantType -> {
                 if ("authorization_code".equalsIgnoreCase(grantType.getValue())) {
@@ -67,21 +67,19 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
             });
         }
 
-        // Agregar redirect URIs
+        // Add redirect URIs
         if (oauthClient.getRedirectUris() != null) {
             oauthClient.getRedirectUris().forEach(redirectUri -> builder.redirectUri(redirectUri.getValue()));
         }
 
-        // Agregar scopes
+        // Add scopes
         if (oauthClient.getScopes() != null) {
             oauthClient.getScopes().forEach(scope -> builder.scope(scope.getUniqueName()));
         }
 
-        // Configurar client settings
-        builder.clientSettings(ClientSettings.builder()
-                .requireProofKey(true)
-                .requireAuthorizationConsent(false)
-                .build());
+        // Configure client settings
+        builder.clientSettings(
+                ClientSettings.builder().requireProofKey(true).requireAuthorizationConsent(false).build());
 
         return builder.build();
     }

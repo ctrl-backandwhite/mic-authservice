@@ -2,15 +2,16 @@ package com.backandwhite.api.mapper;
 
 import com.backandwhite.api.dto.in.RoleDtoIn;
 import com.backandwhite.api.dto.out.RoleDtoOut;
+import com.backandwhite.domain.model.Permission;
 import com.backandwhite.domain.model.Role;
-
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-})
+@Mapper(componentModel = "spring", uses = {PermissionDtoMapper.class})
 public interface RoleDtoMapper {
 
     @Mapping(target = "id", source = "id")
@@ -22,16 +23,25 @@ public interface RoleDtoMapper {
     @Mapping(target = "uniqueName", source = "uniqueName")
     @Mapping(target = "description", source = "description")
     @Mapping(target = "enabled", source = "enabled")
+    @Mapping(target = "permissions", source = "permissions")
     RoleDtoOut toDtoOut(Role model);
 
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "permissions", source = "permissionIds", qualifiedByName = "mapPermissionIds")
     Role toDomain(RoleDtoIn dtoIn);
 
     List<Role> toDomainList(List<RoleDtoIn> dtos);
 
     List<RoleDtoOut> toDtoOutList(List<Role> models);
 
+    @Named("mapPermissionIds")
+    default List<Permission> mapPermissionIds(List<Long> permissionIds) {
+        if (permissionIds == null || permissionIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return permissionIds.stream().map(id -> Permission.builder().id(id).build()).collect(Collectors.toList());
+    }
 }

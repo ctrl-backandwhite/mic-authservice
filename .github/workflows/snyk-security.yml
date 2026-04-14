@@ -27,6 +27,7 @@ on:
 permissions:
   contents: read
   packages: read
+  security-events: read
 
 jobs:
   snyk:
@@ -41,10 +42,10 @@ jobs:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: "21"
+          java-version: "25"
           distribution: "temurin"
           cache: maven
       - name: Set up Snyk CLI to check for security issues
@@ -115,8 +116,9 @@ jobs:
 
         # Push the Snyk Code results into GitHub Code Scanning tab
       - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
+        continue-on-error: true
         with:
           sarif_file: snyk-code.sarif
           wait-for-processing: true

@@ -1,24 +1,23 @@
 package com.backandwhite.infrastructure.db.postgres.repository.impl;
 
-import com.backandwhite.domain.model.GrantType;
-import com.backandwhite.infrastructure.db.postgres.entity.GrantTypeEntity;
-import com.backandwhite.infrastructure.db.postgres.mapper.GrantTypeEntityMapper;
-import com.backandwhite.infrastructure.db.postgres.repository.GrantTypeJpaRepositoryAdapter;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
-
 import static com.backandwhite.provider.GrantTypeProvider.grantType;
 import static com.backandwhite.provider.GrantTypeProvider.grantTypeEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.domain.model.GrantType;
+import com.backandwhite.infrastructure.db.postgres.entity.GrantTypeEntity;
+import com.backandwhite.infrastructure.db.postgres.mapper.GrantTypeEntityMapper;
+import com.backandwhite.infrastructure.db.postgres.repository.GrantTypeJpaRepositoryAdapter;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class GrantTypeRepositoryImplTest {
@@ -110,12 +109,10 @@ class GrantTypeRepositoryImplTest {
     @Test
     void getById_missingEntity_returnsNull() {
         when(grantTypeJpaRepositoryAdapter.findById(5L)).thenReturn(Optional.empty());
-        when(grantTypeEntityMapper.toDomain(null)).thenReturn(null);
 
         GrantType result = grantTypeRepository.getById(5L);
 
         assertThat(result).isNull();
         verify(grantTypeJpaRepositoryAdapter).findById(5L);
-        verify(grantTypeEntityMapper).toDomain(null);
     }
 }

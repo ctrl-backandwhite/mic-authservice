@@ -5,13 +5,10 @@ import com.backandwhite.domain.repository.ScopeRepository;
 import com.backandwhite.infrastructure.db.postgres.entity.ScopeEntity;
 import com.backandwhite.infrastructure.db.postgres.mapper.ScopeEntityMapper;
 import com.backandwhite.infrastructure.db.postgres.repository.ScopeJpaRepositoryAdapter;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
 @Log4j2
 @Repository
@@ -46,7 +43,6 @@ public class ScopeRepositoryImpl implements ScopeRepository {
     @Override
     public Scope getById(Long id) {
         ScopeEntity entity = scopeJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("Scope", id);
-        return scopeEntityMapper.toDomain(entity);
+        return entity != null ? scopeEntityMapper.toDomain(entity) : null;
     }
 }

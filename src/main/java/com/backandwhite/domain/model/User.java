@@ -1,13 +1,12 @@
 package com.backandwhite.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
-import java.time.Instant;
 
 @Data
 @With
@@ -31,13 +30,22 @@ public class User implements UserDetails {
     private Instant activationTokenExpiry;
     private String passwordResetToken;
     private Instant passwordResetTokenExpiry;
-    private List<Scope> scopes;
+    private String passwordChangeCode;
+    private Instant passwordChangeCodeExpiry;
+    private String sessionRevokeCode;
+    private Instant sessionRevokeCodeExpiry;
+    private String sessionToRevoke;
     private List<Role> roles;
     private List<Group> groups;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
 
     @JsonIgnore
     @Override

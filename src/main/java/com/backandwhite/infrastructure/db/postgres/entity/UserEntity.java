@@ -2,13 +2,12 @@ package com.backandwhite.infrastructure.db.postgres.entity;
 
 import com.backandwhite.common.infrastructure.entity.AuditableEntity;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @With
 @Getter
@@ -63,10 +62,20 @@ public class UserEntity extends AuditableEntity {
     @Column(name = "password_reset_token_expiry")
     private Instant passwordResetTokenExpiry;
 
-    @Builder.Default
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_scopes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "scope_id"))
-    private List<ScopeEntity> scopes = new ArrayList<>();
+    @Column(name = "password_change_code", length = 6)
+    private String passwordChangeCode;
+
+    @Column(name = "password_change_code_expiry")
+    private Instant passwordChangeCodeExpiry;
+
+    @Column(name = "session_revoke_code", length = 6)
+    private String sessionRevokeCode;
+
+    @Column(name = "session_revoke_code_expiry")
+    private Instant sessionRevokeCodeExpiry;
+
+    @Column(name = "session_to_revoke", length = 64)
+    private String sessionToRevoke;
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
@@ -83,26 +92,28 @@ public class UserEntity extends AuditableEntity {
         if (object == null || getClass() != object.getClass())
             return false;
         UserEntity that = (UserEntity) object;
-        return Objects.equals(id, that.id)
-                && Objects.equals(name, that.name)
-                && Objects.equals(lastName, that.lastName)
-                && Objects.equals(nickName, that.nickName)
-                && Objects.equals(email, that.email)
-                && Objects.equals(password, that.password)
-                && Objects.equals(enabled, that.enabled)
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(lastName, that.lastName)
+                && Objects.equals(nickName, that.nickName) && Objects.equals(email, that.email)
+                && Objects.equals(password, that.password) && Objects.equals(enabled, that.enabled)
                 && Objects.equals(accountNonExpired, that.accountNonExpired)
                 && Objects.equals(accountNonLocked, that.accountNonLocked)
                 && Objects.equals(credentialsNonExpired, that.credentialsNonExpired)
                 && Objects.equals(activationToken, that.activationToken)
                 && Objects.equals(activationTokenExpiry, that.activationTokenExpiry)
                 && Objects.equals(passwordResetToken, that.passwordResetToken)
-                && Objects.equals(passwordResetTokenExpiry, that.passwordResetTokenExpiry);
+                && Objects.equals(passwordResetTokenExpiry, that.passwordResetTokenExpiry)
+                && Objects.equals(passwordChangeCode, that.passwordChangeCode)
+                && Objects.equals(passwordChangeCodeExpiry, that.passwordChangeCodeExpiry)
+                && Objects.equals(sessionRevokeCode, that.sessionRevokeCode)
+                && Objects.equals(sessionRevokeCodeExpiry, that.sessionRevokeCodeExpiry)
+                && Objects.equals(sessionToRevoke, that.sessionToRevoke);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name, lastName, nickName, email, password, enabled, accountNonExpired, accountNonLocked,
-                credentialsNonExpired, activationToken, activationTokenExpiry,
-                passwordResetToken, passwordResetTokenExpiry);
+                credentialsNonExpired, activationToken, activationTokenExpiry, passwordResetToken,
+                passwordResetTokenExpiry, passwordChangeCode, passwordChangeCodeExpiry, sessionRevokeCode,
+                sessionRevokeCodeExpiry, sessionToRevoke);
     }
 }

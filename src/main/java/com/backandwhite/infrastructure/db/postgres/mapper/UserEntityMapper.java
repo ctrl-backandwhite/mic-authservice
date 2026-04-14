@@ -2,16 +2,11 @@ package com.backandwhite.infrastructure.db.postgres.mapper;
 
 import com.backandwhite.domain.model.User;
 import com.backandwhite.infrastructure.db.postgres.entity.UserEntity;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-        ScopeEntityMapper.class,
-        RoleEntityMapper.class,
-        GroupEntityMapper.class
-})
+@Mapper(componentModel = "spring", uses = {RoleEntityMapper.class, GroupEntityMapper.class})
 public interface UserEntityMapper {
 
     @Mapping(target = "id", source = "id")
@@ -32,7 +27,11 @@ public interface UserEntityMapper {
     @Mapping(target = "activationTokenExpiry", source = "activationTokenExpiry")
     @Mapping(target = "passwordResetToken", source = "passwordResetToken")
     @Mapping(target = "passwordResetTokenExpiry", source = "passwordResetTokenExpiry")
-    @Mapping(target = "scopes", source = "scopes")
+    @Mapping(target = "passwordChangeCode", source = "passwordChangeCode")
+    @Mapping(target = "passwordChangeCodeExpiry", source = "passwordChangeCodeExpiry")
+    @Mapping(target = "sessionRevokeCode", source = "sessionRevokeCode")
+    @Mapping(target = "sessionRevokeCodeExpiry", source = "sessionRevokeCodeExpiry")
+    @Mapping(target = "sessionToRevoke", source = "sessionToRevoke")
     @Mapping(target = "roles", source = "roles")
     @Mapping(target = "groups", source = "groups")
     User toDomain(UserEntity entity);
@@ -55,7 +54,11 @@ public interface UserEntityMapper {
     @Mapping(target = "activationTokenExpiry", source = "activationTokenExpiry")
     @Mapping(target = "passwordResetToken", source = "passwordResetToken")
     @Mapping(target = "passwordResetTokenExpiry", source = "passwordResetTokenExpiry")
-    @Mapping(target = "scopes", source = "scopes")
+    @Mapping(target = "passwordChangeCode", source = "passwordChangeCode")
+    @Mapping(target = "passwordChangeCodeExpiry", source = "passwordChangeCodeExpiry")
+    @Mapping(target = "sessionRevokeCode", source = "sessionRevokeCode")
+    @Mapping(target = "sessionRevokeCodeExpiry", source = "sessionRevokeCodeExpiry")
+    @Mapping(target = "sessionToRevoke", source = "sessionToRevoke")
     @Mapping(target = "roles", source = "roles")
     @Mapping(target = "groups", source = "groups")
     UserEntity toEntity(User model);

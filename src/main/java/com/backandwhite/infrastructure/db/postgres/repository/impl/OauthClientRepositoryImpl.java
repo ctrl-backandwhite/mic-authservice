@@ -5,13 +5,10 @@ import com.backandwhite.domain.repository.OauthClientRepository;
 import com.backandwhite.infrastructure.db.postgres.entity.OauthClientEntity;
 import com.backandwhite.infrastructure.db.postgres.mapper.OauthClientEntityMapper;
 import com.backandwhite.infrastructure.db.postgres.repository.OauthClientJpaRepositoryAdapter;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
 @Log4j2
 @Repository
@@ -46,8 +43,7 @@ public class OauthClientRepositoryImpl implements OauthClientRepository {
     @Override
     public OauthClient getById(Long id) {
         OauthClientEntity entity = oauthClientJpaRepositoryAdapter.findById(id).orElse(null);
-        ENTITY_NOT_FOUND.toEntityNotFound("OauthClient", id);
-        return oauthClientEntityMapper.toDomain(entity);
+        return entity != null ? oauthClientEntityMapper.toDomain(entity) : null;
     }
 
     @Override

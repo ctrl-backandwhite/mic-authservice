@@ -1,16 +1,15 @@
 package com.backandwhite.infrastructure.db.postgres.repository.impl;
 
+import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.repository.UserRepository;
 import com.backandwhite.infrastructure.db.postgres.entity.UserEntity;
 import com.backandwhite.infrastructure.db.postgres.mapper.UserEntityMapper;
 import com.backandwhite.infrastructure.db.postgres.repository.UserJpaRepositoryAdapter;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
 
 @Log4j2
 @Repository
@@ -49,13 +48,20 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User getById(Long id) {
-        UserEntity entity = userJpaRepositoryAdapter.findById(id).orElse(null);
+        UserEntity entity = userJpaRepositoryAdapter.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("US001", "User not found with id: " + id));
         return userEntityMapper.toDomain(entity);
     }
 
     @Override
     public User findUserByEmail(String email) {
         UserEntity userEntity = userJpaRepositoryAdapter.findByEmail(email);
+        return userEntityMapper.toDomain(userEntity);
+    }
+
+    @Override
+    public User findUserByNickName(String nickName) {
+        UserEntity userEntity = userJpaRepositoryAdapter.findByNickName(nickName);
         return userEntityMapper.toDomain(userEntity);
     }
 
@@ -72,6 +78,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public User findByPasswordChangeCode(String code) {
+        UserEntity entity = userJpaRepositoryAdapter.findByPasswordChangeCode(code);
+        return userEntityMapper.toDomain(entity);
+    }
+
+    @Override
     public List<User> findByRoleId(Long roleId) {
         List<UserEntity> entities = userJpaRepositoryAdapter.findByRolesId(roleId);
         return userEntityMapper.toDomainList(entities);
@@ -83,9 +95,4 @@ public class UserRepositoryImpl implements UserRepository {
         return userEntityMapper.toDomainList(entities);
     }
 
-    @Override
-    public List<User> findByScopeId(Long scopeId) {
-        List<UserEntity> entities = userJpaRepositoryAdapter.findByScopesId(scopeId);
-        return userEntityMapper.toDomainList(entities);
-    }
 }

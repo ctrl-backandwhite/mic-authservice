@@ -10,7 +10,8 @@ public interface OauthClientRepository extends BaseRepository<OauthClient, Oauth
     /**
      * Busca un cliente OAuth por su clientId
      * 
-     * @param clientId el identificador del cliente
+     * @param clientId
+     *            el identificador del cliente
      * @return el cliente OAuth o null si no existe
      */
     OauthClient findByClientId(String clientId);

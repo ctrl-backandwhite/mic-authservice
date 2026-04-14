@@ -1,22 +1,23 @@
 server:
   port: ${SERVER_PORT:6001}
+  forward-headers-strategy: FRAMEWORK
   ssl:
-    enabled: ${SSL_ENABLED:true}
+    enabled: ${SSL_ENABLED:false}
     key-store: ${SSL_KEY_STORE:classpath:keystore.p12}
     key-store-password: ${SSL_KEY_STORE_PASSWORD:password}
     key-store-type: ${SSL_KEY_STORE_TYPE:PKCS12}
   servlet:
     session:
       cookie:
-        same-site: ${SERVER_COOKIE_SAME_SITE:none}
-        secure: ${SERVER_COOKIE_SECURE:true}
+        same-site: ${SERVER_COOKIE_SAME_SITE:lax}
+        secure: ${SERVER_COOKIE_SECURE:false}
         http-only: true
 
 spring:
   datasource:
-    url: ${AUTH_DATA_BASE}
-    username: ${AUTH_DATA_USER}
-    password: ${AUTH_DATA_PASSWORD}
+    url: ${AUTH_DATA_BASE:jdbc:postgresql://localhost:5401/db01}
+    username: ${AUTH_DATA_USER:user01}
+    password: ${AUTH_DATA_PASSWORD:pass01}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -30,9 +31,9 @@ spring:
   kafka:
     bootstrap-servers: crossover.proxy.rlwy.net:32058
     properties:
-      schema.registry.url: ${AUTH_SCHEMA_REGISTRY_URL}
+      schema.registry.url: http://schema-registry-sbs4-desarollo.up.railway.app
       basic.auth.credentials.source: USER_INFO
-      basic.auth.user.info: ${AUTH_SCHEMA_REGISTRY_AUTH}
+      basic.auth.user.info: admin:admin123
     enabled: true
     consumer:
       auto-offset-reset: earliest
@@ -40,16 +41,16 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:1}
       timeout: ${REDIS_TIMEOUT:60000}
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${ISSUER_URI:http://localhost:6001}
 app:
   security:
-    handler-url: ${HANDLER_URL:http://localhost:4200}
+    handler-url: ${HANDLER_URL:http://localhost:9000/nexa-auth}
+  activation:
+    base-url: ${ACTIVATION_BASE_URL:http://localhost:9000}
+  jwt:
+    secret: ${JWT_SECRET:local-secret-key-change-me-in-production-must-be-256-bits-long}
 
 logging:
   level:
