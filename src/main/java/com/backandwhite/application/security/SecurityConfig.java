@@ -2,6 +2,12 @@ package com.backandwhite.application.security;
 
 import com.backandwhite.domain.repository.OauthClientRepository;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,13 +58,6 @@ import tools.jackson.databind.JacksonModule;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -69,8 +68,7 @@ public class SecurityConfig {
     private final SessionRevokingLogoutHandler sessionRevokingLogoutHandler;
     private final RateLimitFilter rateLimitFilter;
 
-    public SecurityConfig(PasswordEncoder passwordEncoder,
-            SessionRevokingLogoutHandler sessionRevokingLogoutHandler,
+    public SecurityConfig(PasswordEncoder passwordEncoder, SessionRevokingLogoutHandler sessionRevokingLogoutHandler,
             RateLimitFilter rateLimitFilter) {
         this.passwordEncoder = passwordEncoder;
         this.sessionRevokingLogoutHandler = sessionRevokingLogoutHandler;
@@ -83,35 +81,15 @@ public class SecurityConfig {
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    private final String[] GET_PUBLIC_URLS = {
-            LOGIN_PATH,
-            "/login.html",
-            "/forgot-password.html",
-            "/register.html",
-            "/terms.html",
-            "/activation-success.html",
-            "/activation-error.html",
-            "/reset-password.html",
-            "/reset-success.html",
-            "/reset-error.html",
-            "/css/**",
-            "/js/**",
-            "/images/**",
-            "/favicon.ico",
-            "/error",
-            "/.well-known/**",
-            "/oauth2/token/**",
-            "/logout",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/swagger-ui.html",
-            "/api/v1/**" };
+    private final String[] GET_PUBLIC_URLS = {LOGIN_PATH, "/login.html", "/forgot-password.html", "/register.html",
+            "/terms.html", "/activation-success.html", "/activation-error.html", "/reset-password.html",
+            "/reset-success.html", "/reset-error.html", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/error",
+            "/.well-known/**", "/oauth2/token/**", "/logout", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
+            "/api/v1/**"};
 
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(
-            HttpSecurity http,
-            JwtEncoder jwtEncoder,
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http, JwtEncoder jwtEncoder,
             @Autowired(required = false) OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer) {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
@@ -119,24 +97,19 @@ public class SecurityConfig {
         if (jwtCustomizer != null) {
             jwtGenerator.setJwtCustomizer(jwtCustomizer);
         }
-        DelegatingOAuth2TokenGenerator tokenGenerator = new DelegatingOAuth2TokenGenerator(
-                jwtGenerator, new OAuth2AccessTokenGenerator(), new OAuth2RefreshTokenGenerator());
+        DelegatingOAuth2TokenGenerator tokenGenerator = new DelegatingOAuth2TokenGenerator(jwtGenerator,
+                new OAuth2AccessTokenGenerator(), new OAuth2RefreshTokenGenerator());
 
-        http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .cors(AbstractHttpConfigurer::disable)
+        http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher()).cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .with(authorizationServerConfigurer,
-                        authorizationServer -> authorizationServer
-                                .oidc(Customizer.withDefaults())
+                        authorizationServer -> authorizationServer.oidc(Customizer.withDefaults())
                                 .tokenGenerator(tokenGenerator))
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(GET_PUBLIC_URLS).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated())
-                .exceptionHandling(exceptions -> exceptions
-                        .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint(LOGIN_PATH),
-                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers(GET_PUBLIC_URLS).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
+                .exceptionHandling(exceptions -> exceptions.defaultAuthenticationEntryPointFor(
+                        new LoginUrlAuthenticationEntryPoint(LOGIN_PATH),
+                        new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
         return http.build();
     }
 
@@ -144,24 +117,14 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.cors(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(GET_PUBLIC_URLS).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers(GET_PUBLIC_URLS).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .addLogoutHandler(sessionRevokingLogoutHandler)
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID")
-                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(
-                                HttpStatus.NO_CONTENT)))
-                .formLogin(form -> form
-                        .loginPage(LOGIN_PATH)
-                        .successHandler(authenticationSuccessHandler())
-                        .failureHandler(new CustomAuthenticationFailureHandler())
-                        .permitAll())
+                .logout(logout -> logout.logoutUrl("/logout").addLogoutHandler(sessionRevokingLogoutHandler)
+                        .invalidateHttpSession(true).clearAuthentication(true).deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
+                .formLogin(form -> form.loginPage(LOGIN_PATH).successHandler(authenticationSuccessHandler())
+                        .failureHandler(new CustomAuthenticationFailureHandler()).permitAll())
                 .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -185,13 +148,10 @@ public class SecurityConfig {
     }
 
     private RegisteredClient defaultRegisteredClient() {
-        return RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("default-client")
+        return RegisteredClient.withId(UUID.randomUUID().toString()).clientId("default-client")
                 .clientSecret(passwordEncoder.encode("secret"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .scope("default")
-                .build();
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS).scope("default").build();
     }
 
     @Bean
@@ -242,8 +202,7 @@ public class SecurityConfig {
     }
 
     private record CustomJwtGrantedAuthoritiesConverter(
-            JwtGrantedAuthoritiesConverter delegate)
-            implements Converter<Jwt, Collection<GrantedAuthority>> {
+            JwtGrantedAuthoritiesConverter delegate) implements Converter<Jwt, Collection<GrantedAuthority>> {
 
         @Override
         public Collection<GrantedAuthority> convert(Jwt jwt) {
@@ -251,9 +210,7 @@ public class SecurityConfig {
 
             List<String> rolesFromClaim = (List<String>) jwt.getClaims().get("roles");
             if (rolesFromClaim != null) {
-                rolesFromClaim.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .forEach(authorities::add);
+                rolesFromClaim.stream().map(SimpleGrantedAuthority::new).forEach(authorities::add);
             }
             return authorities;
         }

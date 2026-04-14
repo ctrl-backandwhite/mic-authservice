@@ -2,15 +2,11 @@ package com.backandwhite.infrastructure.db.postgres.mapper;
 
 import com.backandwhite.domain.model.User;
 import com.backandwhite.infrastructure.db.postgres.entity.UserEntity;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-        RoleEntityMapper.class,
-        GroupEntityMapper.class
-})
+@Mapper(componentModel = "spring", uses = {RoleEntityMapper.class, GroupEntityMapper.class})
 public interface UserEntityMapper {
 
     @Mapping(target = "id", source = "id")

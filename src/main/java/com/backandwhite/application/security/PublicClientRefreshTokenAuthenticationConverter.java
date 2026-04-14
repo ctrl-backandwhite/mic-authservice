@@ -9,14 +9,13 @@ import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.util.StringUtils;
 
 /**
- * Handles refresh_token requests for public OAuth2 clients
- * (those using {@link ClientAuthenticationMethod#NONE}).
+ * Handles refresh_token requests for public OAuth2 clients (those using
+ * {@link ClientAuthenticationMethod#NONE}).
  * <p>
  * Spring Authorization Server's default
- * {@code PublicClientAuthenticationConverter}
- * only processes {@code authorization_code} requests. This converter fills the
- * gap
- * so public clients can also refresh their tokens.
+ * {@code PublicClientAuthenticationConverter} only processes
+ * {@code authorization_code} requests. This converter fills the gap so public
+ * clients can also refresh their tokens.
  */
 public class PublicClientRefreshTokenAuthenticationConverter implements AuthenticationConverter {
 
@@ -38,10 +37,6 @@ public class PublicClientRefreshTokenAuthenticationConverter implements Authenti
             return null;
         }
 
-        return new OAuth2ClientAuthenticationToken(
-                clientId,
-                ClientAuthenticationMethod.NONE,
-                null,
-                null);
+        return new OAuth2ClientAuthenticationToken(clientId, ClientAuthenticationMethod.NONE, null, null);
     }
 }

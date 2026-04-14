@@ -3,14 +3,11 @@ package com.backandwhite.api.mapper;
 import com.backandwhite.api.dto.in.ScopeDtoIn;
 import com.backandwhite.api.dto.out.ScopeDtoOut;
 import com.backandwhite.domain.model.Scope;
-
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-})
+@Mapper(componentModel = "spring", uses = {})
 public interface ScopeDtoMapper {
 
     @Mapping(target = "id", source = "id")

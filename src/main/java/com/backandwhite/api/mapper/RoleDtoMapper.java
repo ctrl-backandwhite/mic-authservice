@@ -1,22 +1,17 @@
 package com.backandwhite.api.mapper;
 
 import com.backandwhite.api.dto.in.RoleDtoIn;
-import com.backandwhite.api.dto.out.PermissionDtoOut;
 import com.backandwhite.api.dto.out.RoleDtoOut;
 import com.backandwhite.domain.model.Permission;
 import com.backandwhite.domain.model.Role;
-
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-@Mapper(componentModel = "spring", uses = {
-        PermissionDtoMapper.class
-})
+@Mapper(componentModel = "spring", uses = {PermissionDtoMapper.class})
 public interface RoleDtoMapper {
 
     @Mapping(target = "id", source = "id")
@@ -47,8 +42,6 @@ public interface RoleDtoMapper {
         if (permissionIds == null || permissionIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return permissionIds.stream()
-                .map(id -> Permission.builder().id(id).build())
-                .collect(Collectors.toList());
+        return permissionIds.stream().map(id -> Permission.builder().id(id).build()).collect(Collectors.toList());
     }
 }

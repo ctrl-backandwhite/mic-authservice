@@ -2,12 +2,11 @@ package com.backandwhite.infrastructure.db.postgres.entity;
 
 import com.backandwhite.common.infrastructure.entity.AuditableEntity;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @With
 @Entity
@@ -46,8 +45,7 @@ public class OauthClientEntity extends AuditableEntity {
         if (object == null || getClass() != object.getClass())
             return false;
         OauthClientEntity that = (OauthClientEntity) object;
-        return Objects.equals(id, that.id)
-                && Objects.equals(clientId, that.clientId)
+        return Objects.equals(id, that.id) && Objects.equals(clientId, that.clientId)
                 && Objects.equals(clientSecret, that.clientSecret);
     }
 

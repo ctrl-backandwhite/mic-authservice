@@ -1,12 +1,10 @@
 package com.backandwhite.application.usecase.impl;
 
+import com.backandwhite.application.handler.RoleCommandHandler;
 import com.backandwhite.application.mapper.RoleUpdateMapper;
 import com.backandwhite.application.usecase.RoleUseCase;
 import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.repository.RoleRepository;
-
-import com.backandwhite.application.handler.RoleCommandHandler;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
@@ -14,8 +12,10 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Objects;
+
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
 @Log4j2
@@ -57,8 +57,8 @@ public class RoleUseCaseImpl implements RoleUseCase {
 
     @Override
     @Transactional
-    @CachePut(value = "role", key = "#id") // actualiza cache individual
-    @CacheEvict(value = "role_all", allEntries = true) // limpia cache de lista
+    @CachePut(value = "role", key = "#id")
+    @CacheEvict(value = "role_all", allEntries = true)
     public Role update(Role model, Long id) {
         log.debug("::> Updating role {}", model);
         Role existing = this.getById(id);
@@ -68,7 +68,7 @@ public class RoleUseCaseImpl implements RoleUseCase {
 
     @Override
     @Transactional
-    @CacheEvict(value = { "role_all", "role" }, allEntries = true)
+    @CacheEvict(value = {"role_all", "role"}, allEntries = true)
     public void delete(Long id) {
         this.getById(id);
         log.debug("::> Deleting role with id {}", id);

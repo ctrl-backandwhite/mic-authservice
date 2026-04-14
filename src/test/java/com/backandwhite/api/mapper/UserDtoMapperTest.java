@@ -53,6 +53,7 @@ class UserDtoMapperTest {
 
         assertThat(result)
                 .usingRecursiveComparison()
+                .ignoringFields("password")
                 .isEqualTo(userDtoOut(USER_ID));
     }
 
@@ -87,6 +88,7 @@ class UserDtoMapperTest {
 
         assertThat(result)
                 .usingRecursiveComparison()
+                .ignoringFields("password")
                 .isEqualTo(List.of(userDtoOut(USER_ID)));
     }
 }

@@ -1,17 +1,16 @@
 package com.backandwhite.infrastructure.db.postgres.mapper;
 
-import com.backandwhite.domain.model.OauthClient;
-import com.backandwhite.infrastructure.db.postgres.entity.OauthClientEntity;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-
-import java.lang.reflect.Field;
-import java.util.List;
-
 import static com.backandwhite.provider.OauthClientProvider.oauthClient;
 import static com.backandwhite.provider.OauthClientProvider.oauthClientEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.backandwhite.domain.model.OauthClient;
+import com.backandwhite.infrastructure.db.postgres.entity.OauthClientEntity;
+import java.lang.reflect.Field;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class OauthClientEntityMapperTest {
 
@@ -35,9 +34,7 @@ class OauthClientEntityMapperTest {
 
         OauthClient result = mapper.toDomain(entity);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(oauthClient());
+        assertThat(result).usingRecursiveComparison().isEqualTo(oauthClient());
     }
 
     @Test
@@ -46,8 +43,7 @@ class OauthClientEntityMapperTest {
 
         OauthClientEntity result = mapper.toEntity(model);
 
-        assertThat(result)
-                .usingRecursiveComparison()
+        assertThat(result).usingRecursiveComparison()
                 .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
                 .isEqualTo(oauthClientEntity());
     }
@@ -58,9 +54,7 @@ class OauthClientEntityMapperTest {
 
         List<OauthClient> result = mapper.toDomainList(entities);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(List.of(oauthClient()));
+        assertThat(result).usingRecursiveComparison().isEqualTo(List.of(oauthClient()));
     }
 
     private static <T> void setMapperDependency(Object target, Class<T> type, T value) {

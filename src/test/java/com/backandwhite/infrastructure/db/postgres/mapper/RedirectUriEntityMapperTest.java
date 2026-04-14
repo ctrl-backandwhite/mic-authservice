@@ -1,15 +1,14 @@
 package com.backandwhite.infrastructure.db.postgres.mapper;
 
-import com.backandwhite.domain.model.RedirectUri;
-import com.backandwhite.infrastructure.db.postgres.entity.RedirectUriEntity;
-import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-
-import java.util.List;
-
 import static com.backandwhite.provider.RedirectUriProvider.redirectUri;
 import static com.backandwhite.provider.RedirectUriProvider.redirectUriEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.backandwhite.domain.model.RedirectUri;
+import com.backandwhite.infrastructure.db.postgres.entity.RedirectUriEntity;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class RedirectUriEntityMapperTest {
 
@@ -21,9 +20,7 @@ class RedirectUriEntityMapperTest {
 
         RedirectUri result = mapper.toDomain(entity);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(redirectUri());
+        assertThat(result).usingRecursiveComparison().isEqualTo(redirectUri());
     }
 
     @Test
@@ -32,9 +29,7 @@ class RedirectUriEntityMapperTest {
 
         RedirectUriEntity result = mapper.toEntity(model);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
+        assertThat(result).usingRecursiveComparison().ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
                 .isEqualTo(redirectUriEntity());
     }
 
@@ -44,8 +39,6 @@ class RedirectUriEntityMapperTest {
 
         List<RedirectUri> result = mapper.toDomainList(entities);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(List.of(redirectUri()));
+        assertThat(result).usingRecursiveComparison().isEqualTo(List.of(redirectUri()));
     }
 }

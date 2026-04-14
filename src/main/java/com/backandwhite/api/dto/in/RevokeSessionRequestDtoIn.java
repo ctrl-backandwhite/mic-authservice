@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RevokeSessionRequestDtoIn {
 
-    @NotBlank(message = "El identificador de sesión es requerido")
+    @NotBlank(message = "Session identifier is required")
     @Size(max = 64)
     private String sessionId;
 }

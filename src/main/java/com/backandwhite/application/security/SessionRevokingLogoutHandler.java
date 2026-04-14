@@ -4,6 +4,7 @@ import com.backandwhite.domain.repository.UserSessionRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
+import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
@@ -14,8 +15,8 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
 /**
- * Marks the user_sessions row as revoked = true when the user logs out,
- * so it no longer appears in the "active sessions" list.
+ * Marks the user_sessions row as revoked = true when the user logs out, so it
+ * no longer appears in the "active sessions" list.
  */
 @Log4j2
 @Component
@@ -26,15 +27,13 @@ public class SessionRevokingLogoutHandler implements LogoutHandler {
     private final JwtDecoder jwtDecoder;
     private final UserSessionRepository userSessionRepository;
 
-    public SessionRevokingLogoutHandler(@Lazy JwtDecoder jwtDecoder,
-            UserSessionRepository userSessionRepository) {
+    public SessionRevokingLogoutHandler(@Lazy JwtDecoder jwtDecoder, UserSessionRepository userSessionRepository) {
         this.jwtDecoder = jwtDecoder;
         this.userSessionRepository = userSessionRepository;
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) {
+    public void logout(HttpServletRequest request, @NonNull HttpServletResponse response, Authentication authentication) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             log.debug("::> Logout without Bearer token – skipping session revocation");

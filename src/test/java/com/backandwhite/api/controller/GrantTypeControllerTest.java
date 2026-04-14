@@ -1,20 +1,5 @@
 package com.backandwhite.api.controller;
 
-import com.backandwhite.api.dto.in.GrantTypeDtoIn;
-import com.backandwhite.api.dto.out.GrantTypeDtoOut;
-import com.backandwhite.api.mapper.GrantTypeDtoMapper;
-import com.backandwhite.application.usecase.GrantTypeUseCase;
-import com.backandwhite.domain.model.GrantType;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
 import static com.backandwhite.provider.GrantTypeProvider.GRANT_TYPE_ID;
 import static com.backandwhite.provider.GrantTypeProvider.grantType;
 import static com.backandwhite.provider.GrantTypeProvider.grantTypeDtoIn;
@@ -22,6 +7,20 @@ import static com.backandwhite.provider.GrantTypeProvider.grantTypeDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.api.dto.in.GrantTypeDtoIn;
+import com.backandwhite.api.dto.out.GrantTypeDtoOut;
+import com.backandwhite.api.mapper.GrantTypeDtoMapper;
+import com.backandwhite.application.usecase.GrantTypeUseCase;
+import com.backandwhite.domain.model.GrantType;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class GrantTypeControllerTest {
@@ -45,7 +44,7 @@ class GrantTypeControllerTest {
         when(useCase.save(model)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<GrantTypeDtoOut> response = controller.create("test-nx-token", dtoIn);
+        ResponseEntity<GrantTypeDtoOut> response = controller.create(dtoIn);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -64,7 +63,7 @@ class GrantTypeControllerTest {
         when(useCase.update(model, GRANT_TYPE_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<GrantTypeDtoOut> response = controller.update("test-nx-token", dtoIn, GRANT_TYPE_ID);
+        ResponseEntity<GrantTypeDtoOut> response = controller.update(dtoIn, GRANT_TYPE_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -75,7 +74,7 @@ class GrantTypeControllerTest {
 
     @Test
     void delete_returnsNoContent() {
-        ResponseEntity<Void> response = controller.delete("test-nx-token", GRANT_TYPE_ID);
+        ResponseEntity<Void> response = controller.delete(GRANT_TYPE_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(useCase).delete(GRANT_TYPE_ID);
@@ -89,7 +88,7 @@ class GrantTypeControllerTest {
         when(useCase.getById(GRANT_TYPE_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<GrantTypeDtoOut> response = controller.getById("test-nx-token", GRANT_TYPE_ID);
+        ResponseEntity<GrantTypeDtoOut> response = controller.getById(GRANT_TYPE_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -105,7 +104,7 @@ class GrantTypeControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<GrantTypeDtoOut>> response = controller.findAll("test-nx-token", null);
+        ResponseEntity<List<GrantTypeDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
@@ -123,7 +122,7 @@ class GrantTypeControllerTest {
         when(useCase.findAll()).thenReturn(List.of(enabledGt, disabledGt));
         when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<GrantTypeDtoOut>> response = controller.findAll("test-nx-token", Boolean.TRUE);
+        ResponseEntity<List<GrantTypeDtoOut>> response = controller.findAll(Boolean.TRUE);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);

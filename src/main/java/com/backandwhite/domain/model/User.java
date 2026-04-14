@@ -1,13 +1,12 @@
 package com.backandwhite.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
-import java.time.Instant;
 
 @Data
 @With

@@ -14,17 +14,17 @@ import lombok.*;
 public class PermissionDtoIn {
 
     @NotEmpty
-    @Schema(description = "Nombre del permiso. Debe ser único y descriptivo. Ejemplo: 'Leer usuarios'", example = "Leer usuarios", minLength = 3, maxLength = 100)
+    @Schema(description = "Name of the permission. Must be unique and descriptive. Example: 'Read users'", example = "Read users", minLength = 3, maxLength = 100)
     private String name;
 
     @NotEmpty
-    @Schema(description = "Nombre único del permiso en formato snake_case. Se utiliza internamente. Ejemplo: 'READ_USERS'", example = "READ_USERS", minLength = 3, maxLength = 100)
+    @Schema(description = "Unique name of the permission in snake_case format. Used internally. Example: 'READ_USERS'", example = "READ_USERS", minLength = 3, maxLength = 100)
     private String uniqueName;
 
-    @Schema(description = "Descripción detallada del permiso y su alcance", example = "Permite leer la lista de usuarios del sistema", maxLength = 500)
+    @Schema(description = "Detailed description of the permission and its scope", example = "Allows reading the list of system users", maxLength = 500)
     private String description;
 
-    @NotNull(message = "El estado del permiso no puede ser nulo")
-    @Schema(description = "Indica si el permiso está activo y disponible para asignar", example = "true", defaultValue = "true")
+    @NotNull(message = "The permission status cannot be null")
+    @Schema(description = "Indicates whether the permission is active and available to assign", example = "true", defaultValue = "true")
     private Boolean enabled;
 }

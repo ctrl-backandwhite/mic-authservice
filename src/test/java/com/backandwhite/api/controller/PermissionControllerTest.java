@@ -1,10 +1,15 @@
 package com.backandwhite.api.controller;
 
+import static com.backandwhite.provider.PermissionProvider.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
 import com.backandwhite.api.dto.in.PermissionDtoIn;
 import com.backandwhite.api.dto.out.PermissionDtoOut;
 import com.backandwhite.api.mapper.PermissionDtoMapper;
 import com.backandwhite.application.usecase.PermissionUseCase;
 import com.backandwhite.domain.model.Permission;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,10 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import java.util.List;
-import static com.backandwhite.provider.PermissionProvider.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PermissionControllerTest {
@@ -34,7 +35,7 @@ class PermissionControllerTest {
         when(mapper.toDomain(dtoIn)).thenReturn(model);
         when(useCase.save(model)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
-        ResponseEntity<PermissionDtoOut> response = controller.create("test-nx-token", dtoIn);
+        ResponseEntity<PermissionDtoOut> response = controller.create(dtoIn);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(dtoOut);
         verify(mapper).toDomain(dtoIn);
@@ -50,14 +51,14 @@ class PermissionControllerTest {
         when(mapper.toDomain(dtoIn)).thenReturn(model);
         when(useCase.update(model, PERMISSION_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
-        ResponseEntity<PermissionDtoOut> response = controller.update("test-nx-token", dtoIn, PERMISSION_ID);
+        ResponseEntity<PermissionDtoOut> response = controller.update(dtoIn, PERMISSION_ID);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
     }
 
     @Test
     void delete_returnsNoContent() {
-        ResponseEntity<Void> response = controller.delete("test-nx-token", PERMISSION_ID);
+        ResponseEntity<Void> response = controller.delete(PERMISSION_ID);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(useCase).delete(PERMISSION_ID);
     }
@@ -68,7 +69,7 @@ class PermissionControllerTest {
         PermissionDtoOut dtoOut = permissionDtoOut(PERMISSION_ID);
         when(useCase.getById(PERMISSION_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
-        ResponseEntity<PermissionDtoOut> response = controller.getById("test-nx-token", PERMISSION_ID);
+        ResponseEntity<PermissionDtoOut> response = controller.getById(PERMISSION_ID);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
     }
@@ -79,7 +80,7 @@ class PermissionControllerTest {
         List<PermissionDtoOut> dtoOuts = List.of(permissionDtoOut(PERMISSION_ID));
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
-        ResponseEntity<List<PermissionDtoOut>> response = controller.findAll("test-nx-token", null);
+        ResponseEntity<List<PermissionDtoOut>> response = controller.findAll(null);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
     }
@@ -92,7 +93,7 @@ class PermissionControllerTest {
         List<PermissionDtoOut> dtoOuts = List.of(permissionDtoOut(PERMISSION_ID));
         when(useCase.findAll()).thenReturn(List.of(enabled, disabled));
         when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
-        ResponseEntity<List<PermissionDtoOut>> response = controller.findAll("test-nx-token", Boolean.TRUE);
+        ResponseEntity<List<PermissionDtoOut>> response = controller.findAll(Boolean.TRUE);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
     }

@@ -7,12 +7,11 @@ import com.backandwhite.api.mapper.GroupDtoMapper;
 import com.backandwhite.application.usecase.GroupUseCase;
 import com.backandwhite.domain.model.Group;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,8 +50,7 @@ public class GroupController implements BaseApi<GroupDtoIn, GroupDtoOut, Long> {
     }
 
     @GetMapping
-    public ResponseEntity<List<GroupDtoOut>> findAll(
-            @RequestParam(required = false) Boolean enabled) {
+    public ResponseEntity<List<GroupDtoOut>> findAll(@RequestParam(required = false) Boolean enabled) {
         List<Group> groups = useCase.findAll();
         if (enabled != null) {
             groups = groups.stream().filter(g -> enabled.equals(g.getEnabled())).toList();

@@ -2,9 +2,8 @@ package com.backandwhite.infrastructure.db.postgres.mapper;
 
 import com.backandwhite.domain.model.UserSession;
 import com.backandwhite.infrastructure.db.postgres.entity.UserSessionEntity;
-import org.mapstruct.Mapper;
-
 import java.util.List;
+import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface UserSessionEntityMapper {

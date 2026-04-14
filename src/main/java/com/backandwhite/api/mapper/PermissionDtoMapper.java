@@ -3,14 +3,11 @@ package com.backandwhite.api.mapper;
 import com.backandwhite.api.dto.in.PermissionDtoIn;
 import com.backandwhite.api.dto.out.PermissionDtoOut;
 import com.backandwhite.domain.model.Permission;
-
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-})
+@Mapper(componentModel = "spring", uses = {})
 public interface PermissionDtoMapper {
 
     @Mapping(target = "id", source = "id")

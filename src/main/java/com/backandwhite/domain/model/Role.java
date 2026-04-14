@@ -1,12 +1,11 @@
 package com.backandwhite.domain.model;
 
-import lombok.*;
-import org.jspecify.annotations.Nullable;
-import org.springframework.security.core.GrantedAuthority;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.*;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
 
 @Data
 @With

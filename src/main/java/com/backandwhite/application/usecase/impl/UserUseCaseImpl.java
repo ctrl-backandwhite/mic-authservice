@@ -1,20 +1,18 @@
 package com.backandwhite.application.usecase.impl;
 
+import com.backandwhite.application.handler.UserCommandHandler;
 import com.backandwhite.application.mapper.UserUpdateMapper;
 import com.backandwhite.application.port.out.AuthEventPort;
 import com.backandwhite.application.port.out.NotificationEventPort;
-import com.backandwhite.core.kafka.avro.EmailNotificationEvent;
 import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.common.exception.ArgumentException;
-import com.backandwhite.domain.model.User;
+import com.backandwhite.core.kafka.avro.EmailNotificationEvent;
 import com.backandwhite.domain.model.Role;
+import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.model.UserSession;
-import com.backandwhite.domain.repository.UserRepository;
 import com.backandwhite.domain.repository.RoleRepository;
+import com.backandwhite.domain.repository.UserRepository;
 import com.backandwhite.domain.repository.UserSessionRepository;
-
-import com.backandwhite.application.handler.UserCommandHandler;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.NonNull;
@@ -61,12 +59,12 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Transactional
     @CacheEvict(value = "user_all", allEntries = true)
     public User save(User model) {
+
         User existingUser = userRepository.findUserByEmail(model.getEmail());
-        if (existingUser != null) {
+        if (Objects.nonNull(existingUser)) {
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "Email already exists.");
         }
 
-        // Assign default GUEST role if user has no roles
         if (model.getRoles() == null || model.getRoles().isEmpty()) {
             Role guestRole = findGuestRole();
             if (guestRole != null) {
@@ -77,13 +75,11 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
         model.setPassword(passwordEncoder.encode(model.getPassword()));
 
-        // User starts disabled until email activation
         model.setEnabled(false);
         model.setAccountNonExpired(true);
         model.setAccountNonLocked(true);
         model.setCredentialsNonExpired(true);
 
-        // Generate activation token with 24h expiry
         String activationToken = UUID.randomUUID().toString().replace("-", "");
         model.setActivationToken(activationToken);
         model.setActivationTokenExpiry(Instant.now().plus(24, ChronoUnit.HOURS));
@@ -97,9 +93,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
         // Publish customer.registered event (M-13) — userdetailservice can auto-create
         // profile
-        authEventPort.publishCustomerRegistered(
-                savedUser.getId().toString(), savedUser.getEmail(),
-                savedUser.getName(), savedUser.getLastName());
+        authEventPort.publishCustomerRegistered(savedUser.getId().toString(), savedUser.getEmail(), savedUser.getName(),
+                savedUser.getLastName());
 
         return savedUser;
     }
@@ -111,12 +106,9 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("name", user.getName());
         variables.put("activationUrl", activationUrl);
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
-                .setRecipient(user.getEmail())
-                .setSubject("Activa tu cuenta en Nexa")
-                .setTemplateName("account-activation")
-                .setVariables(variables)
-                .build();
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
+                .setSubject("Activate your account in Nexa").setTemplateName("account-activation")
+                .setVariables(variables).build();
 
         notificationEventPort.sendNotificationEvent(event);
         log.debug("::> Activation email event sent for user {}", user.getEmail());
@@ -125,10 +117,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     private Role findGuestRole() {
         try {
             List<Role> allRoles = roleRepository.findAll();
-            return allRoles.stream()
-                    .filter(role -> "ROLE_GUEST".equals(role.getUniqueName()))
-                    .findFirst()
-                    .orElse(null);
+            return allRoles.stream().filter(role -> "ROLE_GUEST".equals(role.getUniqueName())).findFirst().orElse(null);
         } catch (Exception e) {
             log.warn("::> Could not fetch GUEST role from repository", e);
             return null;
@@ -168,7 +157,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional
-    @CacheEvict(value = { "user_all", "user" }, allEntries = true)
+    @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public void delete(Long id) {
         this.getById(id);
         log.debug("::> Deleting user with id {}", id);
@@ -177,7 +166,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional
-    @CacheEvict(value = { "user_all", "user" }, allEntries = true)
+    @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public void deleteAll(List<Long> ids) {
         log.debug("::> Bulk deleting users with ids {}", ids);
         userRepository.deleteAll(ids);
@@ -185,7 +174,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional
-    @CacheEvict(value = { "user_all", "user" }, allEntries = true)
+    @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public User toggleEnabled(Long id) {
         log.debug("::> Toggling enabled for user with id {}", id);
         User existing = this.getById(id);
@@ -195,7 +184,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional
-    @CacheEvict(value = { "user_all", "user" }, allEntries = true)
+    @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public void activateUser(String token) {
         log.debug("::> Activating user with token: {}", token);
         User user = userRepository.findByActivationToken(token);
@@ -224,12 +213,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("name", user.getName());
         variables.put("loginUrl", loginUrl);
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
-                .setRecipient(user.getEmail())
-                .setSubject("¡Bienvenido a NX036!")
-                .setTemplateName("welcome-email")
-                .setVariables(variables)
-                .build();
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
+                .setSubject("Welcome to NX036!").setTemplateName("welcome-email").setVariables(variables).build();
 
         notificationEventPort.sendNotificationEvent(event);
         log.debug("::> Welcome email event sent for user {}", user.getEmail());
@@ -267,11 +252,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("name", user.getName());
         variables.put("resetUrl", resetUrl);
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
-                .setRecipient(user.getEmail())
-                .setSubject("Recupera tu contraseña en Nexa")
-                .setTemplateName("password-reset")
-                .setVariables(variables)
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
+                .setSubject("Recover your password in Nexa").setTemplateName("password-reset").setVariables(variables)
                 .build();
 
         notificationEventPort.sendNotificationEvent(event);
@@ -280,18 +262,17 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional
-    @CacheEvict(value = { "user_all", "user" }, allEntries = true)
+    @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public void resetPassword(String token, String newPassword) {
         log.debug("::> Resetting password with token");
         User user = userRepository.findByPasswordResetToken(token);
         if (user == null) {
             throw new ArgumentException(VALIDATION_ERROR.getCode(),
-                    "El enlace de recuperación es inválido o ya fue utilizado.");
+                    "The recovery link is invalid or has already been used.");
         }
-        if (user.getPasswordResetTokenExpiry() != null
-                && Instant.now().isAfter(user.getPasswordResetTokenExpiry())) {
+        if (user.getPasswordResetTokenExpiry() != null && Instant.now().isAfter(user.getPasswordResetTokenExpiry())) {
             throw new ArgumentException(VALIDATION_ERROR.getCode(),
-                    "El enlace de recuperación ha expirado. Solicita uno nuevo.");
+                    "The recovery link has expired. Please request a new one.");
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -305,22 +286,22 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional
-    public void requestPasswordChange(String email, String currentPassword,
-            String newPassword, String confirmPassword) {
+    public void requestPasswordChange(String email, String currentPassword, String newPassword,
+                                      String confirmPassword) {
         log.debug("::> Password change requested for email: {}", email);
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Usuario no encontrado.");
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
         }
 
         // 1. Verify current password
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "La contraseña actual es incorrecta.");
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "The current password is incorrect.");
         }
 
         // 2. Verify new passwords match
         if (!newPassword.equals(confirmPassword)) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Las nuevas contraseñas no coinciden.");
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "The new passwords do not match.");
         }
 
         // 3. Generate unique 6-digit code
@@ -341,29 +322,27 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional
-    @CacheEvict(value = { "user_all", "user" }, allEntries = true)
+    @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public void confirmPasswordChange(String email, String code) {
         log.debug("::> Confirming password change for email: {}", email);
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Usuario no encontrado.");
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
         }
 
         // Validate code
         if (user.getPasswordChangeCode() == null || !user.getPasswordChangeCode().equals(code.trim())) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(),
-                    "El código de verificación es inválido.");
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "The verification code is invalid.");
         }
 
         // Validate expiry
-        if (user.getPasswordChangeCodeExpiry() != null
-                && Instant.now().isAfter(user.getPasswordChangeCodeExpiry())) {
+        if (user.getPasswordChangeCodeExpiry() != null && Instant.now().isAfter(user.getPasswordChangeCodeExpiry())) {
             // Clear expired code
             user.setPasswordChangeCode(null);
             user.setPasswordChangeCodeExpiry(null);
             userRepository.update(user);
             throw new ArgumentException(VALIDATION_ERROR.getCode(),
-                    "El código de verificación ha expirado. Solicita uno nuevo.");
+                    "The verification code has expired. Please request a new one.");
         }
 
         // Code is valid — the new password was already validated and stored temporarily
@@ -408,12 +387,9 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("name", user.getName());
         variables.put("code", code);
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
-                .setRecipient(user.getEmail())
-                .setSubject("Código de verificación para cambio de contraseña")
-                .setTemplateName("password-change-code")
-                .setVariables(variables)
-                .build();
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
+                .setSubject("Verification code for password change").setTemplateName("password-change-code")
+                .setVariables(variables).build();
 
         notificationEventPort.sendNotificationEvent(event);
         log.debug("::> Password change code email sent for user {}", user.getEmail());
@@ -459,16 +435,16 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         log.debug("::> Session revoke requested for email: {}, session: {}", email, sessionId);
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Usuario no encontrado.");
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
         }
 
         // Verify the session belongs to this user
         UserSession session = userSessionRepository.findBySessionId(sessionId);
         if (session == null || !session.getUserId().equals(user.getId())) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Sesión no encontrada.");
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Session not found.");
         }
         if (Boolean.TRUE.equals(session.getRevoked())) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "La sesión ya fue cerrada.");
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "The session has already been closed.");
         }
 
         // Generate unique 6‐digit code
@@ -491,25 +467,22 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         log.debug("::> Confirming session revoke for email: {}", email);
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "Usuario no encontrado.");
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
         }
 
         // Validate code
-        if (user.getSessionRevokeCode() == null
-                || !user.getSessionRevokeCode().equals(code.trim())) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(),
-                    "El código de verificación es inválido.");
+        if (user.getSessionRevokeCode() == null || !user.getSessionRevokeCode().equals(code.trim())) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "The verification code is invalid.");
         }
 
         // Validate expiry
-        if (user.getSessionRevokeCodeExpiry() != null
-                && Instant.now().isAfter(user.getSessionRevokeCodeExpiry())) {
+        if (user.getSessionRevokeCodeExpiry() != null && Instant.now().isAfter(user.getSessionRevokeCodeExpiry())) {
             user.setSessionRevokeCode(null);
             user.setSessionRevokeCodeExpiry(null);
             user.setSessionToRevoke(null);
             userRepository.update(user);
             throw new ArgumentException(VALIDATION_ERROR.getCode(),
-                    "El código de verificación ha expirado. Solicita uno nuevo.");
+                    "The verification code has expired. Please request a new one.");
         }
 
         String sessionId = user.getSessionToRevoke();
@@ -529,15 +502,13 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
                 // Try to remove OAuth2 authorization from in-memory service
                 if (session.getAuthorizationId() != null) {
                     try {
-                        OAuth2Authorization auth = authorizationService.findById(
-                                session.getAuthorizationId());
+                        OAuth2Authorization auth = authorizationService.findById(session.getAuthorizationId());
                         if (auth != null) {
                             authorizationService.remove(auth);
                             log.info("::> OAuth2 authorization revoked for session {}", sessionId);
                         }
                     } catch (Exception e) {
-                        log.warn("::> Could not revoke OAuth2 authorization for session {}",
-                                sessionId, e);
+                        log.warn("::> Could not revoke OAuth2 authorization for session {}", sessionId, e);
                     }
                 }
             }
@@ -556,12 +527,9 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("name", user.getName());
         variables.put("code", code);
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder()
-                .setRecipient(user.getEmail())
-                .setSubject("Código de verificación para cerrar sesión")
-                .setTemplateName("session-revoke-code")
-                .setVariables(variables)
-                .build();
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
+                .setSubject("Verification code to close session").setTemplateName("session-revoke-code")
+                .setVariables(variables).build();
 
         notificationEventPort.sendNotificationEvent(event);
         log.debug("::> Session revoke code email sent for user {}", user.getEmail());

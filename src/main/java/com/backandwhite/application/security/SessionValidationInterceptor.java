@@ -16,10 +16,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
- * Interceptor que valida que la sesión (claim "sid" del JWT) no haya sido
- * revocada.
- * Si la sesión fue revocada, devuelve 401 inmediatamente para forzar el cierre
- * en el navegador del usuario.
+ * Interceptor that validates that the session (JWT "sid" claim) has not been
+ * revoked. If the session was revoked, it immediately returns 401 to force
+ * logout in the user's browser.
  */
 @Log4j2
 @Component
@@ -32,8 +31,8 @@ public class SessionValidationInterceptor implements HandlerInterceptor {
     private final UserSessionJpaRepositoryAdapter sessionJpaRepository;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-            Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
@@ -61,8 +60,7 @@ public class SessionValidationInterceptor implements HandlerInterceptor {
 
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.getWriter().write(
-                    "{\"error\":\"session_revoked\",\"message\":\"Your session has been revoked\"}");
+            response.getWriter().write("{\"error\":\"session_revoked\",\"message\":\"Your session has been revoked\"}");
             return false;
         }
 

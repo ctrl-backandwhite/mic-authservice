@@ -1,20 +1,5 @@
 package com.backandwhite.api.controller;
 
-import com.backandwhite.api.dto.in.RedirectUriDtoIn;
-import com.backandwhite.api.dto.out.RedirectUriDtoOut;
-import com.backandwhite.api.mapper.RedirectUriDtoMapper;
-import com.backandwhite.application.usecase.RedirectUriUseCase;
-import com.backandwhite.domain.model.RedirectUri;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
 import static com.backandwhite.provider.RedirectUriProvider.REDIRECT_URI_ID;
 import static com.backandwhite.provider.RedirectUriProvider.redirectUri;
 import static com.backandwhite.provider.RedirectUriProvider.redirectUriDtoIn;
@@ -22,6 +7,20 @@ import static com.backandwhite.provider.RedirectUriProvider.redirectUriDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.api.dto.in.RedirectUriDtoIn;
+import com.backandwhite.api.dto.out.RedirectUriDtoOut;
+import com.backandwhite.api.mapper.RedirectUriDtoMapper;
+import com.backandwhite.application.usecase.RedirectUriUseCase;
+import com.backandwhite.domain.model.RedirectUri;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class RedirectUriControllerTest {
@@ -45,7 +44,7 @@ class RedirectUriControllerTest {
         when(useCase.save(model)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<RedirectUriDtoOut> response = controller.create("test-nx-token", dtoIn);
+        ResponseEntity<RedirectUriDtoOut> response = controller.create(dtoIn);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -64,7 +63,7 @@ class RedirectUriControllerTest {
         when(useCase.update(model, REDIRECT_URI_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<RedirectUriDtoOut> response = controller.update("test-nx-token", dtoIn, REDIRECT_URI_ID);
+        ResponseEntity<RedirectUriDtoOut> response = controller.update(dtoIn, REDIRECT_URI_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -75,7 +74,7 @@ class RedirectUriControllerTest {
 
     @Test
     void delete_returnsNoContent() {
-        ResponseEntity<Void> response = controller.delete("test-nx-token", REDIRECT_URI_ID);
+        ResponseEntity<Void> response = controller.delete(REDIRECT_URI_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(useCase).delete(REDIRECT_URI_ID);
@@ -89,7 +88,7 @@ class RedirectUriControllerTest {
         when(useCase.getById(REDIRECT_URI_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<RedirectUriDtoOut> response = controller.getById("test-nx-token", REDIRECT_URI_ID);
+        ResponseEntity<RedirectUriDtoOut> response = controller.getById(REDIRECT_URI_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -105,7 +104,7 @@ class RedirectUriControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<RedirectUriDtoOut>> response = controller.findAll("test-nx-token", null);
+        ResponseEntity<List<RedirectUriDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
@@ -123,7 +122,7 @@ class RedirectUriControllerTest {
         when(useCase.findAll()).thenReturn(List.of(enabledUri, disabledUri));
         when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<RedirectUriDtoOut>> response = controller.findAll("test-nx-token", Boolean.TRUE);
+        ResponseEntity<List<RedirectUriDtoOut>> response = controller.findAll(Boolean.TRUE);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);

@@ -3,14 +3,11 @@ package com.backandwhite.api.mapper;
 import com.backandwhite.api.dto.in.GrantTypeDtoIn;
 import com.backandwhite.api.dto.out.GrantTypeDtoOut;
 import com.backandwhite.domain.model.GrantType;
-
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-})
+@Mapper(componentModel = "spring", uses = {})
 public interface GrantTypeDtoMapper {
 
     @Mapping(target = "id", source = "id")

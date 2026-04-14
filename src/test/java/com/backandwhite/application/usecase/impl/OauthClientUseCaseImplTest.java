@@ -3,6 +3,7 @@ package com.backandwhite.application.usecase.impl;
 import com.backandwhite.application.handler.OauthClientCommandHandler;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.OauthClient;
+import com.backandwhite.application.mapper.OauthClientUpdateMapper;
 import com.backandwhite.domain.repository.OauthClientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,8 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.beans.BeanUtils;
 
 @ExtendWith(MockitoExtension.class)
 class OauthClientUseCaseImplTest {
@@ -29,6 +32,9 @@ class OauthClientUseCaseImplTest {
 
     @Mock
     private OauthClientCommandHandler oauthClientCommandHandler;
+
+    @Mock
+    private OauthClientUpdateMapper oauthClientUpdateMapper;
 
     @InjectMocks
     private OauthClientUseCaseImpl oauthClientUseCase;
@@ -87,6 +93,8 @@ class OauthClientUseCaseImplTest {
         OauthClient update = otherOauthClient().withId(99L);
 
         when(oauthClientRepository.getById(10L)).thenReturn(existing);
+        doAnswer(inv -> { BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id", "createdAt", "updatedAt", "createdBy", "updatedBy"); return null; })
+                .when(oauthClientUpdateMapper).updateFromModel(any(OauthClient.class), any(OauthClient.class));
         when(oauthClientRepository.update(any(OauthClient.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         OauthClient result = oauthClientUseCase.update(update, 10L);

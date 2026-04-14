@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ConfirmRevokeSessionDtoIn {
 
-    @NotBlank(message = "El código de verificación es requerido")
-    @Size(min = 6, max = 6, message = "El código debe tener 6 dígitos")
+    @NotBlank(message = "The verification code is required")
+    @Size(min = 6, max = 6, message = "The code must be 6 digits")
     private String code;
 }

@@ -12,8 +12,8 @@ import lombok.*;
 @AllArgsConstructor
 public class ForgotPasswordDtoIn {
 
-    @NotBlank(message = "El correo es obligatorio.")
-    @Email(message = "El correo no tiene un formato válido.")
-    @Schema(description = "Correo electrónico del usuario para recuperar la contraseña.", example = "usuario@ejemplo.com")
+    @NotBlank(message = "Email is required.")
+    @Email(message = "Email format is not valid.")
+    @Schema(description = "User's email address to recover the password.", example = "user@example.com")
     private String email;
 }

@@ -5,11 +5,10 @@ import com.backandwhite.domain.repository.GroupRepository;
 import com.backandwhite.infrastructure.db.postgres.entity.GroupEntity;
 import com.backandwhite.infrastructure.db.postgres.mapper.GroupEntityMapper;
 import com.backandwhite.infrastructure.db.postgres.repository.GroupJpaRepositoryAdapter;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Log4j2
 @Repository

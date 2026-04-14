@@ -1,14 +1,9 @@
 package com.backandwhite.infrastructure.db.postgres.mapper;
 
-import com.backandwhite.domain.model.User;
-import com.backandwhite.infrastructure.db.postgres.entity.UserEntity;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-
-import java.lang.reflect.Field;
-import java.util.List;
-
+import static com.backandwhite.provider.AuditProvider.CREATED_AT;
+import static com.backandwhite.provider.AuditProvider.CREATED_BY;
+import static com.backandwhite.provider.AuditProvider.UPDATED_AT;
+import static com.backandwhite.provider.AuditProvider.UPDATED_BY;
 import static com.backandwhite.provider.GroupProvider.group;
 import static com.backandwhite.provider.GroupProvider.groupEntity;
 import static com.backandwhite.provider.RoleProvider.role;
@@ -24,11 +19,15 @@ import static com.backandwhite.provider.UserProvider.USER_NAME;
 import static com.backandwhite.provider.UserProvider.USER_NICK_NAME;
 import static com.backandwhite.provider.UserProvider.USER_PASSWORD;
 import static com.backandwhite.provider.UserProvider.userEntity;
-import static com.backandwhite.provider.AuditProvider.CREATED_AT;
-import static com.backandwhite.provider.AuditProvider.CREATED_BY;
-import static com.backandwhite.provider.AuditProvider.UPDATED_AT;
-import static com.backandwhite.provider.AuditProvider.UPDATED_BY;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.backandwhite.domain.model.User;
+import com.backandwhite.infrastructure.db.postgres.entity.UserEntity;
+import java.lang.reflect.Field;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class UserEntityMapperTest {
 
@@ -69,30 +68,17 @@ class UserEntityMapperTest {
         assertThat(result.getAccountNonLocked()).isEqualTo(USER_ACCOUNT_NON_LOCKED);
         assertThat(result.getCredentialsNonExpired()).isEqualTo(USER_CREDENTIALS_NON_EXPIRED);
         assertThat(result.getRoles()).hasSize(1);
-        assertThat(result.getRoles().get(0))
-                .usingRecursiveComparison()
-                .isEqualTo(role());
+        assertThat(result.getRoles().get(0)).usingRecursiveComparison().isEqualTo(role());
         assertThat(result.getGroups()).hasSize(1);
-        assertThat(result.getGroups().get(0))
-                .usingRecursiveComparison()
-                .isEqualTo(group());
+        assertThat(result.getGroups().get(0)).usingRecursiveComparison().isEqualTo(group());
     }
 
     @Test
     void toEntity_mapsDomainToEntity() {
-        User model = User.builder()
-                .id(USER_ID)
-                .name(USER_NAME)
-                .lastName(USER_LAST_NAME)
-                .nickName(USER_NICK_NAME)
-                .email(USER_EMAIL)
-                .password(USER_PASSWORD)
-                .enabled(USER_ENABLED)
-                .accountNonExpired(USER_ACCOUNT_NON_EXPIRED)
-                .accountNonLocked(USER_ACCOUNT_NON_LOCKED)
-                .credentialsNonExpired(USER_CREDENTIALS_NON_EXPIRED)
-                .roles(List.of(role()))
-                .groups(List.of(group()))
+        User model = User.builder().id(USER_ID).name(USER_NAME).lastName(USER_LAST_NAME).nickName(USER_NICK_NAME)
+                .email(USER_EMAIL).password(USER_PASSWORD).enabled(USER_ENABLED)
+                .accountNonExpired(USER_ACCOUNT_NON_EXPIRED).accountNonLocked(USER_ACCOUNT_NON_LOCKED)
+                .credentialsNonExpired(USER_CREDENTIALS_NON_EXPIRED).roles(List.of(role())).groups(List.of(group()))
                 .build();
 
         UserEntity result = mapper.toEntity(model);
@@ -112,13 +98,11 @@ class UserEntityMapperTest {
         assertThat(result.getAccountNonLocked()).isEqualTo(USER_ACCOUNT_NON_LOCKED);
         assertThat(result.getCredentialsNonExpired()).isEqualTo(USER_CREDENTIALS_NON_EXPIRED);
         assertThat(result.getRoles()).hasSize(1);
-        assertThat(result.getRoles().get(0))
-                .usingRecursiveComparison()
+        assertThat(result.getRoles().get(0)).usingRecursiveComparison()
                 .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
                 .isEqualTo(roleEntity());
         assertThat(result.getGroups()).hasSize(1);
-        assertThat(result.getGroups().get(0))
-                .usingRecursiveComparison()
+        assertThat(result.getGroups().get(0)).usingRecursiveComparison()
                 .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
                 .isEqualTo(groupEntity());
     }

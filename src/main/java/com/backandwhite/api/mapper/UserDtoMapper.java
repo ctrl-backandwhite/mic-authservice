@@ -2,23 +2,17 @@ package com.backandwhite.api.mapper;
 
 import com.backandwhite.api.dto.in.UserDtoIn;
 import com.backandwhite.api.dto.out.UserDtoOut;
-import com.backandwhite.domain.model.User;
-
-import org.mapstruct.Named;
-import java.util.Collections;
-import java.util.stream.Collectors;
-import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.model.Group;
-
+import com.backandwhite.domain.model.Role;
+import com.backandwhite.domain.model.User;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = {
-        RoleDtoMapper.class,
-        GroupDtoMapper.class,
-})
+@Mapper(componentModel = "spring", uses = {RoleDtoMapper.class, GroupDtoMapper.class,})
 public interface UserDtoMapper {
 
     @Mapping(target = "id", source = "id")
@@ -73,9 +67,7 @@ public interface UserDtoMapper {
         if (roleIds == null || roleIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return roleIds.stream()
-                .map(id -> Role.builder().id(id).build())
-                .collect(Collectors.toList());
+        return roleIds.stream().map(id -> Role.builder().id(id).build()).collect(Collectors.toList());
     }
 
     @Named("mapUserGroupIds")
@@ -83,8 +75,6 @@ public interface UserDtoMapper {
         if (groupIds == null || groupIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return groupIds.stream()
-                .map(id -> Group.builder().id(id).build())
-                .collect(Collectors.toList());
+        return groupIds.stream().map(id -> Group.builder().id(id).build()).collect(Collectors.toList());
     }
 }

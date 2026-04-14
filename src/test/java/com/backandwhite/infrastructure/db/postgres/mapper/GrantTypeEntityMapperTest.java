@@ -1,15 +1,14 @@
 package com.backandwhite.infrastructure.db.postgres.mapper;
 
-import com.backandwhite.domain.model.GrantType;
-import com.backandwhite.infrastructure.db.postgres.entity.GrantTypeEntity;
-import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-
-import java.util.List;
-
 import static com.backandwhite.provider.GrantTypeProvider.grantType;
 import static com.backandwhite.provider.GrantTypeProvider.grantTypeEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.backandwhite.domain.model.GrantType;
+import com.backandwhite.infrastructure.db.postgres.entity.GrantTypeEntity;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class GrantTypeEntityMapperTest {
 
@@ -21,9 +20,7 @@ class GrantTypeEntityMapperTest {
 
         GrantType result = mapper.toDomain(entity);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(grantType());
+        assertThat(result).usingRecursiveComparison().isEqualTo(grantType());
     }
 
     @Test
@@ -32,9 +29,7 @@ class GrantTypeEntityMapperTest {
 
         GrantTypeEntity result = mapper.toEntity(model);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
+        assertThat(result).usingRecursiveComparison().ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
                 .isEqualTo(grantTypeEntity());
     }
 
@@ -44,8 +39,6 @@ class GrantTypeEntityMapperTest {
 
         List<GrantType> result = mapper.toDomainList(entities);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(List.of(grantType()));
+        assertThat(result).usingRecursiveComparison().isEqualTo(List.of(grantType()));
     }
 }

@@ -7,12 +7,11 @@ import com.backandwhite.api.mapper.PermissionDtoMapper;
 import com.backandwhite.application.usecase.PermissionUseCase;
 import com.backandwhite.domain.model.Permission;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,8 +50,7 @@ public class PermissionController implements BaseApi<PermissionDtoIn, Permission
     }
 
     @GetMapping
-    public ResponseEntity<List<PermissionDtoOut>> findAll(
-            @RequestParam(required = false) Boolean enabled) {
+    public ResponseEntity<List<PermissionDtoOut>> findAll(@RequestParam(required = false) Boolean enabled) {
         List<Permission> permissions = useCase.findAll();
         if (enabled != null) {
             permissions = permissions.stream().filter(p -> enabled.equals(p.getEnabled())).toList();

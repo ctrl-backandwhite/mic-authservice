@@ -3,13 +3,12 @@ package com.backandwhite.application.handler;
 import com.backandwhite.domain.model.Group;
 import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.repository.RoleRepository;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
@@ -21,7 +20,6 @@ public class GroupCommandHandler {
     public void validate(Group group) {
         validateRole(group);
     }
-
 
     private void validateRole(Group group) {
 

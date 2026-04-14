@@ -1,19 +1,18 @@
 package com.backandwhite.application.handler;
 
-import com.backandwhite.domain.model.OauthClient;
-import com.backandwhite.domain.model.Scope;
-import com.backandwhite.domain.repository.ScopeRepository;
-import com.backandwhite.domain.model.RedirectUri;
-import com.backandwhite.domain.repository.RedirectUriRepository;
 import com.backandwhite.domain.model.GrantType;
+import com.backandwhite.domain.model.OauthClient;
+import com.backandwhite.domain.model.RedirectUri;
+import com.backandwhite.domain.model.Scope;
 import com.backandwhite.domain.repository.GrantTypeRepository;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Component;
+import com.backandwhite.domain.repository.RedirectUriRepository;
+import com.backandwhite.domain.repository.ScopeRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
@@ -30,7 +29,6 @@ public class OauthClientCommandHandler {
         validateGrantType(oauthClient);
     }
 
-
     private void validateScope(OauthClient oauthClient) {
 
         if (Objects.isNull(oauthClient.getScopes()) || oauthClient.getScopes().isEmpty()) {
@@ -46,7 +44,6 @@ public class OauthClientCommandHandler {
         oauthClient.setScopes(scopesList);
     }
 
-
     private void validateRedirectUri(OauthClient oauthClient) {
 
         if (Objects.isNull(oauthClient.getRedirectUris()) || oauthClient.getRedirectUris().isEmpty()) {
@@ -61,7 +58,6 @@ public class OauthClientCommandHandler {
         });
         oauthClient.setRedirectUris(redirectUrisList);
     }
-
 
     private void validateGrantType(OauthClient oauthClient) {
 

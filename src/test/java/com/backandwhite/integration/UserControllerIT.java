@@ -1,5 +1,11 @@
 package com.backandwhite.integration;
 
+import static com.backandwhite.provider.GroupProvider.adminGroupEntity;
+import static com.backandwhite.provider.GroupProvider.userGroupEntity;
+import static com.backandwhite.provider.RoleProvider.*;
+import static com.backandwhite.provider.UserProvider.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.backandwhite.api.dto.OperationResponseDtoOut;
 import com.backandwhite.api.dto.in.ForgotPasswordDtoIn;
 import com.backandwhite.api.dto.in.ResetPasswordDtoIn;
@@ -12,297 +18,183 @@ import com.backandwhite.infrastructure.db.postgres.entity.UserEntity;
 import com.backandwhite.infrastructure.db.postgres.repository.GroupJpaRepositoryAdapter;
 import com.backandwhite.infrastructure.db.postgres.repository.RoleJpaRepositoryAdapter;
 import com.backandwhite.infrastructure.db.postgres.repository.UserJpaRepositoryAdapter;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-
-import static com.backandwhite.provider.GroupProvider.adminGroupEntity;
-import static com.backandwhite.provider.GroupProvider.userGroupEntity;
-import static com.backandwhite.provider.RoleProvider.*;
-import static com.backandwhite.provider.UserProvider.*;
-import static org.assertj.core.api.Assertions.assertThat;
-
 class UserControllerIT extends BaseIntegration {
 
-        private static final String PATH = "/api/v1/users";
+    private static final String PATH = "/api/v1/users";
 
-        @Autowired
-        private UserJpaRepositoryAdapter repository;
+    @Autowired
+    private UserJpaRepositoryAdapter repository;
 
-        @Autowired
-        private RoleJpaRepositoryAdapter roleRepository;
+    @Autowired
+    private RoleJpaRepositoryAdapter roleRepository;
 
-        @Autowired
-        private GroupJpaRepositoryAdapter groupRepository;
+    @Autowired
+    private GroupJpaRepositoryAdapter groupRepository;
 
-        @Test
-        void create() {
-                RoleEntity role = roleRepository.save(adminRoleEntity().withId(null));
-                GroupEntity group = groupRepository.save(adminGroupEntity().withId(null)
-                                .withRoles(List.of(role)));
+    @Test
+    void create() {
+        RoleEntity role = roleRepository.save(adminRoleEntity().withId(null));
+        GroupEntity group = groupRepository.save(adminGroupEntity().withId(null).withRoles(List.of(role)));
 
-                UserDtoIn dtoIn = userDtoIn()
-                                .withRoleIds(List.of(role.getId()))
-                                .withGroupIds(List.of(group.getId()));
+        UserDtoIn dtoIn = userDtoIn().withRoleIds(List.of(role.getId())).withGroupIds(List.of(group.getId()));
 
-                UserDtoOut response = webTestClient
-                                .post()
-                                .uri(PATH)
-                                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME)))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(dtoIn)
-                                .exchange()
-                                .expectStatus().isCreated()
-                                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                                .expectBody(UserDtoOut.class)
-                                .returnResult()
-                                .getResponseBody();
+        UserDtoOut response = webTestClient.post().uri(PATH)
+                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME)))
+                .contentType(MediaType.APPLICATION_JSON).bodyValue(dtoIn).exchange().expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody(UserDtoOut.class).returnResult()
+                .getResponseBody();
 
-                UserDtoOut expected = userDtoOut(null);
-                expected.setEnabled(false);
+        UserDtoOut expected = userDtoOut(null);
+        expected.setEnabled(false);
 
-                assertThat(response)
-                                .usingRecursiveComparison()
-                                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy",
-                                                ".*updatedBy")
-                                .ignoringFields("id", "password", "roles", "groups")
-                                .isEqualTo(expected);
-        }
+        assertThat(response).usingRecursiveComparison()
+                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
+                .ignoringFields("id", "password", "roles", "groups").isEqualTo(expected);
+    }
 
-        @Test
-        void findAll() {
-                RoleEntity role = roleRepository.save(adminRoleEntity().withId(null));
-                RoleEntity otherRole = roleRepository.save(userRoleEntity().withId(null));
-                GroupEntity group = groupRepository.save(adminGroupEntity().withId(null)
-                                .withRoles(List.of(role)));
-                GroupEntity otherGroup = groupRepository.save(userGroupEntity().withId(null)
-                                .withRoles(List.of(otherRole)));
+    @Test
+    void findAll() {
+        RoleEntity role = roleRepository.save(adminRoleEntity().withId(null));
+        RoleEntity otherRole = roleRepository.save(userRoleEntity().withId(null));
+        GroupEntity group = groupRepository.save(adminGroupEntity().withId(null).withRoles(List.of(role)));
+        GroupEntity otherGroup = groupRepository.save(userGroupEntity().withId(null).withRoles(List.of(otherRole)));
 
-                repository.saveAll(List.of(
-                                userEntity().withId(null)
-                                                .withRoles(List.of(role))
-                                                .withGroups(List.of(group)),
-                                otherUserEntity().withId(null)
-                                                .withRoles(List.of(otherRole))
-                                                .withGroups(List.of(otherGroup))));
+        repository.saveAll(List.of(userEntity().withId(null).withRoles(List.of(role)).withGroups(List.of(group)),
+                otherUserEntity().withId(null).withRoles(List.of(otherRole)).withGroups(List.of(otherGroup))));
 
-                List<UserDtoOut> response = webTestClient
-                                .get()
-                                .uri(PATH)
-                                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME)))
-                                .exchange()
-                                .expectStatus().isOk()
-                                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                                .expectBodyList(UserDtoOut.class)
-                                .returnResult()
-                                .getResponseBody();
+        List<UserDtoOut> response = webTestClient.get().uri(PATH)
+                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME))).exchange().expectStatus()
+                .isOk().expectHeader().contentType(MediaType.APPLICATION_JSON).expectBodyList(UserDtoOut.class)
+                .returnResult().getResponseBody();
 
-                assertThat(response)
-                                .usingRecursiveComparison()
-                                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy",
-                                                ".*updatedBy")
-                                .ignoringFields("id", "password", "roles", "groups")
-                                .isEqualTo(List.of(
-                                                userDtoOut(null),
-                                                otherUserDtoOut(null)));
-        }
+        assertThat(response).usingRecursiveComparison()
+                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
+                .ignoringFields("id", "password", "roles", "groups")
+                .isEqualTo(List.of(userDtoOut(null), otherUserDtoOut(null)));
+    }
 
-        @Test
-        void getById() {
-                RoleEntity role = roleRepository.save(adminRoleEntity().withId(null));
-                GroupEntity group = groupRepository.save(adminGroupEntity().withId(null)
-                                .withRoles(List.of(role)));
+    @Test
+    void getById() {
+        RoleEntity role = roleRepository.save(adminRoleEntity().withId(null));
+        GroupEntity group = groupRepository.save(adminGroupEntity().withId(null).withRoles(List.of(role)));
 
-                UserEntity saved = repository.save(userEntity().withId(null)
-                                .withRoles(List.of(role))
-                                .withGroups(List.of(group)));
+        UserEntity saved = repository
+                .save(userEntity().withId(null).withRoles(List.of(role)).withGroups(List.of(group)));
 
-                UserDtoOut response = webTestClient
-                                .get()
-                                .uri(PATH + "/" + saved.getId())
-                                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME)))
-                                .exchange()
-                                .expectStatus().isOk()
-                                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                                .expectBody(UserDtoOut.class)
-                                .returnResult()
-                                .getResponseBody();
+        UserDtoOut response = webTestClient.get().uri(PATH + "/" + saved.getId())
+                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME))).exchange().expectStatus()
+                .isOk().expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody(UserDtoOut.class)
+                .returnResult().getResponseBody();
 
-                assertThat(response)
-                                .usingRecursiveComparison()
-                                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy",
-                                                ".*updatedBy")
-                                .ignoringFields("password", "roles", "groups")
-                                .isEqualTo(userDtoOut(saved.getId()));
-        }
+        assertThat(response).usingRecursiveComparison()
+                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
+                .ignoringFields("password", "roles", "groups").isEqualTo(userDtoOut(saved.getId()));
+    }
 
-        @Test
-        void update() {
-                RoleEntity role = roleRepository.save(adminRoleEntity().withId(null));
-                GroupEntity group = groupRepository.save(adminGroupEntity().withId(null)
-                                .withRoles(List.of(role)));
-                RoleEntity otherRole = roleRepository.save(userRoleEntity().withId(null));
-                GroupEntity otherGroup = groupRepository.save(userGroupEntity().withId(null)
-                                .withRoles(List.of(otherRole)));
+    @Test
+    void update() {
+        RoleEntity role = roleRepository.save(adminRoleEntity().withId(null));
+        GroupEntity group = groupRepository.save(adminGroupEntity().withId(null).withRoles(List.of(role)));
+        RoleEntity otherRole = roleRepository.save(userRoleEntity().withId(null));
+        GroupEntity otherGroup = groupRepository.save(userGroupEntity().withId(null).withRoles(List.of(otherRole)));
 
-                UserEntity saved = repository.save(userEntity().withId(null)
-                                .withRoles(List.of(role))
-                                .withGroups(List.of(group)));
-                UserDtoIn updateDto = otherUserDtoIn()
-                                .withRoleIds(List.of(otherRole.getId()))
-                                .withGroupIds(List.of(otherGroup.getId()));
+        UserEntity saved = repository
+                .save(userEntity().withId(null).withRoles(List.of(role)).withGroups(List.of(group)));
+        UserDtoIn updateDto = otherUserDtoIn().withRoleIds(List.of(otherRole.getId()))
+                .withGroupIds(List.of(otherGroup.getId()));
 
-                UserDtoOut response = webTestClient
-                                .put()
-                                .uri(PATH + "/" + saved.getId())
-                                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME)))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(updateDto)
-                                .exchange()
-                                .expectStatus().isOk()
-                                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                                .expectBody(UserDtoOut.class)
-                                .returnResult()
-                                .getResponseBody();
+        UserDtoOut response = webTestClient.put().uri(PATH + "/" + saved.getId())
+                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME)))
+                .contentType(MediaType.APPLICATION_JSON).bodyValue(updateDto).exchange().expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody(UserDtoOut.class).returnResult()
+                .getResponseBody();
 
-                assertThat(response)
-                                .usingRecursiveComparison()
-                                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy",
-                                                ".*updatedBy")
-                                .ignoringFields("password", "roles", "groups")
-                                .isEqualTo(otherUserDtoOut(saved.getId()));
-        }
+        assertThat(response).usingRecursiveComparison()
+                .ignoringFieldsMatchingRegexes(".*createdAt", ".*updatedAt", ".*createdBy", ".*updatedBy")
+                .ignoringFields("password", "roles", "groups").isEqualTo(otherUserDtoOut(saved.getId()));
+    }
 
-        @Test
-        void delete() {
-                RoleEntity role = roleRepository.save(adminRoleEntity().withId(null));
-                GroupEntity group = groupRepository.save(adminGroupEntity().withId(null)
-                                .withRoles(List.of(role)));
+    @Test
+    void delete() {
+        RoleEntity role = roleRepository.save(adminRoleEntity().withId(null));
+        GroupEntity group = groupRepository.save(adminGroupEntity().withId(null).withRoles(List.of(role)));
 
-                UserEntity saved = repository.save(userEntity().withId(null)
-                                .withRoles(List.of(role))
-                                .withGroups(List.of(group)));
+        UserEntity saved = repository
+                .save(userEntity().withId(null).withRoles(List.of(role)).withGroups(List.of(group)));
 
-                webTestClient
-                                .delete()
-                                .uri(PATH + "/" + saved.getId())
-                                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME)))
-                                .exchange()
-                                .expectStatus().isNoContent();
+        webTestClient.delete().uri(PATH + "/" + saved.getId())
+                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME))).exchange().expectStatus()
+                .isNoContent();
 
-                assertThat(repository.existsById(saved.getId())).isFalse();
-        }
+        assertThat(repository.existsById(saved.getId())).isFalse();
+    }
 
-        @Test
-        void delete_notFound() {
-                webTestClient
-                                .delete()
-                                .uri(PATH + "/99999")
-                                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME)))
-                                .exchange()
-                                .expectStatus().isNotFound();
-        }
+    @Test
+    void delete_notFound() {
+        webTestClient.delete().uri(PATH + "/99999")
+                .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME))).exchange().expectStatus()
+                .isNotFound();
+    }
 
-        @Test
-        void forgotPassword_returnsOk() {
-                ForgotPasswordDtoIn dto = ForgotPasswordDtoIn.builder()
-                                .email("nonexistent@example.com")
-                                .build();
+    @Test
+    void forgotPassword_returnsOk() {
+        ForgotPasswordDtoIn dto = ForgotPasswordDtoIn.builder().email("nonexistent@example.com").build();
 
-                OperationResponseDtoOut response = webTestClient
-                                .post()
-                                .uri(PATH + "/forgot-password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(dto)
-                                .exchange()
-                                .expectStatus().isOk()
-                                .expectBody(OperationResponseDtoOut.class)
-                                .returnResult()
-                                .getResponseBody();
+        OperationResponseDtoOut response = webTestClient.post().uri(PATH + "/forgot-password")
+                .contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk()
+                .expectBody(OperationResponseDtoOut.class).returnResult().getResponseBody();
 
-                assertThat(response).isNotNull();
-                assertThat(response.getCode()).isEqualTo("OK");
-                assertThat(response.getMessage()).contains("Si el correo");
-        }
+        assertThat(response).isNotNull();
+        assertThat(response.getCode()).isEqualTo("OK");
+        assertThat(response.getMessage()).contains("If the email");
+    }
 
-        @Test
-        void forgotPassword_whenEmailBlank_returnsBadRequest() {
-                ForgotPasswordDtoIn dto = ForgotPasswordDtoIn.builder()
-                                .email("")
-                                .build();
+    @Test
+    void forgotPassword_whenEmailBlank_returnsBadRequest() {
+        ForgotPasswordDtoIn dto = ForgotPasswordDtoIn.builder().email("").build();
 
-                webTestClient
-                                .post()
-                                .uri(PATH + "/forgot-password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(dto)
-                                .exchange()
-                                .expectStatus().isBadRequest();
-        }
+        webTestClient.post().uri(PATH + "/forgot-password").contentType(MediaType.APPLICATION_JSON).bodyValue(dto)
+                .exchange().expectStatus().isBadRequest();
+    }
 
-        @Test
-        void forgotPassword_whenInvalidEmailFormat_returnsBadRequest() {
-                ForgotPasswordDtoIn dto = ForgotPasswordDtoIn.builder()
-                                .email("not-an-email")
-                                .build();
+    @Test
+    void forgotPassword_whenInvalidEmailFormat_returnsBadRequest() {
+        ForgotPasswordDtoIn dto = ForgotPasswordDtoIn.builder().email("not-an-email").build();
 
-                webTestClient
-                                .post()
-                                .uri(PATH + "/forgot-password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(dto)
-                                .exchange()
-                                .expectStatus().isBadRequest();
-        }
+        webTestClient.post().uri(PATH + "/forgot-password").contentType(MediaType.APPLICATION_JSON).bodyValue(dto)
+                .exchange().expectStatus().isBadRequest();
+    }
 
-        @Test
-        void resetPassword_whenInvalidToken_redirectsToError() {
-                ResetPasswordDtoIn dto = ResetPasswordDtoIn.builder()
-                                .token("non-existent-token")
-                                .newPassword("NewPass1")
-                                .build();
+    @Test
+    void resetPassword_whenInvalidToken_redirectsToError() {
+        ResetPasswordDtoIn dto = ResetPasswordDtoIn.builder().token("non-existent-token").newPassword("NewPass1")
+                .build();
 
-                webTestClient
-                                .post()
-                                .uri(PATH + "/reset-password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(dto)
-                                .exchange()
-                                .expectStatus().isFound()
-                                .expectHeader().value("Location",
-                                                location -> assertThat(location).contains("/reset-error.html"));
-        }
+        webTestClient.post().uri(PATH + "/reset-password").contentType(MediaType.APPLICATION_JSON).bodyValue(dto)
+                .exchange().expectStatus().isFound().expectHeader()
+                .value("Location", location -> assertThat(location).contains("/reset-error.html"));
+    }
 
-        @Test
-        void resetPassword_whenValidToken_redirectsToSuccess() {
-                String resetToken = "test-reset-token-abc123";
-                repository.save(userEntity()
-                                .withId(null)
-                                .withNickName("reset.test")
-                                .withEmail("reset.test@example.com")
-                                .withPasswordResetToken(resetToken)
-                                .withPasswordResetTokenExpiry(Instant.now().plus(30, ChronoUnit.MINUTES))
-                                .withRoles(List.of())
-                                .withGroups(List.of()));
+    @Test
+    void resetPassword_whenValidToken_redirectsToSuccess() {
+        String resetToken = "test-reset-token-abc123";
+        repository.save(userEntity().withId(null).withNickName("reset.test").withEmail("reset.test@example.com")
+                .withPasswordResetToken(resetToken)
+                .withPasswordResetTokenExpiry(Instant.now().plus(30, ChronoUnit.MINUTES)).withRoles(List.of())
+                .withGroups(List.of()));
 
-                ResetPasswordDtoIn dto = ResetPasswordDtoIn.builder()
-                                .token(resetToken)
-                                .newPassword("NewPass1")
-                                .build();
+        ResetPasswordDtoIn dto = ResetPasswordDtoIn.builder().token(resetToken).newPassword("NewPass1").build();
 
-                webTestClient
-                                .post()
-                                .uri(PATH + "/reset-password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(dto)
-                                .exchange()
-                                .expectStatus().isFound()
-                                .expectHeader().value("Location",
-                                                location -> assertThat(location).endsWith("/reset-success.html"));
-        }
+        webTestClient.post().uri(PATH + "/reset-password").contentType(MediaType.APPLICATION_JSON).bodyValue(dto)
+                .exchange().expectStatus().isFound().expectHeader()
+                .value("Location", location -> assertThat(location).endsWith("/reset-success.html"));
+    }
 }

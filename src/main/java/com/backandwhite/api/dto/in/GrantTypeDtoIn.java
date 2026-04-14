@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-
-
 @Data
 @With
 @Builder
@@ -16,19 +14,12 @@ import lombok.*;
 public class GrantTypeDtoIn {
 
     @NotEmpty
-    @Schema(
-        description = "Tipo de concesión OAuth2 (authorization_code, implicit, password, client_credentials, refresh_token, etc.)",
-        example = "authorization_code",
-        maxLength = 50,
-        allowableValues = {"authorization_code", "implicit", "password", "client_credentials", "refresh_token", "urn:ietf:params:oauth:grant-type:jwt-bearer"}
-    )
+    @Schema(description = "OAuth2 grant type (authorization_code, implicit, password, client_credentials, refresh_token, etc.)", example = "authorization_code", maxLength = 50, allowableValues = {
+            "authorization_code", "implicit", "password", "client_credentials", "refresh_token",
+            "urn:ietf:params:oauth:grant-type:jwt-bearer"})
     private String value;
 
-    @NotNull(message = "El estado del tipo de concesión no puede ser nulo")
-    @Schema(
-        description = "Indica si este tipo de concesión está habilitado en el servidor OAuth2",
-        example = "true",
-        defaultValue = "true"
-    )
+    @NotNull(message = "The grant type status cannot be null")
+    @Schema(description = "Indicates whether this grant type is enabled in the OAuth2 server", example = "true", defaultValue = "true")
     private Boolean enabled;
 }

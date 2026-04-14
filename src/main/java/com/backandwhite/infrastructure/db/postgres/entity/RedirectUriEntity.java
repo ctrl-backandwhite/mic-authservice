@@ -2,12 +2,11 @@ package com.backandwhite.infrastructure.db.postgres.entity;
 
 import com.backandwhite.common.infrastructure.entity.AuditableEntity;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @With
 @Entity
@@ -40,9 +39,7 @@ public class RedirectUriEntity extends AuditableEntity {
         if (object == null || getClass() != object.getClass())
             return false;
         RedirectUriEntity that = (RedirectUriEntity) object;
-        return Objects.equals(id, that.id)
-                && Objects.equals(name, that.name)
-                && Objects.equals(value, that.value)
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(value, that.value)
                 && Objects.equals(enabled, that.enabled);
     }
 

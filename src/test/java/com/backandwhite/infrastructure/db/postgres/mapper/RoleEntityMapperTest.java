@@ -1,17 +1,16 @@
 package com.backandwhite.infrastructure.db.postgres.mapper;
 
-import com.backandwhite.domain.model.Role;
-import com.backandwhite.infrastructure.db.postgres.entity.RoleEntity;
-import com.backandwhite.util.MapperTestUtils;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-
-import java.util.List;
-
 import static com.backandwhite.provider.RoleProvider.role;
 import static com.backandwhite.provider.RoleProvider.roleEntity;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.backandwhite.domain.model.Role;
+import com.backandwhite.infrastructure.db.postgres.entity.RoleEntity;
+import com.backandwhite.util.MapperTestUtils;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class RoleEntityMapperTest {
 
@@ -30,9 +29,7 @@ class RoleEntityMapperTest {
 
         Role result = mapper.toDomain(entity);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(role());
+        assertThat(result).usingRecursiveComparison().isEqualTo(role());
     }
 
     @Test
@@ -41,9 +38,7 @@ class RoleEntityMapperTest {
 
         RoleEntity result = mapper.toEntity(model);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
+        assertThat(result).usingRecursiveComparison().ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
                 .isEqualTo(roleEntity());
     }
 
@@ -53,8 +48,6 @@ class RoleEntityMapperTest {
 
         List<Role> result = mapper.toDomainList(entities);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(List.of(role()));
+        assertThat(result).usingRecursiveComparison().isEqualTo(List.of(role()));
     }
 }

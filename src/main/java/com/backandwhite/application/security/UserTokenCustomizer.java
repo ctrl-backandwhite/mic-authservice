@@ -50,12 +50,10 @@ public class UserTokenCustomizer {
             }
             if (context.getTokenType().getValue().equals("access_token")) {
                 User user = userRepository.findUserByEmail(principal.getName());
-                log.info("Información de usuario: {}", user);
+                log.info("User information: {}", user);
                 context.getClaims().claim(TOKEN_TYPE, "access token");
                 List<String> roles = context.getPrincipal().getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .filter(auth -> !auth.equals("FACTOR_PASSWORD"))
-                        .toList();
+                        .map(GrantedAuthority::getAuthority).filter(auth -> !auth.equals("FACTOR_PASSWORD")).toList();
                 List<String> groups = getGetGroups(user.getGroups());
                 context.getClaims().claim("id", user.getId());
                 context.getClaims().claim("email", user.getEmail());
@@ -80,24 +78,15 @@ public class UserTokenCustomizer {
                 String sessionId = UUID.randomUUID().toString().replace("-", "");
                 context.getClaims().claim("sid", sessionId);
 
-                String authorizationId = context.getAuthorization() != null
-                        ? context.getAuthorization().getId()
-                        : null;
+                String authorizationId = context.getAuthorization() != null ? context.getAuthorization().getId() : null;
 
                 HttpServletRequest request = getHttpRequest();
                 String userAgent = request != null ? request.getHeader("User-Agent") : null;
                 String ipAddress = request != null ? extractIpAddress(request) : null;
 
-                UserSession session = UserSession.builder()
-                        .userId(user.getId())
-                        .sessionId(sessionId)
-                        .authorizationId(authorizationId)
-                        .deviceInfo(parseDeviceInfo(userAgent))
-                        .ipAddress(ipAddress)
-                        .userAgent(userAgent)
-                        .createdAt(Instant.now())
-                        .lastActiveAt(Instant.now())
-                        .revoked(false)
+                UserSession session = UserSession.builder().userId(user.getId()).sessionId(sessionId)
+                        .authorizationId(authorizationId).deviceInfo(parseDeviceInfo(userAgent)).ipAddress(ipAddress)
+                        .userAgent(userAgent).createdAt(Instant.now()).lastActiveAt(Instant.now()).revoked(false)
                         .build();
 
                 userSessionRepository.save(session);
@@ -108,8 +97,7 @@ public class UserTokenCustomizer {
                 OAuth2Authorization auth = context.getAuthorization();
                 String sessionId = null;
 
-                if (auth != null && auth.getAccessToken() != null
-                        && auth.getAccessToken().getClaims() != null) {
+                if (auth != null && auth.getAccessToken() != null && auth.getAccessToken().getClaims() != null) {
                     sessionId = (String) auth.getAccessToken().getClaims().get("sid");
                 }
 
@@ -143,7 +131,7 @@ public class UserTokenCustomizer {
 
     private String parseDeviceInfo(String userAgent) {
         if (userAgent == null || userAgent.isBlank())
-            return "Navegador desconocido";
+            return "Unknown browser";
 
         String browser;
         if (userAgent.contains("Edg/"))
@@ -157,7 +145,7 @@ public class UserTokenCustomizer {
         else if (userAgent.contains("Safari/") && !userAgent.contains("Chrome/"))
             browser = "Safari";
         else
-            browser = "Navegador";
+            browser = "Browser";
 
         String os;
         if (userAgent.contains("iPhone"))
@@ -173,7 +161,7 @@ public class UserTokenCustomizer {
         else if (userAgent.contains("Linux"))
             os = "Linux";
         else
-            os = "Dispositivo";
+            os = "Device";
 
         return browser + " · " + os;
     }
@@ -181,9 +169,7 @@ public class UserTokenCustomizer {
     private List<String> getGetGroups(List<Group> groups) {
 
         if (Objects.nonNull(groups) && !groups.isEmpty()) {
-            return groups.stream()
-                    .map(Group::getUniqueName)
-                    .toList();
+            return groups.stream().map(Group::getUniqueName).toList();
         }
         return Collections.emptyList();
     }

@@ -36,8 +36,6 @@ public interface UserUseCase extends BaseUseCase<User, User, Long> {
         return save(model);
     }
 
-    // ─── Session management ────────────────────────────────────────
-
     List<UserSession> getActiveSessions(String email);
 
     void requestSessionRevoke(String email, String sessionId);

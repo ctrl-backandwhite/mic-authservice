@@ -12,17 +12,17 @@ import lombok.*;
 @AllArgsConstructor
 public class ChangePasswordRequestDtoIn {
 
-    @NotBlank(message = "La contraseña actual es obligatoria.")
-    @Schema(description = "Contraseña actual del usuario.", example = "MiPassActual1")
+    @NotBlank(message = "Current password is required.")
+    @Schema(description = "Current user password.", example = "MyCurrentPass1")
     private String currentPassword;
 
-    @NotBlank(message = "La nueva contraseña es obligatoria.")
-    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres.")
-    @Schema(description = "Nueva contraseña del usuario. Mínimo 8 caracteres.", example = "MiNuevaPass1")
+    @NotBlank(message = "New password is required.")
+    @Size(min = 8, message = "Password must be at least 8 characters.")
+    @Schema(description = "New user password. Minimum 8 characters.", example = "MyNewPass1")
     private String newPassword;
 
-    @NotBlank(message = "La confirmación de contraseña es obligatoria.")
-    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres.")
-    @Schema(description = "Confirmación de la nueva contraseña.", example = "MiNuevaPass1")
+    @NotBlank(message = "Password confirmation is required.")
+    @Size(min = 8, message = "Password must be at least 8 characters.")
+    @Schema(description = "Confirmation of the new password.", example = "MyNewPass1")
     private String confirmPassword;
 }

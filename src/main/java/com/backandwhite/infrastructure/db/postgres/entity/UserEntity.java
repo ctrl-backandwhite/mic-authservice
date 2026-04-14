@@ -2,13 +2,12 @@ package com.backandwhite.infrastructure.db.postgres.entity;
 
 import com.backandwhite.common.infrastructure.entity.AuditableEntity;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @With
 @Getter
@@ -93,13 +92,9 @@ public class UserEntity extends AuditableEntity {
         if (object == null || getClass() != object.getClass())
             return false;
         UserEntity that = (UserEntity) object;
-        return Objects.equals(id, that.id)
-                && Objects.equals(name, that.name)
-                && Objects.equals(lastName, that.lastName)
-                && Objects.equals(nickName, that.nickName)
-                && Objects.equals(email, that.email)
-                && Objects.equals(password, that.password)
-                && Objects.equals(enabled, that.enabled)
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(lastName, that.lastName)
+                && Objects.equals(nickName, that.nickName) && Objects.equals(email, that.email)
+                && Objects.equals(password, that.password) && Objects.equals(enabled, that.enabled)
                 && Objects.equals(accountNonExpired, that.accountNonExpired)
                 && Objects.equals(accountNonLocked, that.accountNonLocked)
                 && Objects.equals(credentialsNonExpired, that.credentialsNonExpired)
@@ -117,9 +112,8 @@ public class UserEntity extends AuditableEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, lastName, nickName, email, password, enabled, accountNonExpired, accountNonLocked,
-                credentialsNonExpired, activationToken, activationTokenExpiry,
-                passwordResetToken, passwordResetTokenExpiry,
-                passwordChangeCode, passwordChangeCodeExpiry,
-                sessionRevokeCode, sessionRevokeCodeExpiry, sessionToRevoke);
+                credentialsNonExpired, activationToken, activationTokenExpiry, passwordResetToken,
+                passwordResetTokenExpiry, passwordChangeCode, passwordChangeCodeExpiry, sessionRevokeCode,
+                sessionRevokeCodeExpiry, sessionToRevoke);
     }
 }

@@ -1,20 +1,19 @@
 package com.backandwhite.api.mapper;
 
-import com.backandwhite.api.dto.in.RoleDtoIn;
-import com.backandwhite.api.dto.out.RoleDtoOut;
-import com.backandwhite.domain.model.Role;
-import com.backandwhite.util.MapperTestUtils;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-
-import java.util.List;
-
 import static com.backandwhite.provider.RoleProvider.ROLE_ID;
 import static com.backandwhite.provider.RoleProvider.role;
 import static com.backandwhite.provider.RoleProvider.supportRoleDtoIn;
 import static com.backandwhite.provider.RoleProvider.supportRoleDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.backandwhite.api.dto.in.RoleDtoIn;
+import com.backandwhite.api.dto.out.RoleDtoOut;
+import com.backandwhite.domain.model.Role;
+import com.backandwhite.util.MapperTestUtils;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class RoleDtoMapperTest {
 
@@ -33,9 +32,7 @@ class RoleDtoMapperTest {
 
         RoleDtoOut result = mapper.toDtoOut(model);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(supportRoleDtoOut(ROLE_ID));
+        assertThat(result).usingRecursiveComparison().isEqualTo(supportRoleDtoOut(ROLE_ID));
     }
 
     @Test
@@ -44,9 +41,7 @@ class RoleDtoMapperTest {
 
         Role result = mapper.toDomain(dtoIn);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
+        assertThat(result).usingRecursiveComparison().ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
                 .isEqualTo(role().withId(null));
     }
 
@@ -54,8 +49,6 @@ class RoleDtoMapperTest {
     void toDtoOutList_mapsList() {
         List<RoleDtoOut> result = mapper.toDtoOutList(List.of(role()));
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(List.of(supportRoleDtoOut(ROLE_ID)));
+        assertThat(result).usingRecursiveComparison().isEqualTo(List.of(supportRoleDtoOut(ROLE_ID)));
     }
 }

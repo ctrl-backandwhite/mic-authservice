@@ -12,12 +12,12 @@ import lombok.*;
 @AllArgsConstructor
 public class ResetPasswordDtoIn {
 
-    @NotBlank(message = "El token de recuperación es obligatorio.")
-    @Schema(description = "Token de recuperación de contraseña enviado por correo.", example = "a1b2c3d4e5f6...")
+    @NotBlank(message = "The recovery token is required.")
+    @Schema(description = "Password recovery token sent by email.", example = "a1b2c3d4e5f6...")
     private String token;
 
-    @NotBlank(message = "La nueva contraseña es obligatoria.")
-    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres.")
-    @Schema(description = "Nueva contraseña del usuario. Mínimo 8 caracteres.", example = "MiNuevaPass1")
+    @NotBlank(message = "The new password is required.")
+    @Size(min = 8, message = "Password must be at least 8 characters.")
+    @Schema(description = "New user password. Minimum 8 characters.", example = "MyNewPass1")
     private String newPassword;
 }

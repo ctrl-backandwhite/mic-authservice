@@ -12,8 +12,8 @@ import lombok.*;
 @AllArgsConstructor
 public class ConfirmPasswordChangeDtoIn {
 
-    @NotBlank(message = "El código de verificación es obligatorio.")
-    @Size(min = 6, max = 6, message = "El código debe tener exactamente 6 dígitos.")
-    @Schema(description = "Código de verificación de 6 dígitos enviado al correo.", example = "482951")
+    @NotBlank(message = "The verification code is required.")
+    @Size(min = 6, max = 6, message = "The code must be exactly 6 digits.")
+    @Schema(description = "6-digit verification code sent to the email.", example = "482951")
     private String code;
 }

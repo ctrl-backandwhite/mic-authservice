@@ -2,12 +2,11 @@ package com.backandwhite.infrastructure.db.postgres.entity;
 
 import com.backandwhite.common.infrastructure.entity.AuditableEntity;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @With
 @Getter
@@ -40,9 +39,7 @@ public class RoleEntity extends AuditableEntity {
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "role_permissions",
-        joinColumns = @JoinColumn(name = "role_id"),
-        inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    @JoinTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<PermissionEntity> permissions = new ArrayList<>();
 
     @Override
@@ -50,10 +47,8 @@ public class RoleEntity extends AuditableEntity {
         if (object == null || getClass() != object.getClass())
             return false;
         RoleEntity that = (RoleEntity) object;
-        return Objects.equals(id, that.id)
-                && Objects.equals(name, that.name)
-                && Objects.equals(uniqueName, that.uniqueName)
-                && Objects.equals(description, that.description)
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
+                && Objects.equals(uniqueName, that.uniqueName) && Objects.equals(description, that.description)
                 && Objects.equals(enabled, that.enabled);
     }
 

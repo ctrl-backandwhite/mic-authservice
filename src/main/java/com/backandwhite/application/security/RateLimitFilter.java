@@ -4,24 +4,23 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Deque;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.Deque;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-
 /**
- * In-memory rate limiter for sensitive public endpoints
- * (registration, password-reset, login).
+ * In-memory rate limiter for sensitive public endpoints (registration,
+ * password-reset, login).
  * <p>
- * Uses a sliding-window counter per client IP + path group.
- * Stale entries are evicted lazily on each request check.
+ * Uses a sliding-window counter per client IP + path group. Stale entries are
+ * evicted lazily on each request check.
  */
 @Log4j2
 @Component
@@ -37,9 +36,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private final Map<String, Deque<Long>> requestCounts = new ConcurrentHashMap<>();
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         String path = request.getRequestURI();
         String method = request.getMethod();

@@ -1,20 +1,5 @@
 package com.backandwhite.api.controller;
 
-import com.backandwhite.api.dto.in.ScopeDtoIn;
-import com.backandwhite.api.dto.out.ScopeDtoOut;
-import com.backandwhite.api.mapper.ScopeDtoMapper;
-import com.backandwhite.application.usecase.ScopeUseCase;
-import com.backandwhite.domain.model.Scope;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
 import static com.backandwhite.provider.ScopeProvider.READ_ID;
 import static com.backandwhite.provider.ScopeProvider.readScope;
 import static com.backandwhite.provider.ScopeProvider.readScopeDtoIn;
@@ -22,6 +7,20 @@ import static com.backandwhite.provider.ScopeProvider.readScopeDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.api.dto.in.ScopeDtoIn;
+import com.backandwhite.api.dto.out.ScopeDtoOut;
+import com.backandwhite.api.mapper.ScopeDtoMapper;
+import com.backandwhite.application.usecase.ScopeUseCase;
+import com.backandwhite.domain.model.Scope;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class ScopeControllerTest {
@@ -45,7 +44,7 @@ class ScopeControllerTest {
         when(useCase.save(model)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<ScopeDtoOut> response = controller.create("test-nx-token", dtoIn);
+        ResponseEntity<ScopeDtoOut> response = controller.create(dtoIn);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -64,7 +63,7 @@ class ScopeControllerTest {
         when(useCase.update(model, READ_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<ScopeDtoOut> response = controller.update("test-nx-token", dtoIn, READ_ID);
+        ResponseEntity<ScopeDtoOut> response = controller.update(dtoIn, READ_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -75,7 +74,7 @@ class ScopeControllerTest {
 
     @Test
     void delete_returnsNoContent() {
-        ResponseEntity<Void> response = controller.delete("test-nx-token", READ_ID);
+        ResponseEntity<Void> response = controller.delete(READ_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(useCase).delete(READ_ID);
@@ -89,7 +88,7 @@ class ScopeControllerTest {
         when(useCase.getById(READ_ID)).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<ScopeDtoOut> response = controller.getById("test-nx-token", READ_ID);
+        ResponseEntity<ScopeDtoOut> response = controller.getById(READ_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -105,7 +104,7 @@ class ScopeControllerTest {
         when(useCase.findAll()).thenReturn(models);
         when(mapper.toDtoOutList(models)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<ScopeDtoOut>> response = controller.findAll("test-nx-token", null);
+        ResponseEntity<List<ScopeDtoOut>> response = controller.findAll(null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
@@ -123,7 +122,7 @@ class ScopeControllerTest {
         when(useCase.findAll()).thenReturn(List.of(enabledScope, disabledScope));
         when(mapper.toDtoOutList(onlyEnabled)).thenReturn(dtoOuts);
 
-        ResponseEntity<List<ScopeDtoOut>> response = controller.findAll("test-nx-token", Boolean.TRUE);
+        ResponseEntity<List<ScopeDtoOut>> response = controller.findAll(Boolean.TRUE);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOuts);
