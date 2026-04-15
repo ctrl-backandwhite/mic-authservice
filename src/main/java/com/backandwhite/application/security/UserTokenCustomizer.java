@@ -127,48 +127,26 @@ public class UserTokenCustomizer {
         return request.getRemoteAddr();
     }
 
-    private static final List<Map.Entry<String, String>> BROWSER_PATTERNS = List.of(
-            Map.entry("Edg/", "Edge"), Map.entry("OPR/", "Opera"), Map.entry("Opera", "Opera"),
-            Map.entry("Firefox/", "Firefox"));
+    private static final List<Map.Entry<String, String>> BROWSER_PATTERNS = List.of(Map.entry("Edg/", "Edge"),
+            Map.entry("OPR/", "Opera"), Map.entry("Opera", "Opera"), Map.entry("Chrome/", "Chrome"),
+            Map.entry("Firefox/", "Firefox"), Map.entry("Safari/", "Safari"));
 
-    private static final List<Map.Entry<String, String>> OS_PATTERNS = List.of(
-            Map.entry("iPhone", "iPhone"), Map.entry("iPad", "iPad"), Map.entry("Android", "Android"),
-            Map.entry("Macintosh", "macOS"), Map.entry("Windows", "Windows"), Map.entry("Linux", "Linux"));
+    private static final List<Map.Entry<String, String>> OS_PATTERNS = List.of(Map.entry("iPhone", "iPhone"),
+            Map.entry("iPad", "iPad"), Map.entry("Android", "Android"), Map.entry("Macintosh", "macOS"),
+            Map.entry("Windows", "Windows"), Map.entry("Linux", "Linux"));
 
     private String parseDeviceInfo(String userAgent) {
         if (userAgent == null || userAgent.isBlank()) {
             return "Unknown browser";
         }
-        String browser = detectBrowser(userAgent);
+        String browser = matchPattern(userAgent, BROWSER_PATTERNS, "Browser");
         String os = matchPattern(userAgent, OS_PATTERNS, "Device");
         return browser + " · " + os;
     }
 
-    private String detectBrowser(String userAgent) {
-        if (userAgent.contains("Edg/")) {
-            return "Edge";
-        }
-        if (userAgent.contains("OPR/") || userAgent.contains("Opera")) {
-            return "Opera";
-        }
-        if (userAgent.contains("Chrome/")) {
-            return "Chrome";
-        }
-        if (userAgent.contains("Firefox/")) {
-            return "Firefox";
-        }
-        if (userAgent.contains("Safari/")) {
-            return "Safari";
-        }
-        return "Browser";
-    }
-
     private String matchPattern(String userAgent, List<Map.Entry<String, String>> patterns, String fallback) {
-        return patterns.stream()
-                .filter(entry -> userAgent.contains(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(fallback);
+        return patterns.stream().filter(entry -> userAgent.contains(entry.getKey())).map(Map.Entry::getValue)
+                .findFirst().orElse(fallback);
     }
 
     private List<String> getGetGroups(List<Group> groups) {
