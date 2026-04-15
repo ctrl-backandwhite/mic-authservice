@@ -1,9 +1,9 @@
 package com.backandwhite.infrastructure.message.kafka.producer;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.mock;
 
-import com.backandwhite.core.kafka.avro.EmailNotificationEvent;
+import com.backandwhite.application.port.out.EmailNotificationRequest;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class NoOpNotificationEventAdapterTest {
@@ -12,8 +12,9 @@ class NoOpNotificationEventAdapterTest {
 
     @Test
     void sendNotificationEvent_doesNothing() {
-        EmailNotificationEvent event = mock(EmailNotificationEvent.class);
+        EmailNotificationRequest request = new EmailNotificationRequest("user@test.com", "Subject", "template",
+                Map.of());
 
-        assertDoesNotThrow(() -> adapter.sendNotificationEvent(event));
+        assertDoesNotThrow(() -> adapter.sendNotificationEvent(request));
     }
 }

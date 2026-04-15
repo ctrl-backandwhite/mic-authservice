@@ -127,8 +127,10 @@ public class UserTokenCustomizer {
         return request.getRemoteAddr();
     }
 
+    private static final String OPERA = "Opera";
+
     private static final List<Map.Entry<String, String>> BROWSER_PATTERNS = List.of(Map.entry("Edg/", "Edge"),
-            Map.entry("OPR/", "Opera"), Map.entry("Opera", "Opera"), Map.entry("Chrome/", "Chrome"),
+            Map.entry("OPR/", OPERA), Map.entry(OPERA, OPERA), Map.entry("Chrome/", "Chrome"),
             Map.entry("Firefox/", "Firefox"), Map.entry("Safari/", "Safari"));
 
     private static final List<Map.Entry<String, String>> OS_PATTERNS = List.of(Map.entry("iPhone", "iPhone"),
