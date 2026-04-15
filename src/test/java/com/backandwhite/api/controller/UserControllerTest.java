@@ -24,6 +24,7 @@ import com.backandwhite.api.dto.in.RevokeSessionRequestDtoIn;
 import com.backandwhite.api.dto.in.UserDtoIn;
 import com.backandwhite.api.dto.out.UserDtoOut;
 import com.backandwhite.api.mapper.UserDtoMapper;
+import com.backandwhite.api.mapper.UserSessionDtoMapper;
 import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.domain.model.User;
 import java.util.List;
@@ -40,6 +41,9 @@ class UserControllerTest {
 
     @Mock
     private UserDtoMapper mapper;
+
+    @Mock
+    private UserSessionDtoMapper sessionMapper;
 
     @Mock
     private UserUseCase useCase;
@@ -267,7 +271,10 @@ class UserControllerTest {
                 .sessionId("sess-1").deviceInfo("Chrome · Windows")
                 .ipAddress("1.2.3.4").createdAt(java.time.Instant.now())
                 .lastActiveAt(java.time.Instant.now()).build();
+        var sessionDto = com.backandwhite.api.dto.out.UserSessionDtoOut.builder()
+                .sessionId("sess-1").deviceInfo("Chrome · Windows").build();
         when(useCase.getActiveSessions(USER_EMAIL)).thenReturn(java.util.List.of(session));
+        when(sessionMapper.toDtoOutList(java.util.List.of(session))).thenReturn(java.util.List.of(sessionDto));
 
         ResponseEntity<java.util.List<com.backandwhite.api.dto.out.UserSessionDtoOut>> response =
                 controller.getActiveSessions(USER_EMAIL);

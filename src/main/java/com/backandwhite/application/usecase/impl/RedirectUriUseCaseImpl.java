@@ -2,7 +2,6 @@ package com.backandwhite.application.usecase.impl;
 
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
-import com.backandwhite.application.handler.RedirectUriCommandHandler;
 import com.backandwhite.application.mapper.RedirectUriUpdateMapper;
 import com.backandwhite.application.usecase.RedirectUriUseCase;
 import com.backandwhite.domain.model.RedirectUri;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RedirectUriUseCaseImpl implements RedirectUriUseCase {
 
     private final RedirectUriRepository redirectUriRepository;
-    private final RedirectUriCommandHandler redirectUriCommandHandler;
     private final RedirectUriUpdateMapper redirectUriUpdateMapper;
 
     @Override
@@ -31,7 +29,6 @@ public class RedirectUriUseCaseImpl implements RedirectUriUseCase {
     @CacheEvict(value = "redirectUri_all", allEntries = true)
     public RedirectUri save(RedirectUri model) {
         log.debug("::> Creating redirecturi {}", model);
-        redirectUriCommandHandler.validate(model);
         return redirectUriRepository.save(model);
     }
 

@@ -2,6 +2,7 @@ package com.backandwhite.infrastructure.message.kafka.producer;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import com.backandwhite.application.port.out.CustomerRegisteredRequest;
 import org.junit.jupiter.api.Test;
 
 class NoOpAuthEventAdapterTest {
@@ -11,6 +12,6 @@ class NoOpAuthEventAdapterTest {
     @Test
     void publishCustomerRegistered_doesNothing() {
         assertDoesNotThrow(
-                () -> adapter.publishCustomerRegistered("1", "test@test.com", "John", "Doe"));
+                () -> adapter.publishCustomerRegistered(new CustomerRegisteredRequest("1", "test@test.com", "John", "Doe")));
     }
 }

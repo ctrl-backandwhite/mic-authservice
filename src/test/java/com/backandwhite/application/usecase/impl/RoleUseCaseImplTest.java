@@ -10,7 +10,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.backandwhite.application.handler.RoleCommandHandler;
 import com.backandwhite.application.mapper.RoleUpdateMapper;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.Role;
@@ -30,9 +29,6 @@ class RoleUseCaseImplTest {
     private RoleRepository roleRepository;
 
     @Mock
-    private RoleCommandHandler roleCommandHandler;
-
-    @Mock
     private RoleUpdateMapper roleUpdateMapper;
 
     @InjectMocks
@@ -48,7 +44,6 @@ class RoleUseCaseImplTest {
         Role result = roleUseCase.save(input);
 
         assertSame(saved, result);
-        verify(roleCommandHandler).validate(input);
         verify(roleRepository).save(input);
     }
 

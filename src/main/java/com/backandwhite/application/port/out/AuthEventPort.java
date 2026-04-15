@@ -8,5 +8,5 @@ public interface AuthEventPort {
     /**
      * Publishes a customer.registered event after user registration.
      */
-    void publishCustomerRegistered(String userId, String email, String firstName, String lastName);
+    void publishCustomerRegistered(CustomerRegisteredRequest request);
 }

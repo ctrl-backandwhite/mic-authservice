@@ -10,7 +10,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.backandwhite.application.handler.GrantTypeCommandHandler;
 import com.backandwhite.application.mapper.GrantTypeUpdateMapper;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.GrantType;
@@ -30,9 +29,6 @@ class GrantTypeUseCaseImplTest {
     private GrantTypeRepository grantTypeRepository;
 
     @Mock
-    private GrantTypeCommandHandler grantTypeCommandHandler;
-
-    @Mock
     private GrantTypeUpdateMapper grantTypeUpdateMapper;
 
     @InjectMocks
@@ -48,7 +44,6 @@ class GrantTypeUseCaseImplTest {
         GrantType result = grantTypeUseCase.save(input);
 
         assertSame(saved, result);
-        verify(grantTypeCommandHandler).validate(input);
         verify(grantTypeRepository).save(input);
     }
 

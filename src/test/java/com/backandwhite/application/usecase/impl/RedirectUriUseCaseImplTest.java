@@ -10,7 +10,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.backandwhite.application.handler.RedirectUriCommandHandler;
 import com.backandwhite.application.mapper.RedirectUriUpdateMapper;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.RedirectUri;
@@ -30,9 +29,6 @@ class RedirectUriUseCaseImplTest {
     private RedirectUriRepository redirectUriRepository;
 
     @Mock
-    private RedirectUriCommandHandler redirectUriCommandHandler;
-
-    @Mock
     private RedirectUriUpdateMapper redirectUriUpdateMapper;
 
     @InjectMocks
@@ -48,7 +44,6 @@ class RedirectUriUseCaseImplTest {
         RedirectUri result = redirectUriUseCase.save(input);
 
         assertSame(saved, result);
-        verify(redirectUriCommandHandler).validate(input);
         verify(redirectUriRepository).save(input);
     }
 

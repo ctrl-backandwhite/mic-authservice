@@ -2,7 +2,6 @@ package com.backandwhite.application.usecase.impl;
 
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
-import com.backandwhite.application.handler.RoleCommandHandler;
 import com.backandwhite.application.mapper.RoleUpdateMapper;
 import com.backandwhite.application.usecase.RoleUseCase;
 import com.backandwhite.domain.model.Role;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoleUseCaseImpl implements RoleUseCase {
 
     private final RoleRepository roleRepository;
-    private final RoleCommandHandler roleCommandHandler;
     private final RoleUpdateMapper roleUpdateMapper;
 
     @Override
@@ -31,7 +29,6 @@ public class RoleUseCaseImpl implements RoleUseCase {
     @CacheEvict(value = "role_all", allEntries = true)
     public Role save(Role model) {
         log.debug("::> Creating role {}", model);
-        roleCommandHandler.validate(model);
         return roleRepository.save(model);
     }
 

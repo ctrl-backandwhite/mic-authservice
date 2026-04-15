@@ -40,10 +40,7 @@ public class AuthController {
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response,
             @RequestParam(required = false) String token) {
 
-        log.info("::> ========================================");
-        log.info("::> Logout request received from: {}", request.getRemoteAddr());
-        log.info("::> Session ID: {}",
-                request.getSession(false) != null ? request.getSession(false).getId() : "No session");
+        log.info("::> Logout request received");
 
         // ── Revoke active session using the JWT sid claim ──────────────
         revokeCurrentSession(request);
@@ -79,7 +76,6 @@ public class AuthController {
         deleteCookies(request, response);
 
         log.info("::> User logged out successfully");
-        log.info("::> ========================================");
 
         return ResponseEntity.noContent().build();
     }
@@ -88,24 +84,20 @@ public class AuthController {
      * Delete all session cookies
      */
     private void deleteCookies(HttpServletRequest request, HttpServletResponse response) {
-        log.info("::> Starting cookie deletion process");
-        log.info("::> Request scheme: {}, isSecure: {}", request.getScheme(), request.isSecure());
+        log.debug("::> Clearing session cookies");
 
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                log.info("::> Processing cookie: {} = {}", cookie.getName(), cookie.getValue());
                 deleteCookie(cookie.getName(), response);
             }
         }
 
         // Explicitly delete JSESSIONID with multiple configurations
-        // to ensure it is removed regardless of how it is configured
-        log.info("::> Explicitly deleting JSESSIONID cookie");
         deleteCookie("JSESSIONID", response);
 
-        log.info("::> Cookie deletion completed");
+        log.debug("::> Cookie deletion completed");
     }
 
     /**
@@ -133,8 +125,6 @@ public class AuthController {
         cookie3.setMaxAge(0);
         cookie3.setPath("/");
         response.addCookie(cookie3);
-
-        log.info("::> Deleted cookie '{}' with multiple configurations", name);
     }
 
     @PostMapping("/revoke")
@@ -153,7 +143,7 @@ public class AuthController {
             OAuth2Authorization authorization = authorizationService.findByToken(token, tokenType);
 
             if (authorization != null) {
-                log.info("::> Revoking token for client: {}", authorization.getRegisteredClientId());
+                log.info("::> Revoking token for client");
 
                 // Remove the authorization (this revokes the token)
                 authorizationService.remove(authorization);
@@ -214,7 +204,7 @@ public class AuthController {
                     OAuth2TokenType.ACCESS_TOKEN);
             if (authorization != null) {
                 authorizationService.remove(authorization);
-                log.info("::> OAuth2 authorization removed for session {}", sessionId);
+                log.info("::> OAuth2 authorization removed during logout");
             }
         } catch (JwtException e) {
             log.debug("::> JWT decode failed during logout: {}", e.getMessage());

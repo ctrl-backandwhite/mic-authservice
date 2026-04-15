@@ -2,7 +2,6 @@ package com.backandwhite.application.usecase.impl;
 
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
-import com.backandwhite.application.handler.PermissionCommandHandler;
 import com.backandwhite.application.mapper.PermissionUpdateMapper;
 import com.backandwhite.application.usecase.PermissionUseCase;
 import com.backandwhite.domain.model.Permission;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PermissionUseCaseImpl implements PermissionUseCase {
 
     private final PermissionRepository permissionRepository;
-    private final PermissionCommandHandler permissionCommandHandler;
     private final PermissionUpdateMapper permissionUpdateMapper;
 
     @Override
@@ -31,7 +29,6 @@ public class PermissionUseCaseImpl implements PermissionUseCase {
     @CacheEvict(value = "permission_all", allEntries = true)
     public Permission save(Permission model) {
         log.debug("::> Creating permission {}", model);
-        permissionCommandHandler.validate(model);
         return permissionRepository.save(model);
     }
 

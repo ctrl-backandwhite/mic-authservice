@@ -1,6 +1,8 @@
 package com.backandwhite.application.security;
 
+import com.backandwhite.application.port.out.NotificationEventPort;
 import com.backandwhite.domain.repository.OauthClientRepository;
+import com.backandwhite.domain.repository.UserRepository;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -50,7 +52,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
@@ -67,12 +68,17 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final SessionRevokingLogoutHandler sessionRevokingLogoutHandler;
     private final RateLimitFilter rateLimitFilter;
+    private final NotificationEventPort notificationEventPort;
+    private final UserRepository userRepository;
 
     public SecurityConfig(PasswordEncoder passwordEncoder, SessionRevokingLogoutHandler sessionRevokingLogoutHandler,
-            RateLimitFilter rateLimitFilter) {
+            RateLimitFilter rateLimitFilter, NotificationEventPort notificationEventPort,
+            UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
         this.sessionRevokingLogoutHandler = sessionRevokingLogoutHandler;
         this.rateLimitFilter = rateLimitFilter;
+        this.notificationEventPort = notificationEventPort;
+        this.userRepository = userRepository;
     }
 
     @Value("${app.security.handler-url:http://localhost:4200}")
@@ -124,17 +130,23 @@ public class SecurityConfig {
                         .invalidateHttpSession(true).clearAuthentication(true).deleteCookies("JSESSIONID")
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
                 .formLogin(form -> form.loginPage(LOGIN_PATH).successHandler(authenticationSuccessHandler())
-                        .failureHandler(new CustomAuthenticationFailureHandler()).permitAll())
+                        .failureHandler(authenticationFailureHandler()).permitAll())
                 .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
-    public SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler() {
-        SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
+    public CustomAuthenticationSuccessHandler authenticationSuccessHandler() {
+        CustomAuthenticationSuccessHandler handler = new CustomAuthenticationSuccessHandler(
+                notificationEventPort, userRepository);
         handler.setDefaultTargetUrl(handlerUrl);
         handler.setAlwaysUseDefaultTargetUrl(false);
         return handler;
+    }
+
+    @Bean
+    public CustomAuthenticationFailureHandler authenticationFailureHandler() {
+        return new CustomAuthenticationFailureHandler(notificationEventPort, userRepository);
     }
 
     @Bean
