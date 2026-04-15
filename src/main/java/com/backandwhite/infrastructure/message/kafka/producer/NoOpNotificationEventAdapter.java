@@ -1,7 +1,7 @@
 package com.backandwhite.infrastructure.message.kafka.producer;
 
+import com.backandwhite.application.port.out.EmailNotificationRequest;
 import com.backandwhite.application.port.out.NotificationEventPort;
-import com.backandwhite.core.kafka.avro.EmailNotificationEvent;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class NoOpNotificationEventAdapter implements NotificationEventPort {
 
     @Override
-    public void sendNotificationEvent(EmailNotificationEvent event) {
+    public void sendNotificationEvent(EmailNotificationRequest request) {
         // Intentionally empty — NoOp implementation when Kafka is disabled
     }
 }

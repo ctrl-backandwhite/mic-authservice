@@ -7,10 +7,10 @@ import com.backandwhite.application.handler.UserCommandHandler;
 import com.backandwhite.application.mapper.UserUpdateMapper;
 import com.backandwhite.application.port.out.AuthEventPort;
 import com.backandwhite.application.port.out.CustomerRegisteredRequest;
+import com.backandwhite.application.port.out.EmailNotificationRequest;
 import com.backandwhite.application.port.out.NotificationEventPort;
 import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.common.exception.ArgumentException;
-import com.backandwhite.core.kafka.avro.EmailNotificationEvent;
 import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.model.UserSession;
@@ -108,11 +108,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("name", user.getName());
         variables.put("activationUrl", activationUrl);
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
-                .setSubject("Activate your account in Nexa").setTemplateName("account-activation")
-                .setVariables(variables).build();
-
-        notificationEventPort.sendNotificationEvent(event);
+        notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
+                "Activate your account in Nexa", "account-activation", variables));
         log.debug("::> Activation email event sent");
     }
 
@@ -164,11 +161,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         Map<String, String> variables = new HashMap<>();
         variables.put("name", user.getName());
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
-                .setSubject("Your account has been modified").setTemplateName("user-modification")
-                .setVariables(variables).build();
-
-        notificationEventPort.sendNotificationEvent(event);
+        notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
+                "Your account has been modified", "user-modification", variables));
         log.debug("::> User modification notification sent for user id={}", user.getId());
     }
 
@@ -230,10 +224,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("name", user.getName());
         variables.put("loginUrl", loginUrl);
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
-                .setSubject("Welcome to NX036!").setTemplateName("welcome-email").setVariables(variables).build();
-
-        notificationEventPort.sendNotificationEvent(event);
+        notificationEventPort.sendNotificationEvent(
+                new EmailNotificationRequest(user.getEmail(), "Welcome to NX036!", "welcome-email", variables));
         log.debug("::> Welcome email event sent");
     }
 
@@ -269,11 +261,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("name", user.getName());
         variables.put("resetUrl", resetUrl);
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
-                .setSubject("Recover your password in Nexa").setTemplateName("password-reset").setVariables(variables)
-                .build();
-
-        notificationEventPort.sendNotificationEvent(event);
+        notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
+                "Recover your password in Nexa", "password-reset", variables));
         log.debug("::> Password reset email event sent");
     }
 
@@ -414,11 +403,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("name", user.getName());
         variables.put("code", code);
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
-                .setSubject("Verification code for password change").setTemplateName("password-change-code")
-                .setVariables(variables).build();
-
-        notificationEventPort.sendNotificationEvent(event);
+        notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
+                "Verification code for password change", "password-change-code", variables));
         log.debug("::> Password change code email sent");
     }
 
@@ -544,11 +530,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("name", user.getName());
         variables.put("code", code);
 
-        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
-                .setSubject("Verification code to close session").setTemplateName("session-revoke-code")
-                .setVariables(variables).build();
-
-        notificationEventPort.sendNotificationEvent(event);
+        notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
+                "Verification code to close session", "session-revoke-code", variables));
         log.debug("::> Session revoke code email sent");
     }
 }

@@ -1,7 +1,7 @@
 package com.backandwhite.application.security;
 
+import com.backandwhite.application.port.out.EmailNotificationRequest;
 import com.backandwhite.application.port.out.NotificationEventPort;
-import com.backandwhite.core.kafka.avro.EmailNotificationEvent;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.repository.UserRepository;
 import java.util.HashMap;
@@ -29,10 +29,8 @@ public class AuthNotificationHelper {
             Map<String, String> variables = new HashMap<>();
             variables.put("name", user.getName());
 
-            EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
-                    .setSubject(subject).setTemplateName(templateName).setVariables(variables).build();
-
-            notificationEventPort.sendNotificationEvent(event);
+            notificationEventPort.sendNotificationEvent(
+                    new EmailNotificationRequest(user.getEmail(), subject, templateName, variables));
             log.debug("::> Auth notification [{}] sent for user", templateName);
         } catch (Exception e) {
             log.warn("::> Could not send auth notification [{}]", templateName, e);
