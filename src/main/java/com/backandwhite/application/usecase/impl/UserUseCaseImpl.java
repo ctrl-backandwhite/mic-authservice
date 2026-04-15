@@ -95,9 +95,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
         // Publish customer.registered event (M-13) — userdetailservice can auto-create
         // profile
-        authEventPort.publishCustomerRegistered(
-                new CustomerRegisteredRequest(savedUser.getId().toString(), savedUser.getEmail(), savedUser.getName(),
-                        savedUser.getLastName()));
+        authEventPort.publishCustomerRegistered(new CustomerRegisteredRequest(savedUser.getId().toString(),
+                savedUser.getEmail(), savedUser.getName(), savedUser.getLastName()));
 
         return savedUser;
     }
@@ -439,8 +438,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
             log.warn("::> User not found for identifier");
             throw ENTITY_NOT_FOUND.toEntityNotFound("User", normalized);
         }
-        log.debug("::> User loaded successfully with {} roles",
-                user.getRoles() != null ? user.getRoles().size() : 0);
+        log.debug("::> User loaded successfully with {} roles", user.getRoles() != null ? user.getRoles().size() : 0);
         return user;
     }
 
@@ -505,10 +503,10 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         user.setSessionToRevoke(null);
         userRepository.update(user);
 
-        revokeSessionById(sessionId, email);
+        revokeSessionById(sessionId);
     }
 
-    private void revokeSessionById(String sessionId, String email) {
+    private void revokeSessionById(String sessionId) {
         if (sessionId == null) {
             return;
         }
