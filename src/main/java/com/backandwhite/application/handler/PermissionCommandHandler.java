@@ -11,5 +11,6 @@ import org.springframework.stereotype.Component;
 public class PermissionCommandHandler {
 
     public void validate(Permission permission) {
+        // No custom validation required for Permission entity
     }
 }

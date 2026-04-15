@@ -3,7 +3,6 @@ package com.backandwhite.application.usecase;
 import com.backandwhite.common.application.BaseUseCase;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.model.UserSession;
-
 import java.util.List;
 
 public interface UserUseCase extends BaseUseCase<User, User, Long> {

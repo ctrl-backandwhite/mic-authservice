@@ -1,18 +1,5 @@
 package com.backandwhite.application.usecase.impl;
 
-import com.backandwhite.application.handler.GroupCommandHandler;
-import com.backandwhite.common.exception.EntityNotFoundException;
-import com.backandwhite.domain.model.Group;
-import com.backandwhite.application.mapper.GroupUpdateMapper;
-import com.backandwhite.domain.repository.GroupRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
 import static com.backandwhite.provider.GroupProvider.adminGroup;
 import static com.backandwhite.provider.GroupProvider.userGroup;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +9,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.application.handler.GroupCommandHandler;
+import com.backandwhite.application.mapper.GroupUpdateMapper;
+import com.backandwhite.common.exception.EntityNotFoundException;
+import com.backandwhite.domain.model.Group;
+import com.backandwhite.domain.repository.GroupRepository;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeanUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,9 +54,7 @@ class GroupUseCaseImplTest {
 
     @Test
     void findAll_returnsRepositoryList() {
-        List<Group> groups = List.of(
-                adminGroup(),
-                userGroup());
+        List<Group> groups = List.of(adminGroup(), userGroup());
 
         when(groupRepository.findAll()).thenReturn(groups);
 
@@ -93,16 +90,17 @@ class GroupUseCaseImplTest {
         Group update = userGroup().withId(99L);
 
         when(groupRepository.getById(10L)).thenReturn(existing);
-        doAnswer(inv -> { BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id", "createdAt", "updatedAt", "createdBy", "updatedBy"); return null; })
-                .when(groupUpdateMapper).updateFromModel(any(Group.class), any(Group.class));
+        doAnswer(inv -> {
+            BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id", "createdAt", "updatedAt",
+                    "createdBy", "updatedBy");
+            return null;
+        }).when(groupUpdateMapper).updateFromModel(any(Group.class), any(Group.class));
         when(groupRepository.update(any(Group.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Group result = groupUseCase.update(update, 10L);
 
         verify(groupRepository).update(any(Group.class));
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(userGroup().withId(10L));
+        assertThat(result).usingRecursiveComparison().isEqualTo(userGroup().withId(10L));
     }
 
     @Test

@@ -1,18 +1,5 @@
 package com.backandwhite.application.usecase.impl;
 
-import com.backandwhite.application.handler.GrantTypeCommandHandler;
-import com.backandwhite.common.exception.EntityNotFoundException;
-import com.backandwhite.domain.model.GrantType;
-import com.backandwhite.application.mapper.GrantTypeUpdateMapper;
-import com.backandwhite.domain.repository.GrantTypeRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
 import static com.backandwhite.provider.GrantTypeProvider.grantType;
 import static com.backandwhite.provider.GrantTypeProvider.otherGrantType;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +9,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.application.handler.GrantTypeCommandHandler;
+import com.backandwhite.application.mapper.GrantTypeUpdateMapper;
+import com.backandwhite.common.exception.EntityNotFoundException;
+import com.backandwhite.domain.model.GrantType;
+import com.backandwhite.domain.repository.GrantTypeRepository;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeanUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,9 +54,7 @@ class GrantTypeUseCaseImplTest {
 
     @Test
     void findAll_returnsRepositoryList() {
-        List<GrantType> grantTypes = List.of(
-                grantType(),
-                otherGrantType());
+        List<GrantType> grantTypes = List.of(grantType(), otherGrantType());
 
         when(grantTypeRepository.findAll()).thenReturn(grantTypes);
 
@@ -93,16 +90,16 @@ class GrantTypeUseCaseImplTest {
         GrantType update = otherGrantType().withId(99L);
 
         when(grantTypeRepository.getById(10L)).thenReturn(existing);
-        doAnswer(inv -> { BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id"); return null; })
-                .when(grantTypeUpdateMapper).updateFromModel(any(GrantType.class), any(GrantType.class));
+        doAnswer(inv -> {
+            BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id");
+            return null;
+        }).when(grantTypeUpdateMapper).updateFromModel(any(GrantType.class), any(GrantType.class));
         when(grantTypeRepository.update(any(GrantType.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         GrantType result = grantTypeUseCase.update(update, 10L);
 
         verify(grantTypeRepository).update(any(GrantType.class));
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(otherGrantType().withId(10L));
+        assertThat(result).usingRecursiveComparison().isEqualTo(otherGrantType().withId(10L));
     }
 
     @Test

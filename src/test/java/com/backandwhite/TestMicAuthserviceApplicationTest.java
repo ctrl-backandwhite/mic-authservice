@@ -1,7 +1,13 @@
 package com.backandwhite;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-public class TestMicAuthserviceApplicationTest {
+import org.junit.jupiter.api.Test;
+
+class TestMicAuthserviceApplicationTest {
+
+    @Test
+    void applicationClassExists() {
+        assertThat(MicAuthserviceApplication.class).isNotNull();
+    }
 }

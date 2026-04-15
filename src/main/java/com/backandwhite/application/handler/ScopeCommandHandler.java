@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class ScopeCommandHandler {
 
     public void validate(Scope scope) {
+        // No custom validation required for Scope entity
     }
 
 }
