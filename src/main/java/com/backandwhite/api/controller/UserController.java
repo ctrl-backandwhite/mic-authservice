@@ -119,8 +119,8 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
             @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
         useCase.requestPasswordReset(dto.getEmail(), lang);
         // Always return success to not reveal if the email exists
-        return ResponseEntity
-                .ok(OperationResponseDtoOut.ok("If the email is registered, you will receive a link to reset your password."));
+        return ResponseEntity.ok(OperationResponseDtoOut
+                .ok("If the email is registered, you will receive a link to reset your password."));
     }
 
     @PostMapping("/reset-password")

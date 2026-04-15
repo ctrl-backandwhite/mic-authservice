@@ -8,7 +8,6 @@ import static com.backandwhite.provider.UserProvider.user;
 import static com.backandwhite.provider.UserProvider.userDtoIn;
 import static com.backandwhite.provider.UserProvider.userDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -228,8 +227,8 @@ class UserControllerTest {
 
     @Test
     void activateUser_invalidToken_redirectsToErrorPage() {
-        doThrow(VALIDATION_ERROR.toArgumentException("Invalid activation token."))
-                .when(useCase).activateUser("bad-token", "es");
+        doThrow(VALIDATION_ERROR.toArgumentException("Invalid activation token.")).when(useCase)
+                .activateUser("bad-token", "es");
 
         ResponseEntity<Void> response = controller.activateUser("bad-token", "es");
 
@@ -241,8 +240,8 @@ class UserControllerTest {
 
     @Test
     void requestPasswordChange_returnsOk() {
-        ChangePasswordRequestDtoIn dto = ChangePasswordRequestDtoIn.builder()
-                .currentPassword("old").newPassword("new").confirmPassword("new").build();
+        ChangePasswordRequestDtoIn dto = ChangePasswordRequestDtoIn.builder().currentPassword("old").newPassword("new")
+                .confirmPassword("new").build();
         doNothing().when(useCase).requestPasswordChange(USER_EMAIL, "old", "new", "new");
 
         ResponseEntity<OperationResponseDtoOut> response = controller.requestPasswordChange(dto, USER_EMAIL);
@@ -267,17 +266,16 @@ class UserControllerTest {
 
     @Test
     void getActiveSessions_returnsSessionList() {
-        var session = com.backandwhite.domain.model.UserSession.builder()
-                .sessionId("sess-1").deviceInfo("Chrome · Windows")
-                .ipAddress("1.2.3.4").createdAt(java.time.Instant.now())
+        var session = com.backandwhite.domain.model.UserSession.builder().sessionId("sess-1")
+                .deviceInfo("Chrome · Windows").ipAddress("1.2.3.4").createdAt(java.time.Instant.now())
                 .lastActiveAt(java.time.Instant.now()).build();
-        var sessionDto = com.backandwhite.api.dto.out.UserSessionDtoOut.builder()
-                .sessionId("sess-1").deviceInfo("Chrome · Windows").build();
+        var sessionDto = com.backandwhite.api.dto.out.UserSessionDtoOut.builder().sessionId("sess-1")
+                .deviceInfo("Chrome · Windows").build();
         when(useCase.getActiveSessions(USER_EMAIL)).thenReturn(java.util.List.of(session));
         when(sessionMapper.toDtoOutList(java.util.List.of(session))).thenReturn(java.util.List.of(sessionDto));
 
-        ResponseEntity<java.util.List<com.backandwhite.api.dto.out.UserSessionDtoOut>> response =
-                controller.getActiveSessions(USER_EMAIL);
+        ResponseEntity<java.util.List<com.backandwhite.api.dto.out.UserSessionDtoOut>> response = controller
+                .getActiveSessions(USER_EMAIL);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(1);

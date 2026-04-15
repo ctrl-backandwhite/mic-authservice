@@ -137,8 +137,8 @@ public class SecurityConfig {
 
     @Bean
     public CustomAuthenticationSuccessHandler authenticationSuccessHandler() {
-        CustomAuthenticationSuccessHandler handler = new CustomAuthenticationSuccessHandler(
-                notificationEventPort, userRepository);
+        CustomAuthenticationSuccessHandler handler = new CustomAuthenticationSuccessHandler(notificationEventPort,
+                userRepository);
         handler.setDefaultTargetUrl(handlerUrl);
         handler.setAlwaysUseDefaultTargetUrl(false);
         return handler;

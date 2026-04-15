@@ -18,10 +18,9 @@ class RoleUpdateMapperTest {
 
     @Test
     void updateFromModel_copiesFieldsExceptId() {
-        Role source = Role.builder().id(99L).name("New").uniqueName("NEW").description("New desc")
-                .enabled(false).build();
-        Role target = Role.builder().id(1L).name("Old").uniqueName("OLD").description("Old desc")
-                .enabled(true).build();
+        Role source = Role.builder().id(99L).name("New").uniqueName("NEW").description("New desc").enabled(false)
+                .build();
+        Role target = Role.builder().id(1L).name("Old").uniqueName("OLD").description("Old desc").enabled(true).build();
 
         mapper.updateFromModel(source, target);
 

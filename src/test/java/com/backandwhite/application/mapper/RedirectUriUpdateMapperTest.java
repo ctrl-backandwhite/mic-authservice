@@ -18,10 +18,10 @@ class RedirectUriUpdateMapperTest {
 
     @Test
     void updateFromModel_copiesFieldsExceptId() {
-        RedirectUri source = RedirectUri.builder().id(99L).name("New").value("https://new.com/callback")
-                .enabled(false).build();
-        RedirectUri target = RedirectUri.builder().id(1L).name("Old").value("https://old.com/callback")
-                .enabled(true).build();
+        RedirectUri source = RedirectUri.builder().id(99L).name("New").value("https://new.com/callback").enabled(false)
+                .build();
+        RedirectUri target = RedirectUri.builder().id(1L).name("Old").value("https://old.com/callback").enabled(true)
+                .build();
 
         mapper.updateFromModel(source, target);
 

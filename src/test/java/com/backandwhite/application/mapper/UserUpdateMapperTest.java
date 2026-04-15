@@ -18,10 +18,10 @@ class UserUpdateMapperTest {
 
     @Test
     void updateFromModel_copiesFieldsExceptIgnored() {
-        User source = User.builder().id(99L).name("New").lastName("NewLast").nickName("new.nick")
-                .email("new@test.com").password("new-pass").enabled(false).build();
-        User target = User.builder().id(1L).name("Old").lastName("OldLast").nickName("old.nick")
-                .email("old@test.com").password("old-pass").enabled(true).build();
+        User source = User.builder().id(99L).name("New").lastName("NewLast").nickName("new.nick").email("new@test.com")
+                .password("new-pass").enabled(false).build();
+        User target = User.builder().id(1L).name("Old").lastName("OldLast").nickName("old.nick").email("old@test.com")
+                .password("old-pass").enabled(true).build();
 
         mapper.updateFromModel(source, target);
 

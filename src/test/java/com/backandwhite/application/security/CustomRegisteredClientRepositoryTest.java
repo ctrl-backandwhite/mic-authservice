@@ -59,8 +59,7 @@ class CustomRegisteredClientRepositoryTest {
         OauthClient client = OauthClient.builder().id(1L).clientId("app-client").clientSecret("secret")
                 .scopes(List.of(Scope.builder().uniqueName("openid").build()))
                 .redirectUris(List.of(RedirectUri.builder().value("https://example.com/callback").build()))
-                .grantTypes(List.of(GrantType.builder().value("client_credentials").build()))
-                .build();
+                .grantTypes(List.of(GrantType.builder().value("client_credentials").build())).build();
 
         when(oauthClientRepository.getById(1L)).thenReturn(client);
 

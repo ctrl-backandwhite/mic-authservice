@@ -11,7 +11,7 @@ class NoOpAuthEventAdapterTest {
 
     @Test
     void publishCustomerRegistered_doesNothing() {
-        assertDoesNotThrow(
-                () -> adapter.publishCustomerRegistered(new CustomerRegisteredRequest("1", "test@test.com", "John", "Doe")));
+        assertDoesNotThrow(() -> adapter
+                .publishCustomerRegistered(new CustomerRegisteredRequest("1", "test@test.com", "John", "Doe")));
     }
 }

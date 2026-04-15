@@ -43,7 +43,8 @@ class CustomAuthenticationFailureHandlerTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        AuthenticationException exception = new AuthenticationException("Bad credentials") {};
+        AuthenticationException exception = new AuthenticationException("Bad credentials") {
+        };
 
         handler.onAuthenticationFailure(request, response, exception);
 

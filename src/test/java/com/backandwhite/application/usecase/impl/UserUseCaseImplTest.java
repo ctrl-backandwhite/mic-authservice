@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -266,8 +265,7 @@ class UserUseCaseImplTest {
 
     @Test
     void activateUser_validToken_activatesUser() {
-        User foundUser = user().withEnabled(false)
-                .withActivationToken("valid-token")
+        User foundUser = user().withEnabled(false).withActivationToken("valid-token")
                 .withActivationTokenExpiry(Instant.now().plus(1, ChronoUnit.HOURS));
         when(userRepository.findByActivationToken("valid-token")).thenReturn(foundUser);
 
@@ -287,8 +285,7 @@ class UserUseCaseImplTest {
 
     @Test
     void activateUser_expiredToken_throwsException() {
-        User foundUser = user().withEnabled(false)
-                .withActivationToken("expired")
+        User foundUser = user().withEnabled(false).withActivationToken("expired")
                 .withActivationTokenExpiry(Instant.now().minus(1, ChronoUnit.HOURS));
         when(userRepository.findByActivationToken("expired")).thenReturn(foundUser);
 
@@ -297,8 +294,7 @@ class UserUseCaseImplTest {
 
     @Test
     void activateUser_alreadyActivated_throwsException() {
-        User foundUser = user().withEnabled(true)
-                .withActivationToken("tok")
+        User foundUser = user().withEnabled(true).withActivationToken("tok")
                 .withActivationTokenExpiry(Instant.now().plus(1, ChronoUnit.HOURS));
         when(userRepository.findByActivationToken("tok")).thenReturn(foundUser);
 
@@ -444,8 +440,7 @@ class UserUseCaseImplTest {
     void confirmPasswordChange_userNotFound_throwsException() {
         when(userRepository.findUserByEmail("none@test.com")).thenReturn(null);
 
-        assertThrows(ArgumentException.class,
-                () -> userUseCase.confirmPasswordChange("none@test.com", "123456"));
+        assertThrows(ArgumentException.class, () -> userUseCase.confirmPasswordChange("none@test.com", "123456"));
     }
 
     @Test
@@ -471,8 +466,7 @@ class UserUseCaseImplTest {
     @Test
     void confirmPasswordChange_noStoredPasswordToken_keepsExistingPassword() {
         User foundUser = user().withPasswordChangeCode("123456")
-                .withPasswordChangeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES))
-                .withPasswordResetToken(null);
+                .withPasswordChangeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES)).withPasswordResetToken(null);
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
 
         userUseCase.confirmPasswordChange(UserProvider.USER_EMAIL, "123456");
@@ -523,8 +517,7 @@ class UserUseCaseImplTest {
     void getActiveSessions_existingUser_returnsSessions() {
         User foundUser = user();
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
-        List<UserSession> sessions = List.of(
-                UserSession.builder().sessionId("s1").userId(1L).build());
+        List<UserSession> sessions = List.of(UserSession.builder().sessionId("s1").userId(1L).build());
         when(userSessionRepository.findActiveByUserId(1L)).thenReturn(sessions);
 
         List<UserSession> result = userUseCase.getActiveSessions(UserProvider.USER_EMAIL);
@@ -546,8 +539,7 @@ class UserUseCaseImplTest {
     @Test
     void requestSessionRevoke_valid_sendsCode() {
         User foundUser = user();
-        UserSession session = UserSession.builder().sessionId("sess-1")
-                .userId(1L).revoked(false).build();
+        UserSession session = UserSession.builder().sessionId("sess-1").userId(1L).revoked(false).build();
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
         when(userSessionRepository.findBySessionId("sess-1")).thenReturn(session);
 
@@ -562,8 +554,7 @@ class UserUseCaseImplTest {
     void requestSessionRevoke_userNotFound_throwsException() {
         when(userRepository.findUserByEmail("none@test.com")).thenReturn(null);
 
-        assertThrows(ArgumentException.class,
-                () -> userUseCase.requestSessionRevoke("none@test.com", "sess-1"));
+        assertThrows(ArgumentException.class, () -> userUseCase.requestSessionRevoke("none@test.com", "sess-1"));
     }
 
     @Test
@@ -579,8 +570,7 @@ class UserUseCaseImplTest {
     @Test
     void requestSessionRevoke_sessionAlreadyRevoked_throwsException() {
         User foundUser = user();
-        UserSession session = UserSession.builder().sessionId("sess-1")
-                .userId(1L).revoked(true).build();
+        UserSession session = UserSession.builder().sessionId("sess-1").userId(1L).revoked(true).build();
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
         when(userSessionRepository.findBySessionId("sess-1")).thenReturn(session);
 
@@ -591,8 +581,7 @@ class UserUseCaseImplTest {
     @Test
     void requestSessionRevoke_sessionBelongsToDifferentUser_throwsException() {
         User foundUser = user().withId(1L);
-        UserSession session = UserSession.builder().sessionId("sess-1")
-                .userId(99L).revoked(false).build();
+        UserSession session = UserSession.builder().sessionId("sess-1").userId(99L).revoked(false).build();
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
         when(userSessionRepository.findBySessionId("sess-1")).thenReturn(session);
 
@@ -605,10 +594,8 @@ class UserUseCaseImplTest {
     @Test
     void confirmSessionRevoke_validCode_revokesSession() {
         User foundUser = user().withSessionRevokeCode("654321")
-                .withSessionRevokeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES))
-                .withSessionToRevoke("sess-1");
-        UserSession session = UserSession.builder().sessionId("sess-1")
-                .authorizationId("auth-id").build();
+                .withSessionRevokeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES)).withSessionToRevoke("sess-1");
+        UserSession session = UserSession.builder().sessionId("sess-1").authorizationId("auth-id").build();
         OAuth2Authorization oAuth2Auth = org.mockito.Mockito.mock(OAuth2Authorization.class);
 
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
@@ -626,8 +613,7 @@ class UserUseCaseImplTest {
     void confirmSessionRevoke_userNotFound_throwsException() {
         when(userRepository.findUserByEmail("none@test.com")).thenReturn(null);
 
-        assertThrows(ArgumentException.class,
-                () -> userUseCase.confirmSessionRevoke("none@test.com", "123456"));
+        assertThrows(ArgumentException.class, () -> userUseCase.confirmSessionRevoke("none@test.com", "123456"));
     }
 
     @Test
@@ -652,8 +638,7 @@ class UserUseCaseImplTest {
     @Test
     void confirmSessionRevoke_nullSessionId_doesNotRevoke() {
         User foundUser = user().withSessionRevokeCode("654321")
-                .withSessionRevokeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES))
-                .withSessionToRevoke(null);
+                .withSessionRevokeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES)).withSessionToRevoke(null);
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
 
         userUseCase.confirmSessionRevoke(UserProvider.USER_EMAIL, "654321");
@@ -677,10 +662,8 @@ class UserUseCaseImplTest {
     @Test
     void confirmSessionRevoke_noAuthorizationId_skipsOAuth2Revoke() {
         User foundUser = user().withSessionRevokeCode("654321")
-                .withSessionRevokeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES))
-                .withSessionToRevoke("sess-1");
-        UserSession session = UserSession.builder().sessionId("sess-1")
-                .authorizationId(null).build();
+                .withSessionRevokeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES)).withSessionToRevoke("sess-1");
+        UserSession session = UserSession.builder().sessionId("sess-1").authorizationId(null).build();
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
         when(userSessionRepository.findBySessionId("sess-1")).thenReturn(session);
 
@@ -693,10 +676,8 @@ class UserUseCaseImplTest {
     @Test
     void confirmSessionRevoke_oAuth2ServiceThrows_logsWarning() {
         User foundUser = user().withSessionRevokeCode("654321")
-                .withSessionRevokeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES))
-                .withSessionToRevoke("sess-1");
-        UserSession session = UserSession.builder().sessionId("sess-1")
-                .authorizationId("auth-id").build();
+                .withSessionRevokeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES)).withSessionToRevoke("sess-1");
+        UserSession session = UserSession.builder().sessionId("sess-1").authorizationId("auth-id").build();
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
         when(userSessionRepository.findBySessionId("sess-1")).thenReturn(session);
         when(authorizationService.findById("auth-id")).thenThrow(new RuntimeException("DB error"));

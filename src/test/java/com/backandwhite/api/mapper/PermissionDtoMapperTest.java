@@ -38,8 +38,7 @@ class PermissionDtoMapperTest {
 
         Permission result = mapper.toDomain(dtoIn);
 
-        assertThat(result).usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
+        assertThat(result).usingRecursiveComparison().ignoringFields("createdAt", "updatedAt", "createdBy", "updatedBy")
                 .isEqualTo(permission().withId(null));
     }
 

@@ -20,10 +20,10 @@ class GroupUpdateMapperTest {
     @Test
     void updateFromModel_copiesFieldsExceptIgnored() {
         Instant originalCreatedAt = Instant.parse("2026-01-01T00:00:00Z");
-        Group source = Group.builder().id(99L).name("New").uniqueName("NEW").description("New desc")
-                .enabled(false).createdAt(Instant.now()).build();
-        Group target = Group.builder().id(1L).name("Old").uniqueName("OLD").description("Old desc")
-                .enabled(true).createdAt(originalCreatedAt).build();
+        Group source = Group.builder().id(99L).name("New").uniqueName("NEW").description("New desc").enabled(false)
+                .createdAt(Instant.now()).build();
+        Group target = Group.builder().id(1L).name("Old").uniqueName("OLD").description("Old desc").enabled(true)
+                .createdAt(originalCreatedAt).build();
 
         mapper.updateFromModel(source, target);
 

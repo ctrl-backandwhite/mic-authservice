@@ -130,4 +130,103 @@ class UserRepositoryImplTest {
         verify(userJpaRepositoryAdapter).findByEmail(UserProvider.USER_EMAIL);
         verify(userEntityMapper).toDomain(entity);
     }
+
+    @Test
+    void deleteAll_delegatesToJpaAdapter() {
+        List<Long> ids = List.of(1L, 2L, 3L);
+
+        userRepository.deleteAll(ids);
+
+        verify(userJpaRepositoryAdapter).deleteAllByIdInBatch(ids);
+    }
+
+    @Test
+    void findUserByNickName_mapsEntityToDomain() {
+        UserEntity entity = userEntity();
+        User model = user();
+
+        when(userJpaRepositoryAdapter.findByNickName("johndoe")).thenReturn(entity);
+        when(userEntityMapper.toDomain(entity)).thenReturn(model);
+
+        User result = userRepository.findUserByNickName("johndoe");
+
+        assertSame(model, result);
+        verify(userJpaRepositoryAdapter).findByNickName("johndoe");
+        verify(userEntityMapper).toDomain(entity);
+    }
+
+    @Test
+    void findByActivationToken_mapsEntityToDomain() {
+        UserEntity entity = userEntity();
+        User model = user();
+
+        when(userJpaRepositoryAdapter.findByActivationToken("token-123")).thenReturn(entity);
+        when(userEntityMapper.toDomain(entity)).thenReturn(model);
+
+        User result = userRepository.findByActivationToken("token-123");
+
+        assertSame(model, result);
+        verify(userJpaRepositoryAdapter).findByActivationToken("token-123");
+        verify(userEntityMapper).toDomain(entity);
+    }
+
+    @Test
+    void findByPasswordResetToken_mapsEntityToDomain() {
+        UserEntity entity = userEntity();
+        User model = user();
+
+        when(userJpaRepositoryAdapter.findByPasswordResetToken("reset-token")).thenReturn(entity);
+        when(userEntityMapper.toDomain(entity)).thenReturn(model);
+
+        User result = userRepository.findByPasswordResetToken("reset-token");
+
+        assertSame(model, result);
+        verify(userJpaRepositoryAdapter).findByPasswordResetToken("reset-token");
+        verify(userEntityMapper).toDomain(entity);
+    }
+
+    @Test
+    void findByPasswordChangeCode_mapsEntityToDomain() {
+        UserEntity entity = userEntity();
+        User model = user();
+
+        when(userJpaRepositoryAdapter.findByPasswordChangeCode("change-code")).thenReturn(entity);
+        when(userEntityMapper.toDomain(entity)).thenReturn(model);
+
+        User result = userRepository.findByPasswordChangeCode("change-code");
+
+        assertSame(model, result);
+        verify(userJpaRepositoryAdapter).findByPasswordChangeCode("change-code");
+        verify(userEntityMapper).toDomain(entity);
+    }
+
+    @Test
+    void findByRoleId_mapsEntitiesToDomain() {
+        List<UserEntity> entities = List.of(userEntity());
+        List<User> users = List.of(user());
+
+        when(userJpaRepositoryAdapter.findByRolesId(1L)).thenReturn(entities);
+        when(userEntityMapper.toDomainList(entities)).thenReturn(users);
+
+        List<User> result = userRepository.findByRoleId(1L);
+
+        assertSame(users, result);
+        verify(userJpaRepositoryAdapter).findByRolesId(1L);
+        verify(userEntityMapper).toDomainList(entities);
+    }
+
+    @Test
+    void findByGroupId_mapsEntitiesToDomain() {
+        List<UserEntity> entities = List.of(userEntity());
+        List<User> users = List.of(user());
+
+        when(userJpaRepositoryAdapter.findByGroupsId(2L)).thenReturn(entities);
+        when(userEntityMapper.toDomainList(entities)).thenReturn(users);
+
+        List<User> result = userRepository.findByGroupId(2L);
+
+        assertSame(users, result);
+        verify(userJpaRepositoryAdapter).findByGroupsId(2L);
+        verify(userEntityMapper).toDomainList(entities);
+    }
 }
