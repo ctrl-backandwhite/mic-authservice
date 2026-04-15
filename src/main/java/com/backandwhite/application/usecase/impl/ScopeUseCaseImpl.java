@@ -2,7 +2,6 @@ package com.backandwhite.application.usecase.impl;
 
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
-import com.backandwhite.application.handler.ScopeCommandHandler;
 import com.backandwhite.application.mapper.ScopeUpdateMapper;
 import com.backandwhite.application.usecase.ScopeUseCase;
 import com.backandwhite.domain.model.Scope;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScopeUseCaseImpl implements ScopeUseCase {
 
     private final ScopeRepository scopeRepository;
-    private final ScopeCommandHandler scopeCommandHandler;
     private final ScopeUpdateMapper scopeUpdateMapper;
 
     @Override
@@ -31,7 +29,6 @@ public class ScopeUseCaseImpl implements ScopeUseCase {
     @CacheEvict(value = "scope_all", allEntries = true)
     public Scope save(Scope model) {
         log.debug("::> Creating scope {}", model);
-        scopeCommandHandler.validate(model);
         return scopeRepository.save(model);
     }
 

@@ -37,7 +37,6 @@ class AuthControllerTest {
     @Test
     void revokeToken_whenAuthorizationFound_returnsNoContent() {
         OAuth2Authorization authorization = mock(OAuth2Authorization.class);
-        when(authorization.getRegisteredClientId()).thenReturn("client-id");
         when(authorizationService.findByToken("token", OAuth2TokenType.ACCESS_TOKEN)).thenReturn(authorization);
 
         ResponseEntity<Void> response = controller.revokeToken("token", "access_token");
@@ -71,9 +70,6 @@ class AuthControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
 
-        when(request.getRemoteAddr()).thenReturn("127.0.0.1");
-        when(request.getScheme()).thenReturn("http");
-        when(request.isSecure()).thenReturn(false);
         when(request.getSession(false)).thenReturn(null);
         when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("foo", "bar")});
 

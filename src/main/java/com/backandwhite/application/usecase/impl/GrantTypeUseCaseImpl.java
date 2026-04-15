@@ -2,7 +2,6 @@ package com.backandwhite.application.usecase.impl;
 
 import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
-import com.backandwhite.application.handler.GrantTypeCommandHandler;
 import com.backandwhite.application.mapper.GrantTypeUpdateMapper;
 import com.backandwhite.application.usecase.GrantTypeUseCase;
 import com.backandwhite.domain.model.GrantType;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class GrantTypeUseCaseImpl implements GrantTypeUseCase {
 
     private final GrantTypeRepository grantTypeRepository;
-    private final GrantTypeCommandHandler grantTypeCommandHandler;
     private final GrantTypeUpdateMapper grantTypeUpdateMapper;
 
     @Override
@@ -31,7 +29,6 @@ public class GrantTypeUseCaseImpl implements GrantTypeUseCase {
     @CacheEvict(value = "grantType_all", allEntries = true)
     public GrantType save(GrantType model) {
         log.debug("::> Creating granttype {}", model);
-        grantTypeCommandHandler.validate(model);
         return grantTypeRepository.save(model);
     }
 

@@ -69,6 +69,7 @@
     <dependency>
       <groupId>com.backandwhite.core</groupId>
       <artifactId>app-test-support</artifactId>
+      <version>${project.parent.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

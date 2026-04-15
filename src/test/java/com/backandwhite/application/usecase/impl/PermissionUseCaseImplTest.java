@@ -9,7 +9,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.backandwhite.application.handler.PermissionCommandHandler;
 import com.backandwhite.application.mapper.PermissionUpdateMapper;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.Permission;
@@ -29,9 +28,6 @@ class PermissionUseCaseImplTest {
     private PermissionRepository permissionRepository;
 
     @Mock
-    private PermissionCommandHandler permissionCommandHandler;
-
-    @Mock
     private PermissionUpdateMapper permissionUpdateMapper;
 
     @InjectMocks
@@ -47,7 +43,6 @@ class PermissionUseCaseImplTest {
         Permission result = permissionUseCase.save(input);
 
         assertSame(saved, result);
-        verify(permissionCommandHandler).validate(input);
         verify(permissionRepository).save(input);
     }
 

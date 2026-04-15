@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    include: kibana
   datasource:
     url: jdbc:postgresql://postgres-c4jk.railway.internal:5432/railway
     username: ${PGUSER}

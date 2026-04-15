@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    include: kibana
   datasource:
     url: ${POSTGRES_URL}
     username: ${POSTGRES_USER}

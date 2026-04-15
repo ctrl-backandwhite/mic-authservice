@@ -1,9 +1,10 @@
 package com.backandwhite.infrastructure.message.kafka.producer;
 
 import com.backandwhite.application.port.out.AuthEventPort;
+import com.backandwhite.application.port.out.CustomerRegisteredRequest;
 import com.backandwhite.common.constants.AppConstants;
 import com.backandwhite.core.kafka.avro.CustomerRegisteredEvent;
-import java.time.Instant;
+import com.backandwhite.infrastructure.message.kafka.mapper.AuthEventMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.avro.specific.SpecificRecord;
@@ -21,21 +22,20 @@ import org.springframework.stereotype.Service;
 public class KafkaAuthEventAdapter implements AuthEventPort {
 
     private final KafkaTemplate<String, SpecificRecord> kafkaTemplate;
+    private final AuthEventMapper authEventMapper;
 
-    /**
-     * Publishes a customer.registered event after user registration (M-13).
-     */
     @Override
-    public void publishCustomerRegistered(String userId, String email, String firstName, String lastName) {
-        CustomerRegisteredEvent event = CustomerRegisteredEvent.newBuilder().setUserId(userId).setEmail(email)
-                .setFirstName(firstName).setLastName(lastName).setTimestamp(Instant.now().toString()).build();
+    public void publishCustomerRegistered(CustomerRegisteredRequest request) {
+        CustomerRegisteredEvent event = authEventMapper.toCustomerRegisteredEvent(request);
 
-        kafkaTemplate.send(AppConstants.KAFKA_TOPIC_CUSTOMER_REGISTERED, userId, event).whenComplete((result, ex) -> {
-            if (ex != null) {
-                log.error("Failed to publish customer.registered for user={}: {}", userId, ex.getMessage());
-            } else {
-                log.info("Published customer.registered for user={}, email={}", userId, email);
-            }
-        });
+        kafkaTemplate.send(AppConstants.KAFKA_TOPIC_CUSTOMER_REGISTERED, request.userId(), event)
+                .whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        log.error("Failed to publish customer.registered for userId={}: {}", request.userId(),
+                                ex.getMessage());
+                    } else {
+                        log.info("Published customer.registered for userId={}", request.userId());
+                    }
+                });
     }
 }

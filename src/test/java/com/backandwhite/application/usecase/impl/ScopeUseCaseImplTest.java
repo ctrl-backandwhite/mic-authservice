@@ -10,7 +10,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.backandwhite.application.handler.ScopeCommandHandler;
 import com.backandwhite.application.mapper.ScopeUpdateMapper;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.Scope;
@@ -30,9 +29,6 @@ class ScopeUseCaseImplTest {
     private ScopeRepository scopeRepository;
 
     @Mock
-    private ScopeCommandHandler scopeCommandHandler;
-
-    @Mock
     private ScopeUpdateMapper scopeUpdateMapper;
 
     @InjectMocks
@@ -48,7 +44,6 @@ class ScopeUseCaseImplTest {
         Scope result = scopeUseCase.save(input);
 
         assertSame(saved, result);
-        verify(scopeCommandHandler).validate(input);
         verify(scopeRepository).save(input);
     }
 

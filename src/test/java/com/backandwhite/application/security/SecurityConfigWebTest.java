@@ -3,6 +3,8 @@ package com.backandwhite.application.security;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.backandwhite.application.port.out.NotificationEventPort;
+import com.backandwhite.domain.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +31,12 @@ class SecurityConfigWebTest {
 
     @MockitoBean
     private RateLimitFilter rateLimitFilter;
+
+    @MockitoBean
+    private NotificationEventPort notificationEventPort;
+
+    @MockitoBean
+    private UserRepository userRepository;
 
     @MockitoBean
     private JdbcOperations jdbcOperations;

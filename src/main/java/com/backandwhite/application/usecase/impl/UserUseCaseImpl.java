@@ -6,6 +6,7 @@ import static com.backandwhite.common.exception.Message.VALIDATION_ERROR;
 import com.backandwhite.application.handler.UserCommandHandler;
 import com.backandwhite.application.mapper.UserUpdateMapper;
 import com.backandwhite.application.port.out.AuthEventPort;
+import com.backandwhite.application.port.out.CustomerRegisteredRequest;
 import com.backandwhite.application.port.out.NotificationEventPort;
 import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.common.exception.ArgumentException;
@@ -70,7 +71,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
             Role guestRole = findGuestRole();
             if (guestRole != null) {
                 model.setRoles(new ArrayList<>(List.of(guestRole)));
-                log.debug("::> Assigned default GUEST role to user {}", model.getEmail());
+                log.debug("::> Assigned default GUEST role to user");
             }
         }
 
@@ -85,7 +86,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         model.setActivationToken(activationToken);
         model.setActivationTokenExpiry(Instant.now().plus(24, ChronoUnit.HOURS));
 
-        log.debug("::> Creating user {} with activation token", model.getEmail());
+        log.debug("::> Creating user with activation token");
         userCommandHandler.validate(model);
         User savedUser = userRepository.save(model);
 
@@ -94,8 +95,9 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
         // Publish customer.registered event (M-13) — userdetailservice can auto-create
         // profile
-        authEventPort.publishCustomerRegistered(savedUser.getId().toString(), savedUser.getEmail(), savedUser.getName(),
-                savedUser.getLastName());
+        authEventPort.publishCustomerRegistered(
+                new CustomerRegisteredRequest(savedUser.getId().toString(), savedUser.getEmail(), savedUser.getName(),
+                        savedUser.getLastName()));
 
         return savedUser;
     }
@@ -112,7 +114,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
                 .setVariables(variables).build();
 
         notificationEventPort.sendNotificationEvent(event);
-        log.debug("::> Activation email event sent for user {}", user.getEmail());
+        log.debug("::> Activation email event sent");
     }
 
     private Role findGuestRole() {
@@ -149,11 +151,26 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @CachePut(value = "user", key = "#id") // actualiza cache individual
     @CacheEvict(value = "user_all", allEntries = true) // limpia cache de lista
     public User update(User model, Long id) {
-        log.debug("::> Updating user {}", model);
+        log.debug("::> Updating user with id {}", id);
         User existing = this.getById(id);
         userUpdateMapper.updateFromModel(model, existing);
         userCommandHandler.validate(existing);
-        return userRepository.update(existing);
+        User updated = userRepository.update(existing);
+
+        sendUserModificationNotification(updated);
+        return updated;
+    }
+
+    private void sendUserModificationNotification(User user) {
+        Map<String, String> variables = new HashMap<>();
+        variables.put("name", user.getName());
+
+        EmailNotificationEvent event = EmailNotificationEvent.newBuilder().setRecipient(user.getEmail())
+                .setSubject("Your account has been modified").setTemplateName("user-modification")
+                .setVariables(variables).build();
+
+        notificationEventPort.sendNotificationEvent(event);
+        log.debug("::> User modification notification sent for user id={}", user.getId());
     }
 
     @Override
@@ -187,7 +204,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Transactional
     @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public void activateUser(String token) {
-        log.debug("::> Activating user with token: {}", token);
+        log.debug("::> Activating user with token");
         User user = userRepository.findByActivationToken(token);
         if (user == null) {
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "Invalid or expired activation token.");
@@ -202,7 +219,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         user.setEnabled(true);
         user.setActivationToken(null);
         user.setActivationTokenExpiry(null);
-        log.debug("::> User {} activated successfully", user.getEmail());
+        log.debug("::> User activated successfully");
         userRepository.update(user);
         sendWelcomeEmail(user);
     }
@@ -218,22 +235,22 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
                 .setSubject("Welcome to NX036!").setTemplateName("welcome-email").setVariables(variables).build();
 
         notificationEventPort.sendNotificationEvent(event);
-        log.debug("::> Welcome email event sent for user {}", user.getEmail());
+        log.debug("::> Welcome email event sent");
     }
 
     @Override
     @Transactional
     public void requestPasswordReset(String email) {
         String normalizedEmail = email == null ? null : email.trim().toLowerCase();
-        log.debug("::> Password reset requested for email: {}", normalizedEmail);
+        log.debug("::> Password reset requested for email");
         User user = userRepository.findUserByEmail(normalizedEmail);
         if (user == null) {
             // Don't reveal if the email exists — just return silently
-            log.warn("::> Password reset requested for non-existent email: {}", normalizedEmail);
+            log.warn("::> Password reset requested for non-existent email");
             return;
         }
         if (!Boolean.TRUE.equals(user.getEnabled())) {
-            log.warn("::> Password reset requested for disabled account: {}", normalizedEmail);
+            log.warn("::> Password reset requested for disabled account");
             return;
         }
 
@@ -243,7 +260,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         userRepository.update(user);
 
         sendPasswordResetEmail(user, resetToken);
-        log.debug("::> Password reset token generated for user {}", email);
+        log.debug("::> Password reset token generated for user");
     }
 
     private void sendPasswordResetEmail(User user, String resetToken) {
@@ -258,7 +275,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
                 .build();
 
         notificationEventPort.sendNotificationEvent(event);
-        log.debug("::> Password reset email event sent for user {}", user.getEmail());
+        log.debug("::> Password reset email event sent");
     }
 
     @Override
@@ -280,7 +297,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         user.setPasswordResetToken(null);
         user.setPasswordResetTokenExpiry(null);
         userRepository.update(user);
-        log.debug("::> Password reset successfully for user {}", user.getEmail());
+        log.debug("::> Password reset successfully");
     }
 
     // ─── Change-password flow (authenticated user) ────────────────────────
@@ -289,7 +306,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Transactional
     public void requestPasswordChange(String email, String currentPassword, String newPassword,
             String confirmPassword) {
-        log.debug("::> Password change requested for email: {}", email);
+        log.debug("::> Password change requested");
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
@@ -318,14 +335,14 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
         // 5. Send code via email
         sendPasswordChangeCodeEmail(user, code);
-        log.debug("::> Password change code generated for user {}", email);
+        log.debug("::> Password change code generated");
     }
 
     @Override
     @Transactional
     @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public void confirmPasswordChange(String email, String code) {
-        log.debug("::> Confirming password change for email: {}", email);
+        log.debug("::> Confirming password change");
         User user = findUserByEmailOrThrow(email);
         validateVerificationCode(user.getPasswordChangeCode(), code);
         validateCodeExpiry(user.getPasswordChangeCodeExpiry(), user, true);
@@ -338,7 +355,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         applyStoredPassword(user);
 
         userRepository.update(user);
-        log.debug("::> Password changed successfully for user {}", email);
+        log.debug("::> Password changed successfully");
     }
 
     private User findUserByEmailOrThrow(String email) {
@@ -403,7 +420,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
                 .setVariables(variables).build();
 
         notificationEventPort.sendNotificationEvent(event);
-        log.debug("::> Password change code email sent for user {}", user.getEmail());
+        log.debug("::> Password change code email sent");
     }
 
     @Override
@@ -411,7 +428,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Cacheable(value = "user", key = "#username.trim().toLowerCase()")
     public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
         String normalized = username.trim().toLowerCase();
-        log.debug("::> Loading user by identifier: {}", normalized);
+        log.debug("::> Loading user by identifier");
 
         // Try email first, then nickName
         User user = userRepository.findUserByEmail(normalized);
@@ -419,10 +436,10 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
             user = userRepository.findUserByNickName(normalized);
         }
         if (Objects.isNull(user)) {
-            log.warn("::> User not found for identifier: {}", normalized);
+            log.warn("::> User not found for identifier");
             throw ENTITY_NOT_FOUND.toEntityNotFound("User", normalized);
         }
-        log.debug("::> User loaded successfully: {} with {} roles", normalized,
+        log.debug("::> User loaded successfully with {} roles",
                 user.getRoles() != null ? user.getRoles().size() : 0);
         return user;
     }
@@ -432,7 +449,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public List<UserSession> getActiveSessions(String email) {
-        log.debug("::> Getting active sessions for: {}", email);
+        log.debug("::> Getting active sessions");
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
             return List.of();
@@ -443,7 +460,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Override
     @Transactional
     public void requestSessionRevoke(String email, String sessionId) {
-        log.debug("::> Session revoke requested for email: {}, session: {}", email, sessionId);
+        log.debug("::> Session revoke requested");
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
@@ -469,13 +486,13 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
         // Send code via email
         sendSessionRevokeCodeEmail(user, code);
-        log.debug("::> Session revoke code generated for user {}", email);
+        log.debug("::> Session revoke code generated");
     }
 
     @Override
     @Transactional
     public void confirmSessionRevoke(String email, String code) {
-        log.debug("::> Confirming session revoke for email: {}", email);
+        log.debug("::> Confirming session revoke");
         User user = findUserByEmailOrThrow(email);
         validateVerificationCode(user.getSessionRevokeCode(), code);
         validateCodeExpiry(user.getSessionRevokeCodeExpiry(), user, false);
@@ -501,7 +518,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         }
         userSessionRepository.revokeSession(sessionId);
         revokeOAuth2Authorization(session.getAuthorizationId(), sessionId);
-        log.info("::> Session {} revoked for user {}", sessionId, email);
+        log.info("::> Session revoked for user");
     }
 
     private void revokeOAuth2Authorization(String authorizationId, String sessionId) {
@@ -512,7 +529,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
             OAuth2Authorization auth = authorizationService.findById(authorizationId);
             if (auth != null) {
                 authorizationService.remove(auth);
-                log.info("::> OAuth2 authorization revoked for session {}", sessionId);
+                log.info("::> OAuth2 authorization revoked for session");
             }
         } catch (Exception e) {
             log.warn("::> Could not revoke OAuth2 authorization for session {}", sessionId, e);
@@ -534,6 +551,6 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
                 .setVariables(variables).build();
 
         notificationEventPort.sendNotificationEvent(event);
-        log.debug("::> Session revoke code email sent for user {}", user.getEmail());
+        log.debug("::> Session revoke code email sent");
     }
 }
