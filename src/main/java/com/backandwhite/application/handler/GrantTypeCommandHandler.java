@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class GrantTypeCommandHandler {
 
     public void validate(GrantType grantType) {
+        // No custom validation required for GrantType entity
     }
 
 }

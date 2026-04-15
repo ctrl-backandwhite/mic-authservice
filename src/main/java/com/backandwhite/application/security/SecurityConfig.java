@@ -81,7 +81,7 @@ public class SecurityConfig {
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    private final String[] GET_PUBLIC_URLS = {LOGIN_PATH, "/login.html", "/forgot-password.html", "/register.html",
+    private final String[] publicUrls = {LOGIN_PATH, "/login.html", "/forgot-password.html", "/register.html",
             "/terms.html", "/activation-success.html", "/activation-error.html", "/reset-password.html",
             "/reset-success.html", "/reset-error.html", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/error",
             "/.well-known/**", "/oauth2/token/**", "/logout", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
@@ -105,7 +105,7 @@ public class SecurityConfig {
                 .with(authorizationServerConfigurer,
                         authorizationServer -> authorizationServer.oidc(Customizer.withDefaults())
                                 .tokenGenerator(tokenGenerator))
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers(GET_PUBLIC_URLS).permitAll()
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers(publicUrls).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions.defaultAuthenticationEntryPointFor(
                         new LoginUrlAuthenticationEntryPoint(LOGIN_PATH),
@@ -117,7 +117,7 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.cors(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.requestMatchers(GET_PUBLIC_URLS).permitAll()
+                .authorizeHttpRequests(auth -> auth.requestMatchers(publicUrls).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .logout(logout -> logout.logoutUrl("/logout").addLogoutHandler(sessionRevokingLogoutHandler)

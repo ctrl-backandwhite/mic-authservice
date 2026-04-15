@@ -1,24 +1,19 @@
 package com.backandwhite.application.security;
 
-import com.backandwhite.domain.repository.OauthClientRepository;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-
-import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.backandwhite.application.security.RateLimitFilter;
-import com.backandwhite.application.security.SessionRevokingLogoutHandler;
-
+import com.backandwhite.domain.repository.OauthClientRepository;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class SecurityConfigTest {
@@ -26,9 +21,7 @@ class SecurityConfigTest {
     private final SecurityConfig config;
 
     SecurityConfigTest() {
-        config = new SecurityConfig(
-                new BCryptPasswordEncoder(),
-                mock(SessionRevokingLogoutHandler.class),
+        config = new SecurityConfig(new BCryptPasswordEncoder(), mock(SessionRevokingLogoutHandler.class),
                 mock(RateLimitFilter.class));
         ReflectionTestUtils.setField(config, "jwtSecret",
                 "local-secret-key-change-me-in-production-must-be-256-bits-long");
@@ -60,18 +53,11 @@ class SecurityConfigTest {
 
     @Test
     void jwtAuthenticationConverter_addsRolesFromClaim() {
-        Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "RS256")
-                .claim("roles", List.of("ROLE_ADMIN", "ROLE_USER"))
-                .issuedAt(Instant.now())
-                .expiresAt(Instant.now().plusSeconds(300))
-                .build();
+        Jwt jwt = Jwt.withTokenValue("token").header("alg", "RS256").claim("roles", List.of("ROLE_ADMIN", "ROLE_USER"))
+                .issuedAt(Instant.now()).expiresAt(Instant.now().plusSeconds(300)).build();
 
-        Collection<GrantedAuthority> authorities = config.jwtAuthenticationConverter().convert(jwt)
-                .getAuthorities();
+        Collection<GrantedAuthority> authorities = config.jwtAuthenticationConverter().convert(jwt).getAuthorities();
 
-        assertThat(authorities)
-                .extracting(GrantedAuthority::getAuthority)
-                .contains("ROLE_ADMIN", "ROLE_USER");
+        assertThat(authorities).extracting(GrantedAuthority::getAuthority).contains("ROLE_ADMIN", "ROLE_USER");
     }
 }

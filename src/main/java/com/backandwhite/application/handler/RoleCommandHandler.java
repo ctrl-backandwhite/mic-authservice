@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class RoleCommandHandler {
 
     public void validate(Role role) {
+        // No custom validation required for Role entity
     }
 
 }

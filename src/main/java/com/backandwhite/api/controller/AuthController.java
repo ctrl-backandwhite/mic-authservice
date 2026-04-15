@@ -96,14 +96,14 @@ public class AuthController {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 log.info("::> Processing cookie: {} = {}", cookie.getName(), cookie.getValue());
-                deleteCookie(cookie.getName(), request, response);
+                deleteCookie(cookie.getName(), response);
             }
         }
 
         // Explicitly delete JSESSIONID with multiple configurations
         // to ensure it is removed regardless of how it is configured
         log.info("::> Explicitly deleting JSESSIONID cookie");
-        deleteCookie("JSESSIONID", request, response);
+        deleteCookie("JSESSIONID", response);
 
         log.info("::> Cookie deletion completed");
     }
@@ -111,7 +111,7 @@ public class AuthController {
     /**
      * Delete a specific cookie with multiple configurations
      */
-    private void deleteCookie(String name, HttpServletRequest request, HttpServletResponse response) {
+    private void deleteCookie(String name, HttpServletResponse response) {
         // Configuration 1: Secure cookie with path /
         Cookie cookie1 = new Cookie(name, "");
         cookie1.setMaxAge(0);

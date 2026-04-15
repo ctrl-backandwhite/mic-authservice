@@ -10,5 +10,6 @@ public class NoOpAuthEventAdapter implements AuthEventPort {
 
     @Override
     public void publishCustomerRegistered(String userId, String email, String firstName, String lastName) {
+        // Intentionally empty — NoOp implementation when Kafka is disabled
     }
 }

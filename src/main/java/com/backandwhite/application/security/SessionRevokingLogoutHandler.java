@@ -33,7 +33,8 @@ public class SessionRevokingLogoutHandler implements LogoutHandler {
     }
 
     @Override
-    public void logout(HttpServletRequest request, @NonNull HttpServletResponse response, Authentication authentication) {
+    public void logout(HttpServletRequest request, @NonNull HttpServletResponse response,
+            Authentication authentication) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             log.debug("::> Logout without Bearer token – skipping session revocation");

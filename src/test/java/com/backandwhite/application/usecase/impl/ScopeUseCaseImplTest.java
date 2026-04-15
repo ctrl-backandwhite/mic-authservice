@@ -1,18 +1,5 @@
 package com.backandwhite.application.usecase.impl;
 
-import com.backandwhite.application.handler.ScopeCommandHandler;
-import com.backandwhite.common.exception.EntityNotFoundException;
-import com.backandwhite.domain.model.Scope;
-import com.backandwhite.application.mapper.ScopeUpdateMapper;
-import com.backandwhite.domain.repository.ScopeRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
 import static com.backandwhite.provider.ScopeProvider.readScope;
 import static com.backandwhite.provider.ScopeProvider.writeScope;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +9,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.application.handler.ScopeCommandHandler;
+import com.backandwhite.application.mapper.ScopeUpdateMapper;
+import com.backandwhite.common.exception.EntityNotFoundException;
+import com.backandwhite.domain.model.Scope;
+import com.backandwhite.domain.repository.ScopeRepository;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeanUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,9 +54,7 @@ class ScopeUseCaseImplTest {
 
     @Test
     void findAll_returnsRepositoryList() {
-        List<Scope> scopes = List.of(
-                readScope(),
-                writeScope());
+        List<Scope> scopes = List.of(readScope(), writeScope());
 
         when(scopeRepository.findAll()).thenReturn(scopes);
 
@@ -93,16 +90,16 @@ class ScopeUseCaseImplTest {
         Scope update = writeScope().withId(99L);
 
         when(scopeRepository.getById(10L)).thenReturn(existing);
-        doAnswer(inv -> { BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id"); return null; })
-                .when(scopeUpdateMapper).updateFromModel(any(Scope.class), any(Scope.class));
+        doAnswer(inv -> {
+            BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id");
+            return null;
+        }).when(scopeUpdateMapper).updateFromModel(any(Scope.class), any(Scope.class));
         when(scopeRepository.update(any(Scope.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Scope result = scopeUseCase.update(update, 10L);
 
         verify(scopeRepository).update(any(Scope.class));
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(writeScope().withId(10L));
+        assertThat(result).usingRecursiveComparison().isEqualTo(writeScope().withId(10L));
     }
 
     @Test

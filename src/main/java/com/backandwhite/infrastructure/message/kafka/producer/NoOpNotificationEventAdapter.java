@@ -11,5 +11,6 @@ public class NoOpNotificationEventAdapter implements NotificationEventPort {
 
     @Override
     public void sendNotificationEvent(EmailNotificationEvent event) {
+        // Intentionally empty — NoOp implementation when Kafka is disabled
     }
 }

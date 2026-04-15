@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class RedirectUriCommandHandler {
 
     public void validate(RedirectUri redirectUri) {
+        // No custom validation required for RedirectUri entity
     }
 
 }

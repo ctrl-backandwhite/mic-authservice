@@ -1,17 +1,5 @@
 package com.backandwhite.api.mapper;
 
-import com.backandwhite.api.dto.in.UserDtoIn;
-import com.backandwhite.api.dto.out.UserDtoOut;
-import com.backandwhite.domain.model.Group;
-import com.backandwhite.domain.model.Role;
-import com.backandwhite.domain.model.User;
-import com.backandwhite.util.MapperTestUtils;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-
-import java.util.List;
-
 import static com.backandwhite.provider.UserProvider.USER_ACCOUNT_NON_EXPIRED;
 import static com.backandwhite.provider.UserProvider.USER_ACCOUNT_NON_LOCKED;
 import static com.backandwhite.provider.UserProvider.USER_CREDENTIALS_NON_EXPIRED;
@@ -26,6 +14,17 @@ import static com.backandwhite.provider.UserProvider.user;
 import static com.backandwhite.provider.UserProvider.userDtoIn;
 import static com.backandwhite.provider.UserProvider.userDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.backandwhite.api.dto.in.UserDtoIn;
+import com.backandwhite.api.dto.out.UserDtoOut;
+import com.backandwhite.domain.model.Group;
+import com.backandwhite.domain.model.Role;
+import com.backandwhite.domain.model.User;
+import com.backandwhite.util.MapperTestUtils;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 class UserDtoMapperTest {
 
@@ -51,10 +50,7 @@ class UserDtoMapperTest {
 
         UserDtoOut result = mapper.toDtoOut(model);
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .ignoringFields("password")
-                .isEqualTo(userDtoOut(USER_ID));
+        assertThat(result).usingRecursiveComparison().ignoringFields("password").isEqualTo(userDtoOut(USER_ID));
     }
 
     @Test
@@ -63,32 +59,21 @@ class UserDtoMapperTest {
 
         User result = mapper.toDomain(dtoIn);
 
-        User expected = User.builder()
-                .name(USER_NAME)
-                .lastName(USER_LAST_NAME)
-                .nickName(USER_NICK_NAME)
-                .email(USER_EMAIL)
-                .password(USER_PASSWORD)
-                .enabled(USER_ENABLED)
-                .accountNonExpired(USER_ACCOUNT_NON_EXPIRED)
-                .accountNonLocked(USER_ACCOUNT_NON_LOCKED)
+        User expected = User.builder().name(USER_NAME).lastName(USER_LAST_NAME).nickName(USER_NICK_NAME)
+                .email(USER_EMAIL).password(USER_PASSWORD).enabled(USER_ENABLED)
+                .accountNonExpired(USER_ACCOUNT_NON_EXPIRED).accountNonLocked(USER_ACCOUNT_NON_LOCKED)
                 .credentialsNonExpired(USER_CREDENTIALS_NON_EXPIRED)
                 .roles(List.of(Role.builder().id(com.backandwhite.provider.RoleProvider.ADMIN_ID).build()))
-                .groups(List.of(Group.builder().id(com.backandwhite.provider.GroupProvider.ADMIN_ID).build()))
-                .build();
+                .groups(List.of(Group.builder().id(com.backandwhite.provider.GroupProvider.ADMIN_ID).build())).build();
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
     void toDtoOutList_mapsList() {
         List<UserDtoOut> result = mapper.toDtoOutList(List.of(user()));
 
-        assertThat(result)
-                .usingRecursiveComparison()
-                .ignoringFields("password")
+        assertThat(result).usingRecursiveComparison().ignoringFields("password")
                 .isEqualTo(List.of(userDtoOut(USER_ID)));
     }
 }

@@ -1,23 +1,5 @@
 package com.backandwhite.api.controller;
 
-import com.backandwhite.api.dto.OperationResponseDtoOut;
-import com.backandwhite.api.dto.in.ForgotPasswordDtoIn;
-import com.backandwhite.api.dto.in.ResetPasswordDtoIn;
-import com.backandwhite.api.dto.in.UserDtoIn;
-import com.backandwhite.api.dto.out.UserDtoOut;
-import com.backandwhite.api.mapper.UserDtoMapper;
-import com.backandwhite.application.usecase.UserUseCase;
-import com.backandwhite.domain.model.User;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
 import static com.backandwhite.common.exception.Message.VALIDATION_ERROR;
 import static com.backandwhite.provider.UserProvider.OTHER_USER_ID;
 import static com.backandwhite.provider.UserProvider.USER_EMAIL;
@@ -26,10 +8,32 @@ import static com.backandwhite.provider.UserProvider.user;
 import static com.backandwhite.provider.UserProvider.userDtoIn;
 import static com.backandwhite.provider.UserProvider.userDtoOut;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.api.dto.OperationResponseDtoOut;
+import com.backandwhite.api.dto.in.ChangePasswordRequestDtoIn;
+import com.backandwhite.api.dto.in.ConfirmPasswordChangeDtoIn;
+import com.backandwhite.api.dto.in.ConfirmRevokeSessionDtoIn;
+import com.backandwhite.api.dto.in.ForgotPasswordDtoIn;
+import com.backandwhite.api.dto.in.ResetPasswordDtoIn;
+import com.backandwhite.api.dto.in.RevokeSessionRequestDtoIn;
+import com.backandwhite.api.dto.in.UserDtoIn;
+import com.backandwhite.api.dto.out.UserDtoOut;
+import com.backandwhite.api.mapper.UserDtoMapper;
+import com.backandwhite.application.usecase.UserUseCase;
+import com.backandwhite.domain.model.User;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
@@ -163,10 +167,7 @@ class UserControllerTest {
 
     @Test
     void resetPassword_redirectsToSuccess() {
-        ResetPasswordDtoIn dto = ResetPasswordDtoIn.builder()
-                .token("valid-token")
-                .newPassword("NewPass1")
-                .build();
+        ResetPasswordDtoIn dto = ResetPasswordDtoIn.builder().token("valid-token").newPassword("NewPass1").build();
         doNothing().when(useCase).resetPassword("valid-token", "NewPass1");
 
         ResponseEntity<Void> response = controller.resetPassword(dto);
@@ -179,10 +180,7 @@ class UserControllerTest {
 
     @Test
     void resetPassword_whenArgumentException_redirectsToError() {
-        ResetPasswordDtoIn dto = ResetPasswordDtoIn.builder()
-                .token("bad-token")
-                .newPassword("NewPass1")
-                .build();
+        ResetPasswordDtoIn dto = ResetPasswordDtoIn.builder().token("bad-token").newPassword("NewPass1").build();
         doThrow(VALIDATION_ERROR.toArgumentException("El enlace de recuperación es inválido o ya fue utilizado."))
                 .when(useCase).resetPassword("bad-token", "NewPass1");
 
@@ -192,5 +190,112 @@ class UserControllerTest {
         assertThat(response.getHeaders().getLocation()).isNotNull();
         assertThat(response.getHeaders().getLocation().toString()).contains("/reset-error.html");
         verify(useCase).resetPassword("bad-token", "NewPass1");
+    }
+
+    // ─── register ──────────────────────────────────────────
+
+    @Test
+    void register_returnsCreatedDto() {
+        UserDtoIn dtoIn = userDtoIn();
+        User model = user();
+        UserDtoOut dtoOut = userDtoOut(USER_ID);
+
+        when(mapper.toDomain(dtoIn)).thenReturn(model);
+        when(useCase.save(model)).thenReturn(model);
+        when(mapper.toDtoOut(model)).thenReturn(dtoOut);
+
+        ResponseEntity<UserDtoOut> response = controller.register(dtoIn);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isEqualTo(dtoOut);
+    }
+
+    // ─── activateUser ──────────────────────────────────────
+
+    @Test
+    void activateUser_success_redirectsToSuccessPage() {
+        doNothing().when(useCase).activateUser("valid-token", "es");
+
+        ResponseEntity<Void> response = controller.activateUser("valid-token", "es");
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("/activation-success.html");
+    }
+
+    @Test
+    void activateUser_invalidToken_redirectsToErrorPage() {
+        doThrow(VALIDATION_ERROR.toArgumentException("Invalid activation token."))
+                .when(useCase).activateUser("bad-token", "es");
+
+        ResponseEntity<Void> response = controller.activateUser("bad-token", "es");
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(response.getHeaders().getLocation().toString()).contains("/activation-error.html");
+    }
+
+    // ─── requestPasswordChange / confirmPasswordChange ─────
+
+    @Test
+    void requestPasswordChange_returnsOk() {
+        ChangePasswordRequestDtoIn dto = ChangePasswordRequestDtoIn.builder()
+                .currentPassword("old").newPassword("new").confirmPassword("new").build();
+        doNothing().when(useCase).requestPasswordChange(USER_EMAIL, "old", "new", "new");
+
+        ResponseEntity<OperationResponseDtoOut> response = controller.requestPasswordChange(dto, USER_EMAIL);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getCode()).isEqualTo("OK");
+        verify(useCase).requestPasswordChange(USER_EMAIL, "old", "new", "new");
+    }
+
+    @Test
+    void confirmPasswordChange_returnsOk() {
+        ConfirmPasswordChangeDtoIn dto = ConfirmPasswordChangeDtoIn.builder().code("123456").build();
+        doNothing().when(useCase).confirmPasswordChange(USER_EMAIL, "123456");
+
+        ResponseEntity<OperationResponseDtoOut> response = controller.confirmPasswordChange(dto, USER_EMAIL);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getCode()).isEqualTo("OK");
+    }
+
+    // ─── session management ────────────────────────────────
+
+    @Test
+    void getActiveSessions_returnsSessionList() {
+        var session = com.backandwhite.domain.model.UserSession.builder()
+                .sessionId("sess-1").deviceInfo("Chrome · Windows")
+                .ipAddress("1.2.3.4").createdAt(java.time.Instant.now())
+                .lastActiveAt(java.time.Instant.now()).build();
+        when(useCase.getActiveSessions(USER_EMAIL)).thenReturn(java.util.List.of(session));
+
+        ResponseEntity<java.util.List<com.backandwhite.api.dto.out.UserSessionDtoOut>> response =
+                controller.getActiveSessions(USER_EMAIL);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).hasSize(1);
+        assertThat(response.getBody().get(0).getSessionId()).isEqualTo("sess-1");
+    }
+
+    @Test
+    void requestSessionRevoke_returnsOk() {
+        RevokeSessionRequestDtoIn dto = RevokeSessionRequestDtoIn.builder().sessionId("sess-1").build();
+        doNothing().when(useCase).requestSessionRevoke(USER_EMAIL, "sess-1");
+
+        ResponseEntity<OperationResponseDtoOut> response = controller.requestSessionRevoke(dto, USER_EMAIL);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getCode()).isEqualTo("OK");
+    }
+
+    @Test
+    void confirmSessionRevoke_returnsOk() {
+        ConfirmRevokeSessionDtoIn dto = ConfirmRevokeSessionDtoIn.builder().code("654321").build();
+        doNothing().when(useCase).confirmSessionRevoke(USER_EMAIL, "654321");
+
+        ResponseEntity<OperationResponseDtoOut> response = controller.confirmSessionRevoke(dto, USER_EMAIL);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getCode()).isEqualTo("OK");
     }
 }

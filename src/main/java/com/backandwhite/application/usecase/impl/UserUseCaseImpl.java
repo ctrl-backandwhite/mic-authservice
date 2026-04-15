@@ -1,5 +1,8 @@
 package com.backandwhite.application.usecase.impl;
 
+import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
+import static com.backandwhite.common.exception.Message.VALIDATION_ERROR;
+
 import com.backandwhite.application.handler.UserCommandHandler;
 import com.backandwhite.application.mapper.UserUpdateMapper;
 import com.backandwhite.application.port.out.AuthEventPort;
@@ -13,6 +16,10 @@ import com.backandwhite.domain.model.UserSession;
 import com.backandwhite.domain.repository.RoleRepository;
 import com.backandwhite.domain.repository.UserRepository;
 import com.backandwhite.domain.repository.UserSessionRepository;
+import java.security.SecureRandom;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.NonNull;
@@ -29,14 +36,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
-import static com.backandwhite.common.exception.Message.VALIDATION_ERROR;
-
 @Log4j2
 @Service
 @RequiredArgsConstructor
@@ -51,6 +50,8 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     private final UserSessionRepository userSessionRepository;
     private final OAuth2AuthorizationService authorizationService;
     private final UserUpdateMapper userUpdateMapper;
+
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Value("${app.activation.base-url:http://localhost:6001}")
     private String activationBaseUrl;
@@ -287,7 +288,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Override
     @Transactional
     public void requestPasswordChange(String email, String currentPassword, String newPassword,
-                                      String confirmPassword) {
+            String confirmPassword) {
         log.debug("::> Password change requested for email: {}", email);
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
@@ -325,58 +326,68 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public void confirmPasswordChange(String email, String code) {
         log.debug("::> Confirming password change for email: {}", email);
-        User user = userRepository.findUserByEmail(email);
-        if (user == null) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
-        }
-
-        // Validate code
-        if (user.getPasswordChangeCode() == null || !user.getPasswordChangeCode().equals(code.trim())) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "The verification code is invalid.");
-        }
-
-        // Validate expiry
-        if (user.getPasswordChangeCodeExpiry() != null && Instant.now().isAfter(user.getPasswordChangeCodeExpiry())) {
-            // Clear expired code
-            user.setPasswordChangeCode(null);
-            user.setPasswordChangeCodeExpiry(null);
-            userRepository.update(user);
-            throw new ArgumentException(VALIDATION_ERROR.getCode(),
-                    "The verification code has expired. Please request a new one.");
-        }
-
-        // Code is valid — the new password was already validated and stored temporarily
-        // We need the newPassword here. Let's store it encoded when requesting.
-        // Actually, we should store the new password (encoded) at request time and
-        // apply it on confirm.
-        // But current flow: request stores code + we need newPassword at confirm.
-        // Better approach: store newPassword (already encoded) along with code at
-        // request time.
-        // Let me refactor: store encoded new password in the password_reset_token field
-        // temporarily.
+        User user = findUserByEmailOrThrow(email);
+        validateVerificationCode(user.getPasswordChangeCode(), code);
+        validateCodeExpiry(user.getPasswordChangeCodeExpiry(), user, true);
 
         // Clear the code (one-time use)
         user.setPasswordChangeCode(null);
         user.setPasswordChangeCodeExpiry(null);
 
-        // The new encoded password was stored in passwordResetToken during
-        // requestPasswordChange
-        if (user.getPasswordResetToken() != null && user.getPasswordResetToken().startsWith("$2a$")) {
-            user.setPassword(user.getPasswordResetToken());
-            user.setPasswordResetToken(null);
-            user.setPasswordResetTokenExpiry(null);
-        }
+        // Apply the pre-encoded password stored during requestPasswordChange
+        applyStoredPassword(user);
 
         userRepository.update(user);
         log.debug("::> Password changed successfully for user {}", email);
     }
 
+    private User findUserByEmailOrThrow(String email) {
+        User user = userRepository.findUserByEmail(email);
+        if (user == null) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
+        }
+        return user;
+    }
+
+    private void validateVerificationCode(String storedCode, String providedCode) {
+        if (storedCode == null || !storedCode.equals(providedCode.trim())) {
+            throw new ArgumentException(VALIDATION_ERROR.getCode(), "The verification code is invalid.");
+        }
+    }
+
+    private void validateCodeExpiry(Instant expiry, User user, boolean isPasswordChange) {
+        if (expiry != null && Instant.now().isAfter(expiry)) {
+            clearExpiredCode(user, isPasswordChange);
+            userRepository.update(user);
+            throw new ArgumentException(VALIDATION_ERROR.getCode(),
+                    "The verification code has expired. Please request a new one.");
+        }
+    }
+
+    private void clearExpiredCode(User user, boolean isPasswordChange) {
+        if (isPasswordChange) {
+            user.setPasswordChangeCode(null);
+            user.setPasswordChangeCodeExpiry(null);
+        } else {
+            user.setSessionRevokeCode(null);
+            user.setSessionRevokeCodeExpiry(null);
+            user.setSessionToRevoke(null);
+        }
+    }
+
+    private void applyStoredPassword(User user) {
+        if (user.getPasswordResetToken() != null && user.getPasswordResetToken().startsWith("$2a$")) {
+            user.setPassword(user.getPasswordResetToken());
+            user.setPasswordResetToken(null);
+            user.setPasswordResetTokenExpiry(null);
+        }
+    }
+
     private String generateUniqueCode() {
-        SecureRandom random = new SecureRandom();
         String code;
         int attempts = 0;
         do {
-            code = String.format("%06d", random.nextInt(1_000_000));
+            code = String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
             attempts++;
         } while (userRepository.findByPasswordChangeCode(code) != null && attempts < 10);
         return code;
@@ -465,25 +476,9 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Transactional
     public void confirmSessionRevoke(String email, String code) {
         log.debug("::> Confirming session revoke for email: {}", email);
-        User user = userRepository.findUserByEmail(email);
-        if (user == null) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
-        }
-
-        // Validate code
-        if (user.getSessionRevokeCode() == null || !user.getSessionRevokeCode().equals(code.trim())) {
-            throw new ArgumentException(VALIDATION_ERROR.getCode(), "The verification code is invalid.");
-        }
-
-        // Validate expiry
-        if (user.getSessionRevokeCodeExpiry() != null && Instant.now().isAfter(user.getSessionRevokeCodeExpiry())) {
-            user.setSessionRevokeCode(null);
-            user.setSessionRevokeCodeExpiry(null);
-            user.setSessionToRevoke(null);
-            userRepository.update(user);
-            throw new ArgumentException(VALIDATION_ERROR.getCode(),
-                    "The verification code has expired. Please request a new one.");
-        }
+        User user = findUserByEmailOrThrow(email);
+        validateVerificationCode(user.getSessionRevokeCode(), code);
+        validateCodeExpiry(user.getSessionRevokeCodeExpiry(), user, false);
 
         String sessionId = user.getSessionToRevoke();
 
@@ -493,33 +488,40 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         user.setSessionToRevoke(null);
         userRepository.update(user);
 
-        if (sessionId != null) {
-            // Mark session as revoked in DB
-            UserSession session = userSessionRepository.findBySessionId(sessionId);
-            if (session != null) {
-                userSessionRepository.revokeSession(sessionId);
+        revokeSessionById(sessionId, email);
+    }
 
-                // Try to remove OAuth2 authorization from in-memory service
-                if (session.getAuthorizationId() != null) {
-                    try {
-                        OAuth2Authorization auth = authorizationService.findById(session.getAuthorizationId());
-                        if (auth != null) {
-                            authorizationService.remove(auth);
-                            log.info("::> OAuth2 authorization revoked for session {}", sessionId);
-                        }
-                    } catch (Exception e) {
-                        log.warn("::> Could not revoke OAuth2 authorization for session {}", sessionId, e);
-                    }
-                }
+    private void revokeSessionById(String sessionId, String email) {
+        if (sessionId == null) {
+            return;
+        }
+        UserSession session = userSessionRepository.findBySessionId(sessionId);
+        if (session == null) {
+            return;
+        }
+        userSessionRepository.revokeSession(sessionId);
+        revokeOAuth2Authorization(session.getAuthorizationId(), sessionId);
+        log.info("::> Session {} revoked for user {}", sessionId, email);
+    }
+
+    private void revokeOAuth2Authorization(String authorizationId, String sessionId) {
+        if (authorizationId == null) {
+            return;
+        }
+        try {
+            OAuth2Authorization auth = authorizationService.findById(authorizationId);
+            if (auth != null) {
+                authorizationService.remove(auth);
+                log.info("::> OAuth2 authorization revoked for session {}", sessionId);
             }
-            log.info("::> Session {} revoked for user {}", sessionId, email);
+        } catch (Exception e) {
+            log.warn("::> Could not revoke OAuth2 authorization for session {}", sessionId, e);
         }
     }
 
     private String generateUniqueSessionRevokeCode() {
-        SecureRandom random = new SecureRandom();
         // Simple 6-digit code (no uniqueness check needed since it's per-user)
-        return String.format("%06d", random.nextInt(1_000_000));
+        return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
     }
 
     private void sendSessionRevokeCodeEmail(User user, String code) {

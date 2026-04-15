@@ -1,18 +1,5 @@
 package com.backandwhite.application.usecase.impl;
 
-import com.backandwhite.application.handler.RedirectUriCommandHandler;
-import com.backandwhite.common.exception.EntityNotFoundException;
-import com.backandwhite.domain.model.RedirectUri;
-import com.backandwhite.application.mapper.RedirectUriUpdateMapper;
-import com.backandwhite.domain.repository.RedirectUriRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
 import static com.backandwhite.provider.RedirectUriProvider.otherRedirectUri;
 import static com.backandwhite.provider.RedirectUriProvider.redirectUri;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +9,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.backandwhite.application.handler.RedirectUriCommandHandler;
+import com.backandwhite.application.mapper.RedirectUriUpdateMapper;
+import com.backandwhite.common.exception.EntityNotFoundException;
+import com.backandwhite.domain.model.RedirectUri;
+import com.backandwhite.domain.repository.RedirectUriRepository;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeanUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,9 +54,7 @@ class RedirectUriUseCaseImplTest {
 
     @Test
     void findAll_returnsRepositoryList() {
-        List<RedirectUri> redirectUris = List.of(
-                redirectUri(),
-                otherRedirectUri());
+        List<RedirectUri> redirectUris = List.of(redirectUri(), otherRedirectUri());
 
         when(redirectUriRepository.findAll()).thenReturn(redirectUris);
 
@@ -93,16 +90,16 @@ class RedirectUriUseCaseImplTest {
         RedirectUri update = otherRedirectUri().withId(99L);
 
         when(redirectUriRepository.getById(10L)).thenReturn(existing);
-        doAnswer(inv -> { BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id"); return null; })
-                .when(redirectUriUpdateMapper).updateFromModel(any(RedirectUri.class), any(RedirectUri.class));
+        doAnswer(inv -> {
+            BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id");
+            return null;
+        }).when(redirectUriUpdateMapper).updateFromModel(any(RedirectUri.class), any(RedirectUri.class));
         when(redirectUriRepository.update(any(RedirectUri.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         RedirectUri result = redirectUriUseCase.update(update, 10L);
 
         verify(redirectUriRepository).update(any(RedirectUri.class));
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(otherRedirectUri().withId(10L));
+        assertThat(result).usingRecursiveComparison().isEqualTo(otherRedirectUri().withId(10L));
     }
 
     @Test

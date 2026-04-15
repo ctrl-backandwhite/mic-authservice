@@ -3,10 +3,15 @@ package com.backandwhite.application.security;
 import com.backandwhite.domain.model.Group;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.model.UserSession;
-import com.backandwhite.domain.repository.GroupRepository;
 import com.backandwhite.domain.repository.UserRepository;
 import com.backandwhite.domain.repository.UserSessionRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
@@ -21,12 +26,6 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
 @Log4j2
 @Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
@@ -36,7 +35,6 @@ public class UserTokenCustomizer {
     public static final String TOKEN_TYPE = "token_type";
 
     private final UserRepository userRepository;
-    private final GroupRepository groupRepository;
     private final UserSessionRepository userSessionRepository;
 
     @Bean
@@ -129,41 +127,48 @@ public class UserTokenCustomizer {
         return request.getRemoteAddr();
     }
 
+    private static final List<Map.Entry<String, String>> BROWSER_PATTERNS = List.of(
+            Map.entry("Edg/", "Edge"), Map.entry("OPR/", "Opera"), Map.entry("Opera", "Opera"),
+            Map.entry("Firefox/", "Firefox"));
+
+    private static final List<Map.Entry<String, String>> OS_PATTERNS = List.of(
+            Map.entry("iPhone", "iPhone"), Map.entry("iPad", "iPad"), Map.entry("Android", "Android"),
+            Map.entry("Macintosh", "macOS"), Map.entry("Windows", "Windows"), Map.entry("Linux", "Linux"));
+
     private String parseDeviceInfo(String userAgent) {
-        if (userAgent == null || userAgent.isBlank())
+        if (userAgent == null || userAgent.isBlank()) {
             return "Unknown browser";
-
-        String browser;
-        if (userAgent.contains("Edg/"))
-            browser = "Edge";
-        else if (userAgent.contains("OPR/") || userAgent.contains("Opera"))
-            browser = "Opera";
-        else if (userAgent.contains("Chrome/") && !userAgent.contains("Edg/"))
-            browser = "Chrome";
-        else if (userAgent.contains("Firefox/"))
-            browser = "Firefox";
-        else if (userAgent.contains("Safari/") && !userAgent.contains("Chrome/"))
-            browser = "Safari";
-        else
-            browser = "Browser";
-
-        String os;
-        if (userAgent.contains("iPhone"))
-            os = "iPhone";
-        else if (userAgent.contains("iPad"))
-            os = "iPad";
-        else if (userAgent.contains("Android"))
-            os = "Android";
-        else if (userAgent.contains("Macintosh"))
-            os = "macOS";
-        else if (userAgent.contains("Windows"))
-            os = "Windows";
-        else if (userAgent.contains("Linux"))
-            os = "Linux";
-        else
-            os = "Device";
-
+        }
+        String browser = detectBrowser(userAgent);
+        String os = matchPattern(userAgent, OS_PATTERNS, "Device");
         return browser + " · " + os;
+    }
+
+    private String detectBrowser(String userAgent) {
+        if (userAgent.contains("Edg/")) {
+            return "Edge";
+        }
+        if (userAgent.contains("OPR/") || userAgent.contains("Opera")) {
+            return "Opera";
+        }
+        if (userAgent.contains("Chrome/")) {
+            return "Chrome";
+        }
+        if (userAgent.contains("Firefox/")) {
+            return "Firefox";
+        }
+        if (userAgent.contains("Safari/")) {
+            return "Safari";
+        }
+        return "Browser";
+    }
+
+    private String matchPattern(String userAgent, List<Map.Entry<String, String>> patterns, String fallback) {
+        return patterns.stream()
+                .filter(entry -> userAgent.contains(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(fallback);
     }
 
     private List<String> getGetGroups(List<Group> groups) {

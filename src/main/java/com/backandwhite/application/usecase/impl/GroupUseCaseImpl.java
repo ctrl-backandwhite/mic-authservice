@@ -1,10 +1,14 @@
 package com.backandwhite.application.usecase.impl;
 
+import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
+
 import com.backandwhite.application.handler.GroupCommandHandler;
 import com.backandwhite.application.mapper.GroupUpdateMapper;
 import com.backandwhite.application.usecase.GroupUseCase;
 import com.backandwhite.domain.model.Group;
 import com.backandwhite.domain.repository.GroupRepository;
+import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
@@ -12,11 +16,6 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Objects;
-
-import static com.backandwhite.common.exception.Message.ENTITY_NOT_FOUND;
 
 @Log4j2
 @Service

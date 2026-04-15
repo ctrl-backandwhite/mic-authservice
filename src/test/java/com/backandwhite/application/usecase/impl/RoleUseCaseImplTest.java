@@ -1,27 +1,26 @@
 package com.backandwhite.application.usecase.impl;
 
+import static com.backandwhite.provider.RoleProvider.adminRole;
+import static com.backandwhite.provider.RoleProvider.userRole;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.backandwhite.application.handler.RoleCommandHandler;
+import com.backandwhite.application.mapper.RoleUpdateMapper;
 import com.backandwhite.common.exception.EntityNotFoundException;
 import com.backandwhite.domain.model.Role;
-import com.backandwhite.application.mapper.RoleUpdateMapper;
 import com.backandwhite.domain.repository.RoleRepository;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static com.backandwhite.provider.RoleProvider.adminRole;
-import static com.backandwhite.provider.RoleProvider.userRole;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.springframework.beans.BeanUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,9 +54,7 @@ class RoleUseCaseImplTest {
 
     @Test
     void findAll_returnsRepositoryList() {
-        List<Role> roles = List.of(
-                adminRole(),
-                userRole());
+        List<Role> roles = List.of(adminRole(), userRole());
 
         when(roleRepository.findAll()).thenReturn(roles);
 
@@ -93,16 +90,16 @@ class RoleUseCaseImplTest {
         Role update = userRole().withId(99L);
 
         when(roleRepository.getById(10L)).thenReturn(existing);
-        doAnswer(inv -> { BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id"); return null; })
-                .when(roleUpdateMapper).updateFromModel(any(Role.class), any(Role.class));
+        doAnswer(inv -> {
+            BeanUtils.copyProperties(inv.getArgument(0), inv.getArgument(1), "id");
+            return null;
+        }).when(roleUpdateMapper).updateFromModel(any(Role.class), any(Role.class));
         when(roleRepository.update(any(Role.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Role result = roleUseCase.update(update, 10L);
 
         verify(roleRepository).update(any(Role.class));
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(userRole().withId(10L));
+        assertThat(result).usingRecursiveComparison().isEqualTo(userRole().withId(10L));
     }
 
     @Test
