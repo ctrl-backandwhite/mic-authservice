@@ -29,13 +29,20 @@ spring:
   liquibase:
     enabled: true
   kafka:
-    bootstrap-servers: crossover.proxy.rlwy.net:32058
-    properties:
-      schema.registry.url: http://schema-registry-sbs4-desarollo.up.railway.app
-      basic.auth.credentials.source: USER_INFO
-      basic.auth.user.info: admin:admin123
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     enabled: true
+    properties:
+      schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8081}
+      basic.auth.credentials.source: USER_INFO
+      basic.auth.user.info: ${SCHEMA_REGISTRY_AUTH:admin:admin123}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      acks: all
     consumer:
+      group-id: ${spring.application.name}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       auto-offset-reset: earliest
   data:
     redis:

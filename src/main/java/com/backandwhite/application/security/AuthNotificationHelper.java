@@ -35,19 +35,22 @@ public class AuthNotificationHelper {
         if (username == null || username.isBlank()) {
             return;
         }
+        // Extract request data on the calling thread before Tomcat recycles the request
+        Map<String, String> deviceInfo = (request != null) ? extractDeviceInfo(request) : Map.of();
         executor.execute(() -> {
             try {
-                User user = userRepository.findUserByEmail(username.trim().toLowerCase());
+                String normalized = username.trim().toLowerCase();
+                User user = userRepository.findUserByEmail(normalized);
+                if (user == null) {
+                    user = userRepository.findUserByNickName(normalized);
+                }
                 if (user == null || user.getEmail() == null) {
                     return;
                 }
 
                 Map<String, String> variables = new HashMap<>();
                 variables.put("name", user.getName());
-
-                if (request != null) {
-                    enrichWithDeviceInfo(variables, request);
-                }
+                variables.putAll(deviceInfo);
 
                 notificationEventPort.sendNotificationEvent(
                         new EmailNotificationRequest(user.getEmail(), subject, templateName, variables));
@@ -58,21 +61,21 @@ public class AuthNotificationHelper {
         });
     }
 
-    private void enrichWithDeviceInfo(Map<String, String> variables, HttpServletRequest request) {
-        variables.put("dateTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    private Map<String, String> extractDeviceInfo(HttpServletRequest request) {
+        Map<String, String> info = new HashMap<>();
+        info.put("dateTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         String userAgent = request.getHeader("User-Agent");
         if (userAgent != null && !userAgent.isBlank()) {
-            variables.put("browser", parseBrowser(userAgent));
-            variables.put("operatingSystem", parseOperatingSystem(userAgent));
+            info.put("browser", parseBrowser(userAgent));
+            info.put("operatingSystem", parseOperatingSystem(userAgent));
         }
 
         String ip = extractClientIp(request);
-        variables.put("ipAddress", ip);
-        variables.put("location", resolveLocation(ip));
-
-        String changePasswordUrl = resolveChangePasswordUrl(request);
-        variables.put("changePasswordUrl", changePasswordUrl);
+        info.put("ipAddress", ip);
+        info.put("location", resolveLocation(ip));
+        info.put("changePasswordUrl", resolveChangePasswordUrl(request));
+        return info;
     }
 
     private String extractClientIp(HttpServletRequest request) {
