@@ -13,6 +13,12 @@ class OauthClientEntityTest {
         return OauthClientEntity.builder().id(1L).clientId("web-app").clientSecret("s3cr3t").build();
     }
 
+    @Test
+    @DisplayName("builder produces non-null entity")
+    void builderProducesNonNull() {
+        assertThat(buildDefault()).isNotNull();
+    }
+
     @Nested
     @DisplayName("equals")
     class Equals {

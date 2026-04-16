@@ -16,6 +16,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class AuthNotificationHelper {
 
+    private static final String UNKNOWN = "Unknown";
+
     private final NotificationEventPort notificationEventPort;
     private final UserRepository userRepository;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -98,12 +100,12 @@ public class AuthNotificationHelper {
                 || ip.startsWith("10.") || ip.startsWith("172.")) {
             return "Local network";
         }
-        return "Unknown";
+        return UNKNOWN;
     }
 
     static String parseBrowser(String userAgent) {
         if (userAgent == null) {
-            return "Unknown";
+            return UNKNOWN;
         }
         if (userAgent.contains("Edg/")) {
             return "Microsoft Edge";
@@ -120,12 +122,12 @@ public class AuthNotificationHelper {
         if (userAgent.contains("Firefox/")) {
             return "Mozilla Firefox";
         }
-        return "Unknown";
+        return UNKNOWN;
     }
 
     static String parseOperatingSystem(String userAgent) {
         if (userAgent == null) {
-            return "Unknown";
+            return UNKNOWN;
         }
         if (userAgent.contains("Windows NT 10")) {
             return "Windows 10/11";
@@ -145,6 +147,6 @@ public class AuthNotificationHelper {
         if (userAgent.contains("Linux")) {
             return "Linux";
         }
-        return "Unknown";
+        return UNKNOWN;
     }
 }

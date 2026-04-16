@@ -1,5 +1,6 @@
 package com.backandwhite.application.security;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -10,7 +11,7 @@ import com.backandwhite.application.port.out.EmailNotificationRequest;
 import com.backandwhite.application.port.out.NotificationEventPort;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.repository.UserRepository;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -37,10 +38,6 @@ class CustomAuthenticationSuccessHandlerTest {
         return handler;
     }
 
-    private void awaitAsync() throws InterruptedException {
-        TimeUnit.MILLISECONDS.sleep(200);
-    }
-
     @Test
     void onAuthenticationSuccess_whenUserFound_sendsNotification() throws Exception {
         CustomAuthenticationSuccessHandler handler = buildHandler();
@@ -53,9 +50,9 @@ class CustomAuthenticationSuccessHandlerTest {
         when(authentication.getName()).thenReturn("user@test.com");
 
         handler.onAuthenticationSuccess(request, response, authentication);
-        awaitAsync();
 
-        verify(notificationEventPort).sendNotificationEvent(any(EmailNotificationRequest.class));
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(
+                () -> verify(notificationEventPort).sendNotificationEvent(any(EmailNotificationRequest.class)));
     }
 
     @Test
@@ -69,8 +66,9 @@ class CustomAuthenticationSuccessHandlerTest {
         when(authentication.getName()).thenReturn("unknown@test.com");
 
         handler.onAuthenticationSuccess(request, response, authentication);
-        awaitAsync();
 
+        await().atMost(Duration.ofSeconds(1))
+                .untilAsserted(() -> verify(userRepository).findUserByEmail("unknown@test.com"));
         verify(notificationEventPort, never()).sendNotificationEvent(any());
     }
 
@@ -86,8 +84,9 @@ class CustomAuthenticationSuccessHandlerTest {
         when(authentication.getName()).thenReturn("user@test.com");
 
         handler.onAuthenticationSuccess(request, response, authentication);
-        awaitAsync();
 
+        await().atMost(Duration.ofSeconds(1))
+                .untilAsserted(() -> verify(userRepository).findUserByEmail("user@test.com"));
         verify(notificationEventPort, never()).sendNotificationEvent(any());
     }
 

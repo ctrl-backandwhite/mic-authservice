@@ -14,6 +14,12 @@ class RoleEntityTest {
                 .enabled(true).build();
     }
 
+    @Test
+    @DisplayName("builder produces non-null entity")
+    void builderProducesNonNull() {
+        assertThat(buildDefault()).isNotNull();
+    }
+
     @Nested
     @DisplayName("equals")
     class Equals {

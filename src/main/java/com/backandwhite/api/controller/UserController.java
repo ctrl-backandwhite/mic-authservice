@@ -46,6 +46,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "User Operations.", description = "Operations related to users.")
 public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
 
+    private static final String CLAIM_EMAIL = "email";
+
     private final UserDtoMapper mapper;
     private final UserSessionDtoMapper sessionMapper;
     private final UserUseCase useCase;
@@ -150,7 +152,7 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     @PostMapping("/change-password/request")
     public ResponseEntity<OperationResponseDtoOut> requestPasswordChange(
             @Valid @RequestBody ChangePasswordRequestDtoIn dto, @AuthenticationPrincipal Jwt jwt) {
-        String email = jwt.getClaimAsString("email");
+        String email = jwt.getClaimAsString(CLAIM_EMAIL);
         useCase.requestPasswordChange(email.trim().toLowerCase(), dto.getCurrentPassword(), dto.getNewPassword(),
                 dto.getConfirmPassword());
         return ResponseEntity
@@ -161,7 +163,7 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     @PostMapping("/change-password/confirm")
     public ResponseEntity<OperationResponseDtoOut> confirmPasswordChange(
             @Valid @RequestBody ConfirmPasswordChangeDtoIn dto, @AuthenticationPrincipal Jwt jwt) {
-        String email = jwt.getClaimAsString("email");
+        String email = jwt.getClaimAsString(CLAIM_EMAIL);
         useCase.confirmPasswordChange(email.trim().toLowerCase(), dto.getCode());
         return ResponseEntity.ok(OperationResponseDtoOut.ok("Your password has been updated successfully."));
     }
@@ -171,7 +173,7 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     @NxUser
     @GetMapping("/sessions")
     public ResponseEntity<List<UserSessionDtoOut>> getActiveSessions(@AuthenticationPrincipal Jwt jwt) {
-        String email = jwt.getClaimAsString("email");
+        String email = jwt.getClaimAsString(CLAIM_EMAIL);
         List<UserSession> sessions = useCase.getActiveSessions(email.trim().toLowerCase());
         return ResponseEntity.ok(sessionMapper.toDtoOutList(sessions));
     }
@@ -180,7 +182,7 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     @PostMapping("/sessions/revoke/request")
     public ResponseEntity<OperationResponseDtoOut> requestSessionRevoke(
             @Valid @RequestBody RevokeSessionRequestDtoIn dto, @AuthenticationPrincipal Jwt jwt) {
-        String email = jwt.getClaimAsString("email");
+        String email = jwt.getClaimAsString(CLAIM_EMAIL);
         useCase.requestSessionRevoke(email.trim().toLowerCase(), dto.getSessionId());
         return ResponseEntity
                 .ok(OperationResponseDtoOut.ok("A verification code has been sent to your email address."));
@@ -190,7 +192,7 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     @PostMapping("/sessions/revoke/confirm")
     public ResponseEntity<OperationResponseDtoOut> confirmSessionRevoke(
             @Valid @RequestBody ConfirmRevokeSessionDtoIn dto, @AuthenticationPrincipal Jwt jwt) {
-        String email = jwt.getClaimAsString("email");
+        String email = jwt.getClaimAsString(CLAIM_EMAIL);
         useCase.confirmSessionRevoke(email.trim().toLowerCase(), dto.getCode());
         return ResponseEntity.ok(OperationResponseDtoOut.ok("The session has been closed successfully."));
     }
