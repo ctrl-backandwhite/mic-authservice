@@ -17,6 +17,9 @@ import com.backandwhite.api.validation.CreateValidation;
 import com.backandwhite.api.validation.UpdateValidation;
 import com.backandwhite.application.usecase.UserUseCase;
 import com.backandwhite.common.exception.ArgumentException;
+import com.backandwhite.common.security.annotation.NxAdmin;
+import com.backandwhite.common.security.annotation.NxPublic;
+import com.backandwhite.common.security.annotation.NxUser;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.model.UserSession;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,10 +33,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Log4j2
+@NxAdmin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -52,6 +58,7 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
         return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.CREATED);
     }
 
+    @NxPublic
     @PostMapping("/register")
     public ResponseEntity<UserDtoOut> register(
             @Validated({Default.class, CreateValidation.class}) @RequestBody UserDtoIn dto) {
@@ -99,6 +106,7 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
         return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.OK);
     }
 
+    @NxPublic
     @GetMapping("/activate")
     public ResponseEntity<Void> activateUser(@RequestParam String token,
             @RequestParam(defaultValue = "es") String lang) {
@@ -114,6 +122,7 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
         }
     }
 
+    @NxPublic
     @PostMapping("/forgot-password")
     public ResponseEntity<OperationResponseDtoOut> forgotPassword(@Valid @RequestBody ForgotPasswordDtoIn dto,
             @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
@@ -123,6 +132,7 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
                 .ok("If the email is registered, you will receive a link to reset your password."));
     }
 
+    @NxPublic
     @PostMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordDtoIn dto) {
         try {
@@ -136,42 +146,51 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
         }
     }
 
+    @NxUser
     @PostMapping("/change-password/request")
     public ResponseEntity<OperationResponseDtoOut> requestPasswordChange(
-            @Valid @RequestBody ChangePasswordRequestDtoIn dto, @RequestHeader(value = "X-Auth-Email") String email) {
+            @Valid @RequestBody ChangePasswordRequestDtoIn dto, @AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
         useCase.requestPasswordChange(email.trim().toLowerCase(), dto.getCurrentPassword(), dto.getNewPassword(),
                 dto.getConfirmPassword());
         return ResponseEntity
                 .ok(OperationResponseDtoOut.ok("A verification code has been sent to your email address."));
     }
 
+    @NxUser
     @PostMapping("/change-password/confirm")
     public ResponseEntity<OperationResponseDtoOut> confirmPasswordChange(
-            @Valid @RequestBody ConfirmPasswordChangeDtoIn dto, @RequestHeader(value = "X-Auth-Email") String email) {
+            @Valid @RequestBody ConfirmPasswordChangeDtoIn dto, @AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
         useCase.confirmPasswordChange(email.trim().toLowerCase(), dto.getCode());
         return ResponseEntity.ok(OperationResponseDtoOut.ok("Your password has been updated successfully."));
     }
 
     // ─── Session management ─────────────────────────────────────────
 
+    @NxUser
     @GetMapping("/sessions")
-    public ResponseEntity<List<UserSessionDtoOut>> getActiveSessions(
-            @RequestHeader(value = "X-Auth-Email") String email) {
+    public ResponseEntity<List<UserSessionDtoOut>> getActiveSessions(@AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
         List<UserSession> sessions = useCase.getActiveSessions(email.trim().toLowerCase());
         return ResponseEntity.ok(sessionMapper.toDtoOutList(sessions));
     }
 
+    @NxUser
     @PostMapping("/sessions/revoke/request")
     public ResponseEntity<OperationResponseDtoOut> requestSessionRevoke(
-            @Valid @RequestBody RevokeSessionRequestDtoIn dto, @RequestHeader(value = "X-Auth-Email") String email) {
+            @Valid @RequestBody RevokeSessionRequestDtoIn dto, @AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
         useCase.requestSessionRevoke(email.trim().toLowerCase(), dto.getSessionId());
         return ResponseEntity
                 .ok(OperationResponseDtoOut.ok("A verification code has been sent to your email address."));
     }
 
+    @NxUser
     @PostMapping("/sessions/revoke/confirm")
     public ResponseEntity<OperationResponseDtoOut> confirmSessionRevoke(
-            @Valid @RequestBody ConfirmRevokeSessionDtoIn dto, @RequestHeader(value = "X-Auth-Email") String email) {
+            @Valid @RequestBody ConfirmRevokeSessionDtoIn dto, @AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
         useCase.confirmSessionRevoke(email.trim().toLowerCase(), dto.getCode());
         return ResponseEntity.ok(OperationResponseDtoOut.ok("The session has been closed successfully."));
     }

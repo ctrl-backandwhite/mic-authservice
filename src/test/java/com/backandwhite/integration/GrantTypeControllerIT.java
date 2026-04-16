@@ -2,6 +2,7 @@ package com.backandwhite.integration;
 
 import static com.backandwhite.provider.GrantTypeProvider.*;
 import static com.backandwhite.provider.RoleProvider.ADMIN_UNIQUE_NAME;
+import static com.backandwhite.provider.RoleProvider.USER_UNIQUE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.backandwhite.api.dto.in.GrantTypeDtoIn;
@@ -10,6 +11,7 @@ import com.backandwhite.config.BaseIntegration;
 import com.backandwhite.infrastructure.db.postgres.entity.GrantTypeEntity;
 import com.backandwhite.infrastructure.db.postgres.repository.GrantTypeJpaRepositoryAdapter;
 import java.util.List;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -97,5 +99,21 @@ class GrantTypeControllerIT extends BaseIntegration {
         webTestClient.delete().uri(PATH + "/99999")
                 .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME))).exchange().expectStatus()
                 .isNotFound();
+    }
+
+    @Nested
+    class Security {
+
+        @Test
+        void create_withUserRole_returnsForbidden() {
+            webTestClient.post().uri(PATH).header(HttpHeaders.AUTHORIZATION, getToken(List.of(USER_UNIQUE_NAME)))
+                    .contentType(MediaType.APPLICATION_JSON).bodyValue(grantTypeDtoIn()).exchange().expectStatus()
+                    .isForbidden();
+        }
+
+        @Test
+        void findAll_withoutToken_returnsUnauthorized() {
+            webTestClient.get().uri(PATH).exchange().expectStatus().isUnauthorized();
+        }
     }
 }

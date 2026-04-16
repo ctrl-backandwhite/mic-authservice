@@ -1,6 +1,7 @@
 package com.backandwhite.config;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
@@ -17,5 +18,9 @@ public abstract class BaseIntegration extends com.backandwhite.core.test.BaseInt
 
     public String getToken(List<String> roles) {
         return jwtTestUtil.getToken("John Doe", roles);
+    }
+
+    public String getToken(List<String> roles, String email) {
+        return jwtTestUtil.getToken("John Doe", roles, Map.of("email", email));
     }
 }

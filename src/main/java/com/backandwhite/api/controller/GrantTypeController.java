@@ -5,6 +5,7 @@ import com.backandwhite.api.dto.in.GrantTypeDtoIn;
 import com.backandwhite.api.dto.out.GrantTypeDtoOut;
 import com.backandwhite.api.mapper.GrantTypeDtoMapper;
 import com.backandwhite.application.usecase.GrantTypeUseCase;
+import com.backandwhite.common.security.annotation.NxAdmin;
 import com.backandwhite.domain.model.GrantType;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@NxAdmin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/granttypes")

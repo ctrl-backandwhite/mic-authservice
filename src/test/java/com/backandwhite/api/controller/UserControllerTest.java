@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
@@ -49,6 +50,11 @@ class UserControllerTest {
 
     @InjectMocks
     private UserController controller;
+
+    private Jwt mockJwt(String email) {
+        return Jwt.withTokenValue("mock-token").header("alg", "HS256").claim("email", email).claim("sub", "user-id")
+                .build();
+    }
 
     @Test
     void create_returnsCreatedDto() {
@@ -244,7 +250,7 @@ class UserControllerTest {
                 .confirmPassword("new").build();
         doNothing().when(useCase).requestPasswordChange(USER_EMAIL, "old", "new", "new");
 
-        ResponseEntity<OperationResponseDtoOut> response = controller.requestPasswordChange(dto, USER_EMAIL);
+        ResponseEntity<OperationResponseDtoOut> response = controller.requestPasswordChange(dto, mockJwt(USER_EMAIL));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getCode()).isEqualTo("OK");
@@ -256,7 +262,7 @@ class UserControllerTest {
         ConfirmPasswordChangeDtoIn dto = ConfirmPasswordChangeDtoIn.builder().code("123456").build();
         doNothing().when(useCase).confirmPasswordChange(USER_EMAIL, "123456");
 
-        ResponseEntity<OperationResponseDtoOut> response = controller.confirmPasswordChange(dto, USER_EMAIL);
+        ResponseEntity<OperationResponseDtoOut> response = controller.confirmPasswordChange(dto, mockJwt(USER_EMAIL));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getCode()).isEqualTo("OK");
@@ -275,7 +281,7 @@ class UserControllerTest {
         when(sessionMapper.toDtoOutList(java.util.List.of(session))).thenReturn(java.util.List.of(sessionDto));
 
         ResponseEntity<java.util.List<com.backandwhite.api.dto.out.UserSessionDtoOut>> response = controller
-                .getActiveSessions(USER_EMAIL);
+                .getActiveSessions(mockJwt(USER_EMAIL));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(1);
@@ -287,7 +293,7 @@ class UserControllerTest {
         RevokeSessionRequestDtoIn dto = RevokeSessionRequestDtoIn.builder().sessionId("sess-1").build();
         doNothing().when(useCase).requestSessionRevoke(USER_EMAIL, "sess-1");
 
-        ResponseEntity<OperationResponseDtoOut> response = controller.requestSessionRevoke(dto, USER_EMAIL);
+        ResponseEntity<OperationResponseDtoOut> response = controller.requestSessionRevoke(dto, mockJwt(USER_EMAIL));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getCode()).isEqualTo("OK");
@@ -298,7 +304,7 @@ class UserControllerTest {
         ConfirmRevokeSessionDtoIn dto = ConfirmRevokeSessionDtoIn.builder().code("654321").build();
         doNothing().when(useCase).confirmSessionRevoke(USER_EMAIL, "654321");
 
-        ResponseEntity<OperationResponseDtoOut> response = controller.confirmSessionRevoke(dto, USER_EMAIL);
+        ResponseEntity<OperationResponseDtoOut> response = controller.confirmSessionRevoke(dto, mockJwt(USER_EMAIL));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getCode()).isEqualTo("OK");
