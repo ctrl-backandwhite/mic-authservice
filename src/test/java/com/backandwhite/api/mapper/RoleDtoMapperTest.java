@@ -51,4 +51,28 @@ class RoleDtoMapperTest {
 
         assertThat(result).usingRecursiveComparison().isEqualTo(List.of(supportRoleDtoOut(ROLE_ID)));
     }
+
+    @Test
+    void mapPermissionIds_withNull_returnsEmptyList() {
+        List<com.backandwhite.domain.model.Permission> result = mapper.mapPermissionIds(null);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void mapPermissionIds_withEmptyList_returnsEmptyList() {
+        List<com.backandwhite.domain.model.Permission> result = mapper.mapPermissionIds(List.of());
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void mapPermissionIds_withIds_returnsPermissions() {
+        List<com.backandwhite.domain.model.Permission> result = mapper.mapPermissionIds(List.of(1L, 2L, 3L));
+
+        assertThat(result).hasSize(3);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(1).getId()).isEqualTo(2L);
+        assertThat(result.get(2).getId()).isEqualTo(3L);
+    }
 }
