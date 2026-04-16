@@ -1,10 +1,12 @@
 package com.backandwhite.config;
 
+import com.backandwhite.core.test.JwtTestUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -29,6 +31,6 @@ public class TestContainersConfiguration {
     @Bean
     @Primary
     JwtTestUtil jwtTestUtil(JwtEncoder jwtEncoder) {
-        return new JwtTestUtil(jwtEncoder);
+        return new JwtTestUtil(jwtEncoder, MacAlgorithm.HS256);
     }
 }
