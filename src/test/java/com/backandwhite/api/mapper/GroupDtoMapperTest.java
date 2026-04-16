@@ -15,6 +15,7 @@ import com.backandwhite.api.dto.out.GroupDtoOut;
 import com.backandwhite.domain.model.Group;
 import com.backandwhite.domain.model.Role;
 import com.backandwhite.util.MapperTestUtils;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,5 +61,24 @@ class GroupDtoMapperTest {
         List<GroupDtoOut> result = mapper.toDtoOutList(List.of(adminGroup()));
 
         assertThat(result).usingRecursiveComparison().isEqualTo(List.of(adminGroupDtoOut(ADMIN_ID)));
+    }
+
+    @Test
+    void mapRoleIds_nullReturnsEmptyList() {
+        assertThat(mapper.mapRoleIds(null)).isEmpty();
+    }
+
+    @Test
+    void mapRoleIds_emptyReturnsEmptyList() {
+        assertThat(mapper.mapRoleIds(Collections.emptyList())).isEmpty();
+    }
+
+    @Test
+    void mapRoleIds_withIdsReturnRoles() {
+        List<Role> result = mapper.mapRoleIds(List.of(1L, 2L));
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(1).getId()).isEqualTo(2L);
     }
 }

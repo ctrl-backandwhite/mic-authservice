@@ -115,4 +115,29 @@ class OauthClientRepositoryImplTest {
         assertThat(result).isNull();
         verify(oauthClientJpaRepositoryAdapter).findById(5L);
     }
+
+    @Test
+    void findByClientId_existingEntity_returnsDomain() {
+        OauthClientEntity entity = oauthClientEntity();
+        OauthClient model = oauthClient();
+
+        when(oauthClientJpaRepositoryAdapter.findByClientId("client-1")).thenReturn(entity);
+        when(oauthClientEntityMapper.toDomain(entity)).thenReturn(model);
+
+        OauthClient result = oauthClientRepository.findByClientId("client-1");
+
+        assertSame(model, result);
+        verify(oauthClientJpaRepositoryAdapter).findByClientId("client-1");
+        verify(oauthClientEntityMapper).toDomain(entity);
+    }
+
+    @Test
+    void findByClientId_missingEntity_returnsNull() {
+        when(oauthClientJpaRepositoryAdapter.findByClientId("missing")).thenReturn(null);
+
+        OauthClient result = oauthClientRepository.findByClientId("missing");
+
+        assertThat(result).isNull();
+        verify(oauthClientJpaRepositoryAdapter).findByClientId("missing");
+    }
 }

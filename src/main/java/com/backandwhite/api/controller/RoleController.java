@@ -5,6 +5,7 @@ import com.backandwhite.api.dto.in.RoleDtoIn;
 import com.backandwhite.api.dto.out.RoleDtoOut;
 import com.backandwhite.api.mapper.RoleDtoMapper;
 import com.backandwhite.application.usecase.RoleUseCase;
+import com.backandwhite.common.security.annotation.NxAdmin;
 import com.backandwhite.domain.model.Role;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@NxAdmin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/roles")

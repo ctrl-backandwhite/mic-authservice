@@ -21,6 +21,7 @@ import com.backandwhite.domain.model.Group;
 import com.backandwhite.domain.model.Role;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.util.MapperTestUtils;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,5 +76,43 @@ class UserDtoMapperTest {
 
         assertThat(result).usingRecursiveComparison().ignoringFields("password")
                 .isEqualTo(List.of(userDtoOut(USER_ID)));
+    }
+
+    @Test
+    void mapUserRoleIds_nullReturnsEmptyList() {
+        assertThat(mapper.mapUserRoleIds(null)).isEmpty();
+    }
+
+    @Test
+    void mapUserRoleIds_emptyReturnsEmptyList() {
+        assertThat(mapper.mapUserRoleIds(Collections.emptyList())).isEmpty();
+    }
+
+    @Test
+    void mapUserRoleIds_withIdsReturnRoles() {
+        List<Role> result = mapper.mapUserRoleIds(List.of(1L, 2L));
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(1).getId()).isEqualTo(2L);
+    }
+
+    @Test
+    void mapUserGroupIds_nullReturnsEmptyList() {
+        assertThat(mapper.mapUserGroupIds(null)).isEmpty();
+    }
+
+    @Test
+    void mapUserGroupIds_emptyReturnsEmptyList() {
+        assertThat(mapper.mapUserGroupIds(Collections.emptyList())).isEmpty();
+    }
+
+    @Test
+    void mapUserGroupIds_withIdsReturnGroups() {
+        List<Group> result = mapper.mapUserGroupIds(List.of(1L, 2L));
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(1).getId()).isEqualTo(2L);
     }
 }

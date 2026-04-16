@@ -25,16 +25,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
-import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 
 @ExtendWith(MockitoExtension.class)
 class UserTokenCustomizerTest {
@@ -73,15 +72,14 @@ class UserTokenCustomizerTest {
     void tokenCustomizer_accessToken_setsUserClaims() {
         OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
 
-        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User")
-                .enabled(true).groups(List.of(Group.builder().uniqueName("GROUP_ADMIN").build()))
-                .build();
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(List.of(Group.builder().uniqueName("GROUP_ADMIN").build())).build();
         when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
 
         JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.CLIENT_CREDENTIALS);
         when(context.getPrincipal().getName()).thenReturn("test@test.com");
-        when(context.getPrincipal().getAuthorities()).thenReturn(
-                (java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
         bean.customize(context);
 
@@ -97,16 +95,14 @@ class UserTokenCustomizerTest {
     void tokenCustomizer_accessToken_filtersFactorPasswordFromRoles() {
         OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
 
-        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User")
-                .enabled(true).groups(Collections.emptyList()).build();
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
         when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
 
         JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.CLIENT_CREDENTIALS);
         when(context.getPrincipal().getName()).thenReturn("test@test.com");
-        when(context.getPrincipal().getAuthorities()).thenReturn(
-                (java.util.Collection) List.of(
-                        new SimpleGrantedAuthority("ROLE_USER"),
-                        new SimpleGrantedAuthority("FACTOR_PASSWORD")));
+        when(context.getPrincipal().getAuthorities()).thenReturn((java.util.Collection) List
+                .of(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("FACTOR_PASSWORD")));
 
         bean.customize(context);
 
@@ -117,14 +113,14 @@ class UserTokenCustomizerTest {
     void tokenCustomizer_accessToken_nullGroups_returnsEmptyList() {
         OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
 
-        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User")
-                .enabled(true).groups(null).build();
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(null).build();
         when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
 
         JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.CLIENT_CREDENTIALS);
         when(context.getPrincipal().getName()).thenReturn("test@test.com");
-        when(context.getPrincipal().getAuthorities()).thenReturn(
-                (java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
 
         bean.customize(context);
 
@@ -135,14 +131,14 @@ class UserTokenCustomizerTest {
     void tokenCustomizer_accessToken_authorizationCodeGrant_createsSession() {
         OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
 
-        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User")
-                .enabled(true).groups(Collections.emptyList()).build();
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
         when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
 
         JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.AUTHORIZATION_CODE);
         when(context.getPrincipal().getName()).thenReturn("test@test.com");
-        when(context.getPrincipal().getAuthorities()).thenReturn(
-                (java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
 
         OAuth2Authorization auth = mock(OAuth2Authorization.class);
         when(auth.getId()).thenReturn("auth-123");
@@ -162,19 +158,19 @@ class UserTokenCustomizerTest {
     void tokenCustomizer_accessToken_refreshTokenGrant_reusesSessionId() {
         OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
 
-        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User")
-                .enabled(true).groups(Collections.emptyList()).build();
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
         when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
 
         JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.REFRESH_TOKEN);
         when(context.getPrincipal().getName()).thenReturn("test@test.com");
-        when(context.getPrincipal().getAuthorities()).thenReturn(
-                (java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
 
         OAuth2Authorization auth = mock(OAuth2Authorization.class);
         @SuppressWarnings("unchecked")
-        OAuth2Authorization.Token<org.springframework.security.oauth2.core.OAuth2AccessToken> accessToken =
-                mock(OAuth2Authorization.Token.class);
+        OAuth2Authorization.Token<org.springframework.security.oauth2.core.OAuth2AccessToken> accessToken = mock(
+                OAuth2Authorization.Token.class);
         when(accessToken.getClaims()).thenReturn(Map.of("sid", "existing-session-id"));
         when(auth.getAccessToken()).thenReturn(accessToken);
         when(context.getAuthorization()).thenReturn(auth);
@@ -187,16 +183,13 @@ class UserTokenCustomizerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0', Chrome · Windows",
+    @CsvSource({"'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0', Chrome · Windows",
             "'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Edg/120', Edge · Windows",
             "'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0) Safari/604.1', Safari · iPhone",
             "'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Firefox/120.0', Firefox · macOS",
             "'Mozilla/5.0 (Linux; Android 13) OPR/76.0', Opera · Android",
-            "'Mozilla/5.0 (iPad; CPU OS 17_0)', Browser · iPad",
-            "'SomeBot/1.0', Browser · Device",
-            "'Mozilla/5.0 (X11; Linux x86_64) Chrome/120.0', Chrome · Linux"
-    })
+            "'Mozilla/5.0 (iPad; CPU OS 17_0)', Browser · iPad", "'SomeBot/1.0', Browser · Device",
+            "'Mozilla/5.0 (X11; Linux x86_64) Chrome/120.0', Chrome · Linux"})
     void tokenCustomizer_parseDeviceInfo_variousBrowsers(String userAgent, String expected) {
         // Testing through reflection since parseDeviceInfo is private
         // Instead we test via the token customization flow

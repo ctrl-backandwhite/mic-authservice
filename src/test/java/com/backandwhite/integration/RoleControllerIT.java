@@ -9,6 +9,7 @@ import com.backandwhite.config.BaseIntegration;
 import com.backandwhite.infrastructure.db.postgres.entity.RoleEntity;
 import com.backandwhite.infrastructure.db.postgres.repository.RoleJpaRepositoryAdapter;
 import java.util.List;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -96,5 +97,33 @@ class RoleControllerIT extends BaseIntegration {
         webTestClient.delete().uri(PATH_ROLES + "/99999")
                 .header(HttpHeaders.AUTHORIZATION, getToken(List.of(ADMIN_UNIQUE_NAME))).exchange().expectStatus()
                 .isNotFound();
+    }
+
+    @Nested
+    class Security {
+
+        @Test
+        void create_withUserRole_returnsForbidden() {
+            webTestClient.post().uri(PATH_ROLES).header(HttpHeaders.AUTHORIZATION, getToken(List.of(USER_UNIQUE_NAME)))
+                    .contentType(MediaType.APPLICATION_JSON).bodyValue(adminRoleDtoIn()).exchange().expectStatus()
+                    .isForbidden();
+        }
+
+        @Test
+        void findAll_withUserRole_returnsForbidden() {
+            webTestClient.get().uri(PATH_ROLES).header(HttpHeaders.AUTHORIZATION, getToken(List.of(USER_UNIQUE_NAME)))
+                    .exchange().expectStatus().isForbidden();
+        }
+
+        @Test
+        void create_withoutToken_returnsUnauthorized() {
+            webTestClient.post().uri(PATH_ROLES).contentType(MediaType.APPLICATION_JSON).bodyValue(adminRoleDtoIn())
+                    .exchange().expectStatus().isUnauthorized();
+        }
+
+        @Test
+        void findAll_withoutToken_returnsUnauthorized() {
+            webTestClient.get().uri(PATH_ROLES).exchange().expectStatus().isUnauthorized();
+        }
     }
 }

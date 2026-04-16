@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -61,6 +62,7 @@ import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String LOGIN_PATH = "/login";
@@ -90,8 +92,12 @@ public class SecurityConfig {
     private final String[] publicUrls = {LOGIN_PATH, "/login.html", "/forgot-password.html", "/register.html",
             "/terms.html", "/activation-success.html", "/activation-error.html", "/reset-password.html",
             "/reset-success.html", "/reset-error.html", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/error",
-            "/.well-known/**", "/oauth2/token/**", "/logout", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
-            "/api/v1/**"};
+            "/.well-known/**", "/oauth2/token/**", "/logout", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"};
+
+    private final String[] publicApiUrls = {"/api/v1/users/register", "/api/v1/users/forgot-password",
+            "/api/v1/users/reset-password"};
+
+    private final String[] publicApiGetUrls = {"/api/v1/users/activate"};
 
     @Bean
     @Order(1)
@@ -112,7 +118,10 @@ public class SecurityConfig {
                         authorizationServer -> authorizationServer.oidc(Customizer.withDefaults())
                                 .tokenGenerator(tokenGenerator))
                 .authorizeHttpRequests(authorize -> authorize.requestMatchers(publicUrls).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
+                        .requestMatchers(HttpMethod.POST, publicApiUrls).permitAll()
+                        .requestMatchers(HttpMethod.GET, publicApiGetUrls).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().requestMatchers("/api/v1/**")
+                        .authenticated().anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions.defaultAuthenticationEntryPointFor(
                         new LoginUrlAuthenticationEntryPoint(LOGIN_PATH),
                         new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
@@ -124,8 +133,12 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(publicUrls).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
+                        .requestMatchers(HttpMethod.POST, publicApiUrls).permitAll()
+                        .requestMatchers(HttpMethod.GET, publicApiGetUrls).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().requestMatchers("/api/v1/**")
+                        .authenticated().anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .logout(logout -> logout.logoutUrl("/logout").addLogoutHandler(sessionRevokingLogoutHandler)
                         .invalidateHttpSession(true).clearAuthentication(true).deleteCookies("JSESSIONID")
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
@@ -137,8 +150,8 @@ public class SecurityConfig {
 
     @Bean
     public CustomAuthenticationSuccessHandler authenticationSuccessHandler() {
-        CustomAuthenticationSuccessHandler handler = new CustomAuthenticationSuccessHandler(
-                notificationEventPort, userRepository);
+        CustomAuthenticationSuccessHandler handler = new CustomAuthenticationSuccessHandler(notificationEventPort,
+                userRepository);
         handler.setDefaultTargetUrl(handlerUrl);
         handler.setAlwaysUseDefaultTargetUrl(false);
         return handler;

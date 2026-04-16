@@ -18,10 +18,10 @@ class ScopeUpdateMapperTest {
 
     @Test
     void updateFromModel_copiesFieldsExceptId() {
-        Scope source = Scope.builder().id(99L).name("New").uniqueName("NEW").description("New desc")
-                .enabled(false).build();
-        Scope target = Scope.builder().id(1L).name("Old").uniqueName("OLD").description("Old desc")
-                .enabled(true).build();
+        Scope source = Scope.builder().id(99L).name("New").uniqueName("NEW").description("New desc").enabled(false)
+                .build();
+        Scope target = Scope.builder().id(1L).name("Old").uniqueName("OLD").description("Old desc").enabled(true)
+                .build();
 
         mapper.updateFromModel(source, target);
 

@@ -43,8 +43,8 @@ class OauthClientCommandHandlerTest {
     void validate_withScopes_fetchesAndSetsScopes() {
         Scope inputScope = Scope.builder().id(3L).build();
         Scope fetched = openidScope();
-        OauthClient client = OauthClient.builder().scopes(new ArrayList<>(List.of(inputScope)))
-                .redirectUris(null).grantTypes(null).build();
+        OauthClient client = OauthClient.builder().scopes(new ArrayList<>(List.of(inputScope))).redirectUris(null)
+                .grantTypes(null).build();
 
         when(scopeRepository.getById(3L)).thenReturn(fetched);
 
@@ -58,8 +58,8 @@ class OauthClientCommandHandlerTest {
     void validate_withRedirectUris_fetchesAndSetsRedirectUris() {
         RedirectUri inputUri = RedirectUri.builder().id(1L).build();
         RedirectUri fetched = redirectUri();
-        OauthClient client = OauthClient.builder().scopes(null)
-                .redirectUris(new ArrayList<>(List.of(inputUri))).grantTypes(null).build();
+        OauthClient client = OauthClient.builder().scopes(null).redirectUris(new ArrayList<>(List.of(inputUri)))
+                .grantTypes(null).build();
 
         when(redirectUriRepository.getById(1L)).thenReturn(fetched);
 
@@ -97,8 +97,8 @@ class OauthClientCommandHandlerTest {
 
     @Test
     void validate_withEmptyCollections_skipsAllValidation() {
-        OauthClient client = OauthClient.builder().scopes(Collections.emptyList())
-                .redirectUris(Collections.emptyList()).grantTypes(Collections.emptyList()).build();
+        OauthClient client = OauthClient.builder().scopes(Collections.emptyList()).redirectUris(Collections.emptyList())
+                .grantTypes(Collections.emptyList()).build();
 
         oauthClientCommandHandler.validate(client);
 

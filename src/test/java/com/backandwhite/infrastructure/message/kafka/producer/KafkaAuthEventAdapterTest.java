@@ -2,6 +2,7 @@ package com.backandwhite.infrastructure.message.kafka.producer;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +47,49 @@ class KafkaAuthEventAdapterTest {
         adapter.publishCustomerRegistered(request);
 
         verify(authEventMapper).toCustomerRegisteredEvent(request);
+        verify(kafkaTemplate).send(eq(AppConstants.KAFKA_TOPIC_CUSTOMER_REGISTERED), eq("user-1"),
+                any(SpecificRecord.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void publishCustomerRegistered_whenSuccess_logsInfo() {
+        CustomerRegisteredRequest request = new CustomerRegisteredRequest("user-1", "test@test.com", "John", "Doe");
+        CustomerRegisteredEvent event = CustomerRegisteredEvent.newBuilder().setUserId("user-1")
+                .setEmail("test@test.com").setFirstName("John").setLastName("Doe").setTimestamp("now").build();
+
+        when(authEventMapper.toCustomerRegisteredEvent(request)).thenReturn(event);
+
+        CompletableFuture<SendResult<String, SpecificRecord>> future = new CompletableFuture<>();
+        when(kafkaTemplate.send(eq(AppConstants.KAFKA_TOPIC_CUSTOMER_REGISTERED), eq("user-1"), any()))
+                .thenReturn(future);
+
+        adapter.publishCustomerRegistered(request);
+
+        SendResult<String, SpecificRecord> sendResult = mock(SendResult.class);
+        future.complete(sendResult);
+
+        verify(kafkaTemplate).send(eq(AppConstants.KAFKA_TOPIC_CUSTOMER_REGISTERED), eq("user-1"),
+                any(SpecificRecord.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void publishCustomerRegistered_whenFailure_logsError() {
+        CustomerRegisteredRequest request = new CustomerRegisteredRequest("user-1", "test@test.com", "John", "Doe");
+        CustomerRegisteredEvent event = CustomerRegisteredEvent.newBuilder().setUserId("user-1")
+                .setEmail("test@test.com").setFirstName("John").setLastName("Doe").setTimestamp("now").build();
+
+        when(authEventMapper.toCustomerRegisteredEvent(request)).thenReturn(event);
+
+        CompletableFuture<SendResult<String, SpecificRecord>> future = new CompletableFuture<>();
+        when(kafkaTemplate.send(eq(AppConstants.KAFKA_TOPIC_CUSTOMER_REGISTERED), eq("user-1"), any()))
+                .thenReturn(future);
+
+        adapter.publishCustomerRegistered(request);
+
+        future.completeExceptionally(new RuntimeException("Kafka is down"));
+
         verify(kafkaTemplate).send(eq(AppConstants.KAFKA_TOPIC_CUSTOMER_REGISTERED), eq("user-1"),
                 any(SpecificRecord.class));
     }

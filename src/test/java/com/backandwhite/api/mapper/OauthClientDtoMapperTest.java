@@ -18,6 +18,7 @@ import com.backandwhite.domain.model.OauthClient;
 import com.backandwhite.domain.model.RedirectUri;
 import com.backandwhite.domain.model.Scope;
 import com.backandwhite.util.MapperTestUtils;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,5 +68,62 @@ class OauthClientDtoMapperTest {
         List<OauthClientDtoOut> result = mapper.toDtoOutList(List.of(oauthClient()));
 
         assertThat(result).usingRecursiveComparison().isEqualTo(List.of(oauthClientDtoOut(CLIENT_ID)));
+    }
+
+    @Test
+    void mapScopeIds_nullReturnsEmptyList() {
+        assertThat(mapper.mapScopeIds(null)).isEmpty();
+    }
+
+    @Test
+    void mapScopeIds_emptyReturnsEmptyList() {
+        assertThat(mapper.mapScopeIds(Collections.emptyList())).isEmpty();
+    }
+
+    @Test
+    void mapScopeIds_withIdsReturnScopes() {
+        List<Scope> result = mapper.mapScopeIds(List.of(1L, 2L));
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(1).getId()).isEqualTo(2L);
+    }
+
+    @Test
+    void mapRedirectUriIds_nullReturnsEmptyList() {
+        assertThat(mapper.mapRedirectUriIds(null)).isEmpty();
+    }
+
+    @Test
+    void mapRedirectUriIds_emptyReturnsEmptyList() {
+        assertThat(mapper.mapRedirectUriIds(Collections.emptyList())).isEmpty();
+    }
+
+    @Test
+    void mapRedirectUriIds_withIdsReturnRedirectUris() {
+        List<RedirectUri> result = mapper.mapRedirectUriIds(List.of(1L, 2L));
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(1).getId()).isEqualTo(2L);
+    }
+
+    @Test
+    void mapGrantTypeIds_nullReturnsEmptyList() {
+        assertThat(mapper.mapGrantTypeIds(null)).isEmpty();
+    }
+
+    @Test
+    void mapGrantTypeIds_emptyReturnsEmptyList() {
+        assertThat(mapper.mapGrantTypeIds(Collections.emptyList())).isEmpty();
+    }
+
+    @Test
+    void mapGrantTypeIds_withIdsReturnGrantTypes() {
+        List<GrantType> result = mapper.mapGrantTypeIds(List.of(1L, 2L));
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(1).getId()).isEqualTo(2L);
     }
 }

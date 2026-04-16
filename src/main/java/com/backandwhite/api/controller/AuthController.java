@@ -1,5 +1,6 @@
 package com.backandwhite.api.controller;
 
+import com.backandwhite.common.security.annotation.NxUser;
 import com.backandwhite.domain.repository.UserSessionRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.*;
 
 @Log4j2
+@NxUser
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
