@@ -91,8 +91,9 @@ public class SecurityConfig {
 
     private final String[] publicUrls = {LOGIN_PATH, "/login.html", "/forgot-password.html", "/register.html",
             "/terms.html", "/activation-success.html", "/activation-error.html", "/reset-password.html",
-            "/reset-success.html", "/reset-error.html", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/error",
-            "/.well-known/**", "/oauth2/token/**", "/logout", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"};
+            "/reset-success.html", "/reset-error.html", "/css/**", "/js/**", "/font/**", "/images/**", "/favicon.ico",
+            "/error", "/.well-known/**", "/oauth2/token/**", "/logout", "/swagger-ui/**", "/v3/api-docs/**",
+            "/swagger-ui.html"};
 
     private final String[] publicApiUrls = {"/api/v1/users/register", "/api/v1/users/forgot-password",
             "/api/v1/users/reset-password"};

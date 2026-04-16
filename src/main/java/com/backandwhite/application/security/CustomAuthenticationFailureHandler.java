@@ -32,7 +32,8 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         }
 
         String username = request.getParameter("username");
-        notificationHelper.sendAuthNotification(username, "Failed login attempt detected", "login-failed-attempt");
+        notificationHelper.sendAuthNotification(username, "Failed login attempt detected", "login-failed-attempt",
+                request);
 
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }

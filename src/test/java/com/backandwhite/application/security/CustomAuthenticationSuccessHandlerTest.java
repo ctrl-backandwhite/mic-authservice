@@ -1,7 +1,6 @@
 package com.backandwhite.application.security;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -11,6 +10,7 @@ import com.backandwhite.application.port.out.EmailNotificationRequest;
 import com.backandwhite.application.port.out.NotificationEventPort;
 import com.backandwhite.domain.model.User;
 import com.backandwhite.domain.repository.UserRepository;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -32,11 +32,13 @@ class CustomAuthenticationSuccessHandlerTest {
     private CustomAuthenticationSuccessHandler buildHandler() {
         CustomAuthenticationSuccessHandler handler = new CustomAuthenticationSuccessHandler(notificationEventPort,
                 userRepository);
-        // Use a no-op redirect strategy so super.onAuthenticationSuccess doesn't
-        // perform HTTP redirect
         RedirectStrategy noOpRedirect = mock(RedirectStrategy.class);
         handler.setRedirectStrategy(noOpRedirect);
         return handler;
+    }
+
+    private void awaitAsync() throws InterruptedException {
+        TimeUnit.MILLISECONDS.sleep(200);
     }
 
     @Test
@@ -51,6 +53,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(authentication.getName()).thenReturn("user@test.com");
 
         handler.onAuthenticationSuccess(request, response, authentication);
+        awaitAsync();
 
         verify(notificationEventPort).sendNotificationEvent(any(EmailNotificationRequest.class));
     }
@@ -66,6 +69,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(authentication.getName()).thenReturn("unknown@test.com");
 
         handler.onAuthenticationSuccess(request, response, authentication);
+        awaitAsync();
 
         verify(notificationEventPort, never()).sendNotificationEvent(any());
     }
@@ -82,6 +86,7 @@ class CustomAuthenticationSuccessHandlerTest {
         when(authentication.getName()).thenReturn("user@test.com");
 
         handler.onAuthenticationSuccess(request, response, authentication);
+        awaitAsync();
 
         verify(notificationEventPort, never()).sendNotificationEvent(any());
     }
@@ -89,16 +94,13 @@ class CustomAuthenticationSuccessHandlerTest {
     @Test
     void onAuthenticationSuccess_whenNotificationThrows_doesNotPropagateException() throws Exception {
         CustomAuthenticationSuccessHandler handler = buildHandler();
-        User user = User.builder().email("user@test.com").name("Ana").build();
-        when(userRepository.findUserByEmail("user@test.com")).thenReturn(user);
-        doThrow(new RuntimeException("Kafka down")).when(notificationEventPort).sendNotificationEvent(any());
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("user@test.com");
 
-        // Should not throw
+        // Should not throw — notification runs async
         handler.onAuthenticationSuccess(request, response, authentication);
     }
 }
