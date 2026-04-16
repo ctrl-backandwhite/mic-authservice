@@ -46,8 +46,8 @@
   --error: #dc2626;
   --error-light: #fdf2f2;
   --error-border: #fecaca;
-  --panel-bg: #1e293b;
-  --panel-accent: rgba(255,255,255,0.06);
+  --panel-bg: #ffffff;
+  --panel-accent: rgba(0,0,0,0.04);
   --gradient-brand: #1e293b;
   --gradient-error: linear-gradient(135deg, #dc2626 0%, #1e293b 100%);
 }
@@ -92,13 +92,13 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(25,179,164,0.12) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 80%, rgba(255,255,255,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 30% 20%, rgba(25,179,164,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(0,0,0,0.02) 0%, transparent 50%);
 }
 
 .media__content {
   position: relative;
-  color: #fff;
+  color: #1e293b;
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -133,8 +133,8 @@ body {
 }
 
 .media__quote {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--panel-accent);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 18px;
   display: grid;
@@ -168,13 +168,13 @@ body {
 .media__dots span {
   width: 26px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 999px;
   transition: opacity 0.4s ease, background 0.4s ease;
 }
 
 .media__dots .is-active {
-  background: #fff;
+  background: var(--primary);
 }
 
 .fade-out {
