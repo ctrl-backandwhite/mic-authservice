@@ -84,7 +84,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=ctrl-backandwhite_auth-backandwhite
+            -Dsonar.projectKey=ctrl-backandwhite_mic-authservice
             -Dsonar.organization=ctrl-backandwhite
             -Dsonar.sources=src/main/java
             -Dsonar.tests=src/test/java
