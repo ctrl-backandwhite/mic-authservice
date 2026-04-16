@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 class UserControllerIT extends BaseIntegration {
 
@@ -40,6 +41,9 @@ class UserControllerIT extends BaseIntegration {
 
     @Autowired
     private GroupJpaRepositoryAdapter groupRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Test
     void create() {
@@ -244,7 +248,7 @@ class UserControllerIT extends BaseIntegration {
         @Test
         void changePasswordRequest_withUserRole_isPermitted() {
             repository.save(userEntity().withId(null).withNickName("cpuser").withEmail("cpuser@example.com")
-                    .withRoles(List.of()).withGroups(List.of()));
+                    .withPassword(passwordEncoder.encode("OldPass1")).withRoles(List.of()).withGroups(List.of()));
 
             ChangePasswordRequestDtoIn dto = ChangePasswordRequestDtoIn.builder().currentPassword("OldPass1")
                     .newPassword("NewPass1").confirmPassword("NewPass1").build();

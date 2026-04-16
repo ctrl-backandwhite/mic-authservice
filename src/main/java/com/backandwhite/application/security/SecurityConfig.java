@@ -139,7 +139,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().requestMatchers("/api/v1/**")
                         .authenticated().anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .oauth2ResourceServer(
+                        oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .logout(logout -> logout.logoutUrl("/logout").addLogoutHandler(sessionRevokingLogoutHandler)
                         .invalidateHttpSession(true).clearAuthentication(true).deleteCookies("JSESSIONID")
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
