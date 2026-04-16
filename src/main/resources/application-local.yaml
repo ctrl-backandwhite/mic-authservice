@@ -31,19 +31,6 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     enabled: true
-    properties:
-      schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8081}
-      basic.auth.credentials.source: USER_INFO
-      basic.auth.user.info: ${SCHEMA_REGISTRY_AUTH:admin:admin123}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
-      acks: all
-    consumer:
-      group-id: ${spring.application.name}
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-      auto-offset-reset: earliest
   data:
     redis:
       host: ${REDIS_HOST:localhost}
