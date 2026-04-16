@@ -236,16 +236,7 @@
     width: 100%;
 }
 
-.register-card__content .btn--primary {
-    background: #ffffff;
-    color: var(--text);
-    border: 1px solid var(--border);
-}
 
-.register-card__content .btn--primary:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-}
 
 /* Checkbox estandarizado */
 .register-card__content .checkbox {

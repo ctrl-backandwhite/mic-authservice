@@ -379,12 +379,14 @@ body {
 }
 
 .btn--primary {
-  background: var(--primary);
-  color: white;
+  background: #ffffff;
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
 .btn--primary:hover {
-  background: var(--primary-dark);
+  background: #f8fafc;
+  border-color: #cbd5e1;
 }
 
 .divider {
