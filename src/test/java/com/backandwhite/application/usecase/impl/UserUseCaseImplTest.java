@@ -269,7 +269,7 @@ class UserUseCaseImplTest {
                 .withActivationTokenExpiry(Instant.now().plus(1, ChronoUnit.HOURS));
         when(userRepository.findByActivationToken("valid-token")).thenReturn(foundUser);
 
-        userUseCase.activateUser("valid-token");
+        userUseCase.activateUser("valid-token", "es");
 
         assertThat(foundUser.getEnabled()).isTrue();
         assertThat(foundUser.getActivationToken()).isNull();
@@ -280,7 +280,7 @@ class UserUseCaseImplTest {
     void activateUser_invalidToken_throwsException() {
         when(userRepository.findByActivationToken("bad-token")).thenReturn(null);
 
-        assertThrows(ArgumentException.class, () -> userUseCase.activateUser("bad-token"));
+        assertThrows(ArgumentException.class, () -> userUseCase.activateUser("bad-token", "es"));
     }
 
     @Test
@@ -289,7 +289,7 @@ class UserUseCaseImplTest {
                 .withActivationTokenExpiry(Instant.now().minus(1, ChronoUnit.HOURS));
         when(userRepository.findByActivationToken("expired")).thenReturn(foundUser);
 
-        assertThrows(ArgumentException.class, () -> userUseCase.activateUser("expired"));
+        assertThrows(ArgumentException.class, () -> userUseCase.activateUser("expired", "es"));
     }
 
     @Test
@@ -298,7 +298,7 @@ class UserUseCaseImplTest {
                 .withActivationTokenExpiry(Instant.now().plus(1, ChronoUnit.HOURS));
         when(userRepository.findByActivationToken("tok")).thenReturn(foundUser);
 
-        assertThrows(ArgumentException.class, () -> userUseCase.activateUser("tok"));
+        assertThrows(ArgumentException.class, () -> userUseCase.activateUser("tok", "es"));
     }
 
     // ─── requestPasswordReset ──────────────────────────────
@@ -308,7 +308,7 @@ class UserUseCaseImplTest {
         User foundUser = user().withEnabled(true);
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
 
-        userUseCase.requestPasswordReset(UserProvider.USER_EMAIL);
+        userUseCase.requestPasswordReset(UserProvider.USER_EMAIL, "es");
 
         verify(userRepository).update(foundUser);
         verify(notificationEventPort).sendNotificationEvent(any());
@@ -318,7 +318,7 @@ class UserUseCaseImplTest {
     void requestPasswordReset_nonExistentEmail_returnsSilently() {
         when(userRepository.findUserByEmail("unknown@test.com")).thenReturn(null);
 
-        userUseCase.requestPasswordReset("unknown@test.com");
+        userUseCase.requestPasswordReset("unknown@test.com", "es");
 
         verify(userRepository, never()).update(any());
     }
@@ -328,7 +328,7 @@ class UserUseCaseImplTest {
         User foundUser = user().withEnabled(false);
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
 
-        userUseCase.requestPasswordReset(UserProvider.USER_EMAIL);
+        userUseCase.requestPasswordReset(UserProvider.USER_EMAIL, "es");
 
         verify(userRepository, never()).update(any());
     }
@@ -337,7 +337,7 @@ class UserUseCaseImplTest {
     void requestPasswordReset_nullEmail_returnsSilently() {
         when(userRepository.findUserByEmail(null)).thenReturn(null);
 
-        userUseCase.requestPasswordReset(null);
+        userUseCase.requestPasswordReset(null, "es");
 
         verify(userRepository, never()).update(any());
     }
@@ -384,7 +384,7 @@ class UserUseCaseImplTest {
         when(passwordEncoder.encode("NewPass1")).thenReturn("$2a$encoded");
         when(userRepository.findByPasswordChangeCode(anyString())).thenReturn(null);
 
-        userUseCase.requestPasswordChange(UserProvider.USER_EMAIL, "secret", "NewPass1", "NewPass1");
+        userUseCase.requestPasswordChange(UserProvider.USER_EMAIL, "secret", "NewPass1", "NewPass1", "es");
 
         assertThat(foundUser.getPasswordChangeCode()).isNotNull();
         verify(userRepository).update(foundUser);
@@ -396,7 +396,7 @@ class UserUseCaseImplTest {
         when(userRepository.findUserByEmail("none@test.com")).thenReturn(null);
 
         assertThrows(ArgumentException.class,
-                () -> userUseCase.requestPasswordChange("none@test.com", "old", "new", "new"));
+                () -> userUseCase.requestPasswordChange("none@test.com", "old", "new", "new", "es"));
     }
 
     @Test
@@ -406,7 +406,7 @@ class UserUseCaseImplTest {
         when(passwordEncoder.matches("wrong", foundUser.getPassword())).thenReturn(false);
 
         assertThrows(ArgumentException.class,
-                () -> userUseCase.requestPasswordChange(UserProvider.USER_EMAIL, "wrong", "new", "new"));
+                () -> userUseCase.requestPasswordChange(UserProvider.USER_EMAIL, "wrong", "new", "new", "es"));
     }
 
     @Test
@@ -416,7 +416,7 @@ class UserUseCaseImplTest {
         when(passwordEncoder.matches("secret", foundUser.getPassword())).thenReturn(true);
 
         assertThrows(ArgumentException.class,
-                () -> userUseCase.requestPasswordChange(UserProvider.USER_EMAIL, "secret", "new1", "new2"));
+                () -> userUseCase.requestPasswordChange(UserProvider.USER_EMAIL, "secret", "new1", "new2", "es"));
     }
 
     // ─── confirmPasswordChange ─────────────────────────────
@@ -543,7 +543,7 @@ class UserUseCaseImplTest {
         when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
         when(userSessionRepository.findBySessionId("sess-1")).thenReturn(session);
 
-        userUseCase.requestSessionRevoke(UserProvider.USER_EMAIL, "sess-1");
+        userUseCase.requestSessionRevoke(UserProvider.USER_EMAIL, "sess-1", "es");
 
         assertThat(foundUser.getSessionRevokeCode()).isNotNull();
         verify(userRepository).update(foundUser);
@@ -554,7 +554,7 @@ class UserUseCaseImplTest {
     void requestSessionRevoke_userNotFound_throwsException() {
         when(userRepository.findUserByEmail("none@test.com")).thenReturn(null);
 
-        assertThrows(ArgumentException.class, () -> userUseCase.requestSessionRevoke("none@test.com", "sess-1"));
+        assertThrows(ArgumentException.class, () -> userUseCase.requestSessionRevoke("none@test.com", "sess-1", "es"));
     }
 
     @Test
@@ -564,7 +564,7 @@ class UserUseCaseImplTest {
         when(userSessionRepository.findBySessionId("sess-x")).thenReturn(null);
 
         assertThrows(ArgumentException.class,
-                () -> userUseCase.requestSessionRevoke(UserProvider.USER_EMAIL, "sess-x"));
+                () -> userUseCase.requestSessionRevoke(UserProvider.USER_EMAIL, "sess-x", "es"));
     }
 
     @Test
@@ -575,7 +575,7 @@ class UserUseCaseImplTest {
         when(userSessionRepository.findBySessionId("sess-1")).thenReturn(session);
 
         assertThrows(ArgumentException.class,
-                () -> userUseCase.requestSessionRevoke(UserProvider.USER_EMAIL, "sess-1"));
+                () -> userUseCase.requestSessionRevoke(UserProvider.USER_EMAIL, "sess-1", "es"));
     }
 
     @Test
@@ -586,7 +586,7 @@ class UserUseCaseImplTest {
         when(userSessionRepository.findBySessionId("sess-1")).thenReturn(session);
 
         assertThrows(ArgumentException.class,
-                () -> userUseCase.requestSessionRevoke(UserProvider.USER_EMAIL, "sess-1"));
+                () -> userUseCase.requestSessionRevoke(UserProvider.USER_EMAIL, "sess-1", "es"));
     }
 
     // ─── confirmSessionRevoke ─────────────────────────────

@@ -61,9 +61,17 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Transactional
     @CacheEvict(value = "user_all", allEntries = true)
     public User save(User model) {
+        return save(model, "es");
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "user_all", allEntries = true)
+    public User save(User model, String lang) {
 
         User existingUser = userRepository.findUserByEmail(model.getEmail());
         if (Objects.nonNull(existingUser)) {
+            log.warn("::> [USER] Registration failed: email already exists");
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "Email already exists.");
         }
 
@@ -90,27 +98,26 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         userCommandHandler.validate(model);
         User savedUser = userRepository.save(model);
 
-        // Send activation email via Kafka
-        sendActivationEmail(savedUser, activationToken);
+        sendActivationEmail(savedUser, activationToken, lang);
 
-        // Publish customer.registered event (M-13) — userdetailservice can auto-create
-        // profile
         authEventPort.publishCustomerRegistered(new CustomerRegisteredRequest(savedUser.getId().toString(),
                 savedUser.getEmail(), savedUser.getName(), savedUser.getLastName()));
 
+        log.info("::> [USER] Registration completed userId={} lang={}", savedUser.getId(), lang);
         return savedUser;
     }
 
-    private void sendActivationEmail(User user, String activationToken) {
-        String activationUrl = activationBaseUrl + "/api/v1/users/activate?token=" + activationToken;
+    private void sendActivationEmail(User user, String activationToken, String lang) {
+        String activationUrl = activationBaseUrl + "/api/v1/users/activate?token=" + activationToken + "&lang=" + lang;
 
         Map<String, String> variables = new HashMap<>();
         variables.put("name", user.getName());
         variables.put("activationUrl", activationUrl);
+        variables.put("lang", lang);
 
         notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
                 "Activate your account in Nexa", "account-activation", variables));
-        log.debug("::> Activation email event sent");
+        log.info("::> [NOTIFICATION] Sent template=account-activation userId={} lang={}", user.getId(), lang);
     }
 
     private Role findGuestRole() {
@@ -144,26 +151,35 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional
-    @CachePut(value = "user", key = "#id") // actualiza cache individual
-    @CacheEvict(value = "user_all", allEntries = true) // limpia cache de lista
+    @CachePut(value = "user", key = "#id")
+    @CacheEvict(value = "user_all", allEntries = true)
     public User update(User model, Long id) {
+        return update(model, id, "es");
+    }
+
+    @Override
+    @Transactional
+    @CachePut(value = "user", key = "#id")
+    @CacheEvict(value = "user_all", allEntries = true)
+    public User update(User model, Long id, String lang) {
         log.debug("::> Updating user with id {}", id);
         User existing = this.getById(id);
         userUpdateMapper.updateFromModel(model, existing);
         userCommandHandler.validate(existing);
         User updated = userRepository.update(existing);
 
-        sendUserModificationNotification(updated);
+        sendUserModificationNotification(updated, lang);
         return updated;
     }
 
-    private void sendUserModificationNotification(User user) {
+    private void sendUserModificationNotification(User user, String lang) {
         Map<String, String> variables = new HashMap<>();
         variables.put("name", user.getName());
+        variables.put("lang", lang);
 
         notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
                 "Your account has been modified", "user-modification", variables));
-        log.debug("::> User modification notification sent for user id={}", user.getId());
+        log.info("::> [NOTIFICATION] Sent template=user-modification userId={} lang={}", user.getId(), lang);
     }
 
     @Override
@@ -196,52 +212,55 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Override
     @Transactional
     @CacheEvict(value = {"user_all", "user"}, allEntries = true)
-    public void activateUser(String token) {
+    public void activateUser(String token, String lang) {
         log.debug("::> Activating user with token");
         User user = userRepository.findByActivationToken(token);
         if (user == null) {
+            log.warn("::> [USER] Activation failed: invalid or expired token");
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "Invalid or expired activation token.");
         }
         if (user.getActivationTokenExpiry() != null && Instant.now().isAfter(user.getActivationTokenExpiry())) {
+            log.warn("::> [USER] Activation failed: token expired userId={}", user.getId());
             throw new ArgumentException(VALIDATION_ERROR.getCode(),
                     "Activation token has expired. Please register again.");
         }
         if (Boolean.TRUE.equals(user.getEnabled())) {
+            log.warn("::> [USER] Activation failed: already activated userId={}", user.getId());
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "User account is already activated.");
         }
         user.setEnabled(true);
         user.setActivationToken(null);
         user.setActivationTokenExpiry(null);
-        log.debug("::> User activated successfully");
         userRepository.update(user);
-        sendWelcomeEmail(user);
+        sendWelcomeEmail(user, lang);
+        log.info("::> [USER] Activation completed userId={} lang={}", user.getId(), lang);
     }
 
-    private void sendWelcomeEmail(User user) {
+    private void sendWelcomeEmail(User user, String lang) {
         String loginUrl = activationBaseUrl + "/login";
 
         Map<String, String> variables = new HashMap<>();
         variables.put("name", user.getName());
         variables.put("loginUrl", loginUrl);
+        variables.put("lang", lang);
 
         notificationEventPort.sendNotificationEvent(
                 new EmailNotificationRequest(user.getEmail(), "Welcome to NX036!", "welcome-email", variables));
-        log.debug("::> Welcome email event sent");
+        log.info("::> [NOTIFICATION] Sent template=welcome-email userId={} lang={}", user.getId(), lang);
     }
 
     @Override
     @Transactional
-    public void requestPasswordReset(String email) {
+    public void requestPasswordReset(String email, String lang) {
         String normalizedEmail = email == null ? null : email.trim().toLowerCase();
-        log.debug("::> Password reset requested for email");
+        log.debug("::> Password reset requested");
         User user = userRepository.findUserByEmail(normalizedEmail);
         if (user == null) {
-            // Don't reveal if the email exists — just return silently
-            log.warn("::> Password reset requested for non-existent email");
+            log.warn("::> [USER] Password reset failed: email not found");
             return;
         }
         if (!Boolean.TRUE.equals(user.getEnabled())) {
-            log.warn("::> Password reset requested for disabled account");
+            log.warn("::> [USER] Password reset failed: account disabled userId={}", user.getId());
             return;
         }
 
@@ -250,20 +269,21 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         user.setPasswordResetTokenExpiry(Instant.now().plus(30, ChronoUnit.MINUTES));
         userRepository.update(user);
 
-        sendPasswordResetEmail(user, resetToken);
-        log.debug("::> Password reset token generated for user");
+        sendPasswordResetEmail(user, resetToken, lang);
+        log.info("::> [USER] Password reset token generated userId={} lang={}", user.getId(), lang);
     }
 
-    private void sendPasswordResetEmail(User user, String resetToken) {
+    private void sendPasswordResetEmail(User user, String resetToken, String lang) {
         String resetUrl = activationBaseUrl + "/reset-password.html?token=" + resetToken;
 
         Map<String, String> variables = new HashMap<>();
         variables.put("name", user.getName());
         variables.put("resetUrl", resetUrl);
+        variables.put("lang", lang);
 
         notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
                 "Recover your password in Nexa", "password-reset", variables));
-        log.debug("::> Password reset email event sent");
+        log.info("::> [NOTIFICATION] Sent template=password-reset userId={} lang={}", user.getId(), lang);
     }
 
     @Override
@@ -292,38 +312,34 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional
-    public void requestPasswordChange(String email, String currentPassword, String newPassword,
-            String confirmPassword) {
+    public void requestPasswordChange(String email, String currentPassword, String newPassword, String confirmPassword,
+            String lang) {
         log.debug("::> Password change requested");
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
+            log.warn("::> [USER] Password change failed: user not found");
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
         }
 
-        // 1. Verify current password
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            log.warn("::> [USER] Password change failed: incorrect current password userId={}", user.getId());
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "The current password is incorrect.");
         }
 
-        // 2. Verify new passwords match
         if (!newPassword.equals(confirmPassword)) {
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "The new passwords do not match.");
         }
 
-        // 3. Generate unique 6-digit code
         String code = generateUniqueCode();
 
-        // 4. Persist code with 3-minute expiry + store encoded new password temporarily
         user.setPasswordChangeCode(code);
         user.setPasswordChangeCodeExpiry(Instant.now().plus(3, ChronoUnit.MINUTES));
-        // Store the encoded new password temporarily in passwordResetToken
         user.setPasswordResetToken(passwordEncoder.encode(newPassword));
         user.setPasswordResetTokenExpiry(null);
         userRepository.update(user);
 
-        // 5. Send code via email
-        sendPasswordChangeCodeEmail(user, code);
-        log.debug("::> Password change code generated");
+        sendPasswordChangeCodeEmail(user, code, lang);
+        log.info("::> [USER] Password change code generated userId={} lang={}", user.getId(), lang);
     }
 
     @Override
@@ -398,14 +414,15 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         return code;
     }
 
-    private void sendPasswordChangeCodeEmail(User user, String code) {
+    private void sendPasswordChangeCodeEmail(User user, String code, String lang) {
         Map<String, String> variables = new HashMap<>();
         variables.put("name", user.getName());
         variables.put("code", code);
+        variables.put("lang", lang);
 
         notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
                 "Verification code for password change", "password-change-code", variables));
-        log.debug("::> Password change code email sent");
+        log.info("::> [NOTIFICATION] Sent template=password-change-code userId={} lang={}", user.getId(), lang);
     }
 
     @Override
@@ -443,34 +460,32 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
     @Override
     @Transactional
-    public void requestSessionRevoke(String email, String sessionId) {
+    public void requestSessionRevoke(String email, String sessionId, String lang) {
         log.debug("::> Session revoke requested");
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
+            log.warn("::> [USER] Session revoke failed: user not found");
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "User not found.");
         }
 
-        // Verify the session belongs to this user
         UserSession session = userSessionRepository.findBySessionId(sessionId);
         if (session == null || !session.getUserId().equals(user.getId())) {
+            log.warn("::> [USER] Session revoke failed: session not found userId={}", user.getId());
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "Session not found.");
         }
         if (Boolean.TRUE.equals(session.getRevoked())) {
             throw new ArgumentException(VALIDATION_ERROR.getCode(), "The session has already been closed.");
         }
 
-        // Generate unique 6‐digit code
         String code = generateUniqueSessionRevokeCode();
 
-        // Store code + expiry + target session
         user.setSessionRevokeCode(code);
         user.setSessionRevokeCodeExpiry(Instant.now().plus(3, ChronoUnit.MINUTES));
         user.setSessionToRevoke(sessionId);
         userRepository.update(user);
 
-        // Send code via email
-        sendSessionRevokeCodeEmail(user, code);
-        log.debug("::> Session revoke code generated");
+        sendSessionRevokeCodeEmail(user, code, lang);
+        log.info("::> [USER] Session revoke code generated userId={} lang={}", user.getId(), lang);
     }
 
     @Override
@@ -525,13 +540,14 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
     }
 
-    private void sendSessionRevokeCodeEmail(User user, String code) {
+    private void sendSessionRevokeCodeEmail(User user, String code, String lang) {
         Map<String, String> variables = new HashMap<>();
         variables.put("name", user.getName());
         variables.put("code", code);
+        variables.put("lang", lang);
 
         notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
                 "Verification code to close session", "session-revoke-code", variables));
-        log.debug("::> Session revoke code email sent");
+        log.info("::> [NOTIFICATION] Sent template=session-revoke-code userId={} lang={}", user.getId(), lang);
     }
 }

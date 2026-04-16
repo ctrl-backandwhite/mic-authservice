@@ -127,6 +127,7 @@ class AuthNotificationHelperTest {
         assertThat(captured.variables()).containsEntry("browser", "Google Chrome");
         assertThat(captured.variables()).containsEntry("operatingSystem", "Windows 10/11");
         assertThat(captured.variables()).containsEntry("ipAddress", "203.0.113.50");
+        assertThat(captured.variables()).containsEntry("lang", "es");
     }
 
     @Test

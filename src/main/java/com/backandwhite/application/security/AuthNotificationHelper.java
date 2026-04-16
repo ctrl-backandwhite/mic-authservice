@@ -37,6 +37,7 @@ public class AuthNotificationHelper {
         }
         // Extract request data on the calling thread before Tomcat recycles the request
         Map<String, String> deviceInfo = (request != null) ? extractDeviceInfo(request) : Map.of();
+        String lang = (request != null) ? extractLang(request) : "es";
         executor.execute(() -> {
             try {
                 String normalized = username.trim().toLowerCase();
@@ -50,15 +51,34 @@ public class AuthNotificationHelper {
 
                 Map<String, String> variables = new HashMap<>();
                 variables.put("name", user.getName());
+                variables.put("lang", lang);
                 variables.putAll(deviceInfo);
 
                 notificationEventPort.sendNotificationEvent(
                         new EmailNotificationRequest(user.getEmail(), subject, templateName, variables));
-                log.debug("::> Auth notification [{}] sent for user", templateName);
+                log.info("::> [AUTH-NOTIFICATION] Sent template={} userId={} lang={}", templateName, user.getId(),
+                        lang);
             } catch (Exception e) {
-                log.warn("::> Could not send auth notification [{}]", templateName, e);
+                log.warn("::> [AUTH-NOTIFICATION] Failed template={} reason={}", templateName, e.getMessage());
             }
         });
+    }
+
+    private String extractLang(HttpServletRequest request) {
+        String acceptLanguage = request.getHeader("Accept-Language");
+        if (acceptLanguage != null && !acceptLanguage.isBlank()) {
+            String primary = acceptLanguage.split(",")[0].trim().split(";")[0].trim().toLowerCase();
+            if (primary.startsWith("en")) {
+                return "en";
+            }
+            if (primary.startsWith("pt")) {
+                return "pt";
+            }
+            if (primary.startsWith("es")) {
+                return "es";
+            }
+        }
+        return "es";
     }
 
     private Map<String, String> extractDeviceInfo(HttpServletRequest request) {

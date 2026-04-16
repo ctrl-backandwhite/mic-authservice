@@ -13,31 +13,24 @@ public interface UserUseCase extends BaseUseCase<User, User, Long> {
 
     User toggleEnabled(Long id);
 
-    void activateUser(String token);
+    void activateUser(String token, String lang);
 
-    default void activateUser(String token, String lang) {
-        activateUser(token);
-    }
-
-    void requestPasswordReset(String email);
-
-    default void requestPasswordReset(String email, String lang) {
-        requestPasswordReset(email);
-    }
+    void requestPasswordReset(String email, String lang);
 
     void resetPassword(String token, String newPassword);
 
-    void requestPasswordChange(String email, String currentPassword, String newPassword, String confirmPassword);
+    void requestPasswordChange(String email, String currentPassword, String newPassword, String confirmPassword,
+            String lang);
 
     void confirmPasswordChange(String email, String code);
 
-    default User save(User model, String lang) {
-        return save(model);
-    }
+    User save(User model, String lang);
+
+    User update(User model, Long id, String lang);
 
     List<UserSession> getActiveSessions(String email);
 
-    void requestSessionRevoke(String email, String sessionId);
+    void requestSessionRevoke(String email, String sessionId, String lang);
 
     void confirmSessionRevoke(String email, String code);
 }

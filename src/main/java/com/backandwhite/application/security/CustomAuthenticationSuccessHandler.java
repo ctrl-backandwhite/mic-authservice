@@ -22,7 +22,8 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
 
-        notificationHelper.sendAuthNotification(authentication.getName(), "New login to your account", "login-success");
+        notificationHelper.sendAuthNotification(authentication.getName(), "New login to your account", "login-success",
+                request);
         super.onAuthenticationSuccess(request, response, authentication);
     }
 }

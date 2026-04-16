@@ -82,15 +82,15 @@ class UserControllerTest {
         UserDtoOut dtoOut = userDtoOut(USER_ID);
 
         when(mapper.toDomain(dtoIn)).thenReturn(model);
-        when(useCase.update(model, USER_ID)).thenReturn(model);
+        when(useCase.update(model, USER_ID, "es")).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<UserDtoOut> response = controller.update(dtoIn, USER_ID);
+        ResponseEntity<UserDtoOut> response = controller.update(dtoIn, USER_ID, "es");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(dtoOut);
         verify(mapper).toDomain(dtoIn);
-        verify(useCase).update(model, USER_ID);
+        verify(useCase).update(model, USER_ID, "es");
         verify(mapper).toDtoOut(model);
     }
 
@@ -210,10 +210,10 @@ class UserControllerTest {
         UserDtoOut dtoOut = userDtoOut(USER_ID);
 
         when(mapper.toDomain(dtoIn)).thenReturn(model);
-        when(useCase.save(model)).thenReturn(model);
+        when(useCase.save(model, "es")).thenReturn(model);
         when(mapper.toDtoOut(model)).thenReturn(dtoOut);
 
-        ResponseEntity<UserDtoOut> response = controller.register(dtoIn);
+        ResponseEntity<UserDtoOut> response = controller.register(dtoIn, "es");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(dtoOut);
@@ -248,13 +248,14 @@ class UserControllerTest {
     void requestPasswordChange_returnsOk() {
         ChangePasswordRequestDtoIn dto = ChangePasswordRequestDtoIn.builder().currentPassword("old").newPassword("new")
                 .confirmPassword("new").build();
-        doNothing().when(useCase).requestPasswordChange(USER_EMAIL, "old", "new", "new");
+        doNothing().when(useCase).requestPasswordChange(USER_EMAIL, "old", "new", "new", "es");
 
-        ResponseEntity<OperationResponseDtoOut> response = controller.requestPasswordChange(dto, mockJwt(USER_EMAIL));
+        ResponseEntity<OperationResponseDtoOut> response = controller.requestPasswordChange(dto, mockJwt(USER_EMAIL),
+                "es");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getCode()).isEqualTo("OK");
-        verify(useCase).requestPasswordChange(USER_EMAIL, "old", "new", "new");
+        verify(useCase).requestPasswordChange(USER_EMAIL, "old", "new", "new", "es");
     }
 
     @Test
@@ -291,9 +292,10 @@ class UserControllerTest {
     @Test
     void requestSessionRevoke_returnsOk() {
         RevokeSessionRequestDtoIn dto = RevokeSessionRequestDtoIn.builder().sessionId("sess-1").build();
-        doNothing().when(useCase).requestSessionRevoke(USER_EMAIL, "sess-1");
+        doNothing().when(useCase).requestSessionRevoke(USER_EMAIL, "sess-1", "es");
 
-        ResponseEntity<OperationResponseDtoOut> response = controller.requestSessionRevoke(dto, mockJwt(USER_EMAIL));
+        ResponseEntity<OperationResponseDtoOut> response = controller.requestSessionRevoke(dto, mockJwt(USER_EMAIL),
+                "es");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getCode()).isEqualTo("OK");

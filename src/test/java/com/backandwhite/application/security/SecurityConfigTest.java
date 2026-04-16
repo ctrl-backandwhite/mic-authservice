@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.backandwhite.application.port.out.AuthEventPort;
 import com.backandwhite.application.port.out.NotificationEventPort;
 import com.backandwhite.domain.repository.OauthClientRepository;
+import com.backandwhite.domain.repository.RoleRepository;
 import com.backandwhite.domain.repository.UserRepository;
 import java.time.Instant;
 import java.util.Collection;
@@ -24,7 +26,8 @@ class SecurityConfigTest {
 
     SecurityConfigTest() {
         config = new SecurityConfig(new BCryptPasswordEncoder(), mock(SessionRevokingLogoutHandler.class),
-                mock(RateLimitFilter.class), mock(NotificationEventPort.class), mock(UserRepository.class));
+                mock(RateLimitFilter.class), mock(NotificationEventPort.class), mock(UserRepository.class),
+                mock(RoleRepository.class), mock(AuthEventPort.class));
         ReflectionTestUtils.setField(config, "jwtSecret",
                 "local-secret-key-change-me-in-production-must-be-256-bits-long");
     }
