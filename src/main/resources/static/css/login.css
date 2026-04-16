@@ -186,6 +186,8 @@ body {
   display: grid;
   align-content: center;
   gap: 22px;
+  border-left: 1px solid var(--border);
+  box-shadow: -8px 0 20px -4px rgba(15, 23, 42, 0.10);
 }
 
 .content__header h1 {
