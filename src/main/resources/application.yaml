@@ -1,3 +1,16 @@
+server:
+  server-header: ""
+  error:
+    include-stacktrace: never
+    include-message: never
+    include-binding-errors: never
+    include-exception: false
+
+nx:
+  security:
+    gateway-filter:
+      enabled: false
+
 spring:
   application:
     name: mic-authservice
