@@ -1,7 +1,9 @@
 package com.backandwhite.application.security;
 
+import com.backandwhite.application.port.out.AuthEventPort;
 import com.backandwhite.application.port.out.NotificationEventPort;
 import com.backandwhite.domain.repository.OauthClientRepository;
+import com.backandwhite.domain.repository.RoleRepository;
 import com.backandwhite.domain.repository.UserRepository;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import java.nio.charset.StandardCharsets;
@@ -72,15 +74,19 @@ public class SecurityConfig {
     private final RateLimitFilter rateLimitFilter;
     private final NotificationEventPort notificationEventPort;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final AuthEventPort authEventPort;
 
     public SecurityConfig(PasswordEncoder passwordEncoder, SessionRevokingLogoutHandler sessionRevokingLogoutHandler,
-            RateLimitFilter rateLimitFilter, NotificationEventPort notificationEventPort,
-            UserRepository userRepository) {
+            RateLimitFilter rateLimitFilter, NotificationEventPort notificationEventPort, UserRepository userRepository,
+            RoleRepository roleRepository, AuthEventPort authEventPort) {
         this.passwordEncoder = passwordEncoder;
         this.sessionRevokingLogoutHandler = sessionRevokingLogoutHandler;
         this.rateLimitFilter = rateLimitFilter;
         this.notificationEventPort = notificationEventPort;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.authEventPort = authEventPort;
     }
 
     @Value("${app.security.handler-url:http://localhost:4200}")
@@ -92,8 +98,8 @@ public class SecurityConfig {
     private final String[] publicUrls = {LOGIN_PATH, "/login.html", "/forgot-password.html", "/register.html",
             "/terms.html", "/activation-success.html", "/activation-error.html", "/reset-password.html",
             "/reset-success.html", "/reset-error.html", "/css/**", "/js/**", "/font/**", "/images/**", "/favicon.ico",
-            "/error", "/.well-known/**", "/oauth2/token/**", "/logout", "/swagger-ui/**", "/v3/api-docs/**",
-            "/swagger-ui.html"};
+            "/error", "/.well-known/**", "/oauth2/token/**", "/oauth2/authorization/**", "/login/oauth2/**", "/logout",
+            "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"};
 
     private final String[] publicApiUrls = {"/api/v1/users/register", "/api/v1/users/forgot-password",
             "/api/v1/users/reset-password"};
@@ -146,6 +152,8 @@ public class SecurityConfig {
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
                 .formLogin(form -> form.loginPage(LOGIN_PATH).successHandler(authenticationSuccessHandler())
                         .failureHandler(authenticationFailureHandler()).permitAll())
+                .oauth2Login(
+                        oauth2 -> oauth2.loginPage(LOGIN_PATH).successHandler(googleOAuth2SuccessHandler()).permitAll())
                 .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -162,6 +170,15 @@ public class SecurityConfig {
     @Bean
     public CustomAuthenticationFailureHandler authenticationFailureHandler() {
         return new CustomAuthenticationFailureHandler(notificationEventPort, userRepository);
+    }
+
+    @Bean
+    public GoogleOAuth2SuccessHandler googleOAuth2SuccessHandler() {
+        GoogleOAuth2SuccessHandler handler = new GoogleOAuth2SuccessHandler(userRepository, roleRepository,
+                notificationEventPort, authEventPort);
+        handler.setDefaultTargetUrl(handlerUrl);
+        handler.setAlwaysUseDefaultTargetUrl(false);
+        return handler;
     }
 
     @Bean

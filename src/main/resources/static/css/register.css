@@ -24,7 +24,7 @@
 }
 
 .register-card__media {
-    background: #1e293b;
+    background: var(--panel-bg);
     position: relative;
     padding: 3rem;
     display: flex;
@@ -40,6 +40,8 @@
     overflow-y: auto;
     justify-content: center;
     gap: 0.75rem;
+    border-left: 1px solid var(--border);
+    box-shadow: -8px 0 20px -4px rgba(15, 23, 42, 0.10);
 }
 
 .register-card__content .form {
@@ -233,6 +235,8 @@
     font-weight: 600;
     width: 100%;
 }
+
+
 
 /* Checkbox estandarizado */
 .register-card__content .checkbox {

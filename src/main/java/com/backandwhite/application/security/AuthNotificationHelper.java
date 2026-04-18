@@ -35,44 +35,67 @@ public class AuthNotificationHelper {
         if (username == null || username.isBlank()) {
             return;
         }
+        // Extract request data on the calling thread before Tomcat recycles the request
+        Map<String, String> deviceInfo = (request != null) ? extractDeviceInfo(request) : Map.of();
+        String lang = (request != null) ? extractLang(request) : "es";
         executor.execute(() -> {
             try {
-                User user = userRepository.findUserByEmail(username.trim().toLowerCase());
+                String normalized = username.trim().toLowerCase();
+                User user = userRepository.findUserByEmail(normalized);
+                if (user == null) {
+                    user = userRepository.findUserByNickName(normalized);
+                }
                 if (user == null || user.getEmail() == null) {
                     return;
                 }
 
                 Map<String, String> variables = new HashMap<>();
                 variables.put("name", user.getName());
-
-                if (request != null) {
-                    enrichWithDeviceInfo(variables, request);
-                }
+                variables.put("lang", lang);
+                variables.putAll(deviceInfo);
 
                 notificationEventPort.sendNotificationEvent(
                         new EmailNotificationRequest(user.getEmail(), subject, templateName, variables));
-                log.debug("::> Auth notification [{}] sent for user", templateName);
+                log.info("::> [AUTH-NOTIFICATION] Sent template={} userId={} lang={}", templateName, user.getId(),
+                        lang);
             } catch (Exception e) {
-                log.warn("::> Could not send auth notification [{}]", templateName, e);
+                log.warn("::> [AUTH-NOTIFICATION] Failed template={} reason={}", templateName, e.getMessage());
             }
         });
     }
 
-    private void enrichWithDeviceInfo(Map<String, String> variables, HttpServletRequest request) {
-        variables.put("dateTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    private String extractLang(HttpServletRequest request) {
+        String acceptLanguage = request.getHeader("Accept-Language");
+        if (acceptLanguage != null && !acceptLanguage.isBlank()) {
+            String primary = acceptLanguage.split(",")[0].trim().split(";")[0].trim().toLowerCase();
+            if (primary.startsWith("en")) {
+                return "en";
+            }
+            if (primary.startsWith("pt")) {
+                return "pt";
+            }
+            if (primary.startsWith("es")) {
+                return "es";
+            }
+        }
+        return "es";
+    }
+
+    private Map<String, String> extractDeviceInfo(HttpServletRequest request) {
+        Map<String, String> info = new HashMap<>();
+        info.put("dateTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         String userAgent = request.getHeader("User-Agent");
         if (userAgent != null && !userAgent.isBlank()) {
-            variables.put("browser", parseBrowser(userAgent));
-            variables.put("operatingSystem", parseOperatingSystem(userAgent));
+            info.put("browser", parseBrowser(userAgent));
+            info.put("operatingSystem", parseOperatingSystem(userAgent));
         }
 
         String ip = extractClientIp(request);
-        variables.put("ipAddress", ip);
-        variables.put("location", resolveLocation(ip));
-
-        String changePasswordUrl = resolveChangePasswordUrl(request);
-        variables.put("changePasswordUrl", changePasswordUrl);
+        info.put("ipAddress", ip);
+        info.put("location", resolveLocation(ip));
+        info.put("changePasswordUrl", resolveChangePasswordUrl(request));
+        return info;
     }
 
     private String extractClientIp(HttpServletRequest request) {

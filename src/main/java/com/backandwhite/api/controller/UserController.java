@@ -63,16 +63,17 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     @NxPublic
     @PostMapping("/register")
     public ResponseEntity<UserDtoOut> register(
-            @Validated({Default.class, CreateValidation.class}) @RequestBody UserDtoIn dto) {
-        User entity = useCase.save(mapper.toDomain(dto));
+            @Validated({Default.class, CreateValidation.class}) @RequestBody UserDtoIn dto,
+            @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
+        User entity = useCase.save(mapper.toDomain(dto), lang);
         return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.CREATED);
     }
 
-    @Override
     @PutMapping("/{id}")
     public ResponseEntity<UserDtoOut> update(
-            @Validated({Default.class, UpdateValidation.class}) @RequestBody UserDtoIn dto, @PathVariable Long id) {
-        User entity = useCase.update(mapper.toDomain(dto), id);
+            @Validated({Default.class, UpdateValidation.class}) @RequestBody UserDtoIn dto, @PathVariable Long id,
+            @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
+        User entity = useCase.update(mapper.toDomain(dto), id, lang);
         return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.OK);
     }
 
@@ -151,10 +152,11 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     @NxUser
     @PostMapping("/change-password/request")
     public ResponseEntity<OperationResponseDtoOut> requestPasswordChange(
-            @Valid @RequestBody ChangePasswordRequestDtoIn dto, @AuthenticationPrincipal Jwt jwt) {
+            @Valid @RequestBody ChangePasswordRequestDtoIn dto, @AuthenticationPrincipal Jwt jwt,
+            @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
         String email = jwt.getClaimAsString(CLAIM_EMAIL);
         useCase.requestPasswordChange(email.trim().toLowerCase(), dto.getCurrentPassword(), dto.getNewPassword(),
-                dto.getConfirmPassword());
+                dto.getConfirmPassword(), lang);
         return ResponseEntity
                 .ok(OperationResponseDtoOut.ok("A verification code has been sent to your email address."));
     }
@@ -181,9 +183,10 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     @NxUser
     @PostMapping("/sessions/revoke/request")
     public ResponseEntity<OperationResponseDtoOut> requestSessionRevoke(
-            @Valid @RequestBody RevokeSessionRequestDtoIn dto, @AuthenticationPrincipal Jwt jwt) {
+            @Valid @RequestBody RevokeSessionRequestDtoIn dto, @AuthenticationPrincipal Jwt jwt,
+            @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
         String email = jwt.getClaimAsString(CLAIM_EMAIL);
-        useCase.requestSessionRevoke(email.trim().toLowerCase(), dto.getSessionId());
+        useCase.requestSessionRevoke(email.trim().toLowerCase(), dto.getSessionId(), lang);
         return ResponseEntity
                 .ok(OperationResponseDtoOut.ok("A verification code has been sent to your email address."));
     }

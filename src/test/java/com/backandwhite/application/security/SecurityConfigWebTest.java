@@ -3,7 +3,9 @@ package com.backandwhite.application.security;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.backandwhite.application.port.out.AuthEventPort;
 import com.backandwhite.application.port.out.NotificationEventPort;
+import com.backandwhite.domain.repository.RoleRepository;
 import com.backandwhite.domain.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -37,6 +40,15 @@ class SecurityConfigWebTest {
 
     @MockitoBean
     private UserRepository userRepository;
+
+    @MockitoBean
+    private RoleRepository roleRepository;
+
+    @MockitoBean
+    private AuthEventPort authEventPort;
+
+    @MockitoBean
+    private ClientRegistrationRepository clientRegistrationRepository;
 
     @MockitoBean
     private JdbcOperations jdbcOperations;

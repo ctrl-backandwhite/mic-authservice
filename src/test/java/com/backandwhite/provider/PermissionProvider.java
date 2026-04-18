@@ -7,9 +7,9 @@ import com.backandwhite.infrastructure.db.postgres.entity.PermissionEntity;
 
 public final class PermissionProvider {
     public static final Long PERMISSION_ID = 1L;
-    public static final String PERMISSION_NAME = "Leer usuarios";
+    public static final String PERMISSION_NAME = "Read Users";
     public static final String PERMISSION_UNIQUE_NAME = "READ_USERS";
-    public static final String PERMISSION_DESCRIPTION = "Permite listar usuarios";
+    public static final String PERMISSION_DESCRIPTION = "Allows listing users";
     public static final Boolean PERMISSION_ENABLED = true;
 
     private PermissionProvider() {
