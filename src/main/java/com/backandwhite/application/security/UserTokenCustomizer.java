@@ -105,7 +105,7 @@ public class UserTokenCustomizer {
                     log.debug("::> Session refreshed: {} for user {}", sessionId, user.getEmail());
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("::> Failed to track session for user {}", user.getEmail(), e);
         }
     }
@@ -114,7 +114,7 @@ public class UserTokenCustomizer {
         try {
             ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             return attrs != null ? attrs.getRequest() : null;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return null;
         }
     }

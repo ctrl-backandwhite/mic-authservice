@@ -58,7 +58,7 @@ public class AuthNotificationHelper {
                         new EmailNotificationRequest(user.getEmail(), subject, templateName, variables));
                 log.info("::> [AUTH-NOTIFICATION] Sent template={} userId={} lang={}", templateName, user.getId(),
                         lang);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 log.warn("::> [AUTH-NOTIFICATION] Failed template={} reason={}", templateName, e.getMessage());
             }
         });

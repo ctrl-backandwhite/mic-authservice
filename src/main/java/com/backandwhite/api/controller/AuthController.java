@@ -156,7 +156,7 @@ public class AuthController {
                 log.warn("::> Token not found");
                 return ResponseEntity.notFound().build();
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("::> Error revoking token", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -170,7 +170,7 @@ public class AuthController {
                 authorizationService.remove(authorization);
                 log.info("::> Token revoked during logout");
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("::> Error revoking token during logout", e);
         }
     }
@@ -210,7 +210,7 @@ public class AuthController {
             }
         } catch (JwtException e) {
             log.debug("::> JWT decode failed during logout: {}", e.getMessage());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("::> Error revoking session during logout", e);
         }
     }

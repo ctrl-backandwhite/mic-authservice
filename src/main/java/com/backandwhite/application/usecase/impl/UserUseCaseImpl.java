@@ -124,7 +124,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         try {
             List<Role> allRoles = roleRepository.findAll();
             return allRoles.stream().filter(role -> "ROLE_GUEST".equals(role.getUniqueName())).findFirst().orElse(null);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.warn("::> Could not fetch GUEST role from repository", e);
             return null;
         }
@@ -530,7 +530,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
                 authorizationService.remove(auth);
                 log.info("::> OAuth2 authorization revoked for session");
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.warn("::> Could not revoke OAuth2 authorization for session {}", sessionId, e);
         }
     }

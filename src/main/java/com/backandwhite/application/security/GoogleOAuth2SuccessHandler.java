@@ -69,7 +69,7 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
             } else {
                 log.info("::> [GOOGLE-OAUTH2] Existing user login userId={}", existingUser.getId());
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("::> [GOOGLE-OAUTH2] Registration failed reason={}", e.getMessage());
         }
 
@@ -100,7 +100,7 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         try {
             return roleRepository.findAll().stream().filter(role -> "ROLE_GUEST".equals(role.getUniqueName()))
                     .findFirst().orElse(null);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.warn("::> [GOOGLE-OAUTH2] Could not fetch GUEST role", e);
             return null;
         }
@@ -115,7 +115,7 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
             notificationEventPort.sendNotificationEvent(
                     new EmailNotificationRequest(user.getEmail(), "Welcome to NX036!", "welcome-email", variables));
             log.info("::> [NOTIFICATION] Sent template=welcome-email userId={} lang={}", user.getId(), lang);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.warn("::> [GOOGLE-OAUTH2] Welcome email failed reason={}", e.getMessage());
         }
     }
