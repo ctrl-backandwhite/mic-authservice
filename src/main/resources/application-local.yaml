@@ -14,6 +14,8 @@ server:
         http-only: true
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     url: ${AUTH_DATA_BASE:jdbc:postgresql://localhost:5401/db01}
     username: ${AUTH_DATA_USER:user01}
@@ -55,7 +57,8 @@ spring:
 
 app:
   security:
-    handler-url: ${HANDLER_URL:http://localhost:9000/nexa-auth}
+    handler-url: ${HANDLER_URL:http://localhost:9000/}
+    issuer: ${AUTH_ISSUER:http://localhost:9000}
   activation:
     base-url: ${ACTIVATION_BASE_URL:http://localhost:9000}
   jwt:

@@ -3,29 +3,60 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#111827" />
     <title data-i18n="register.pageTitle">Crear cuenta</title>
-    <link rel="stylesheet" href="/css/register.css?v=20260616" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="/css/login.css?v=20260419b" />
+    <link rel="stylesheet" href="/css/register.css?v=20260419b" />
 </head>
 
 <body>
-    <main class="register-page">
-        <section class="register-card">
-            <div class="register-card__media" aria-hidden="true">
+    <main class="login-page register-page">
+        <!-- Mobile brand header -->
+        <header class="mobile-brand">
+            <a href="/" class="brand">
+                <span class="brand__name">NX036</span>
+            </a>
+        </header>
+
+        <section class="login-card register-card">
+            <!-- Desktop media panel -->
+            <div class="login-card__media" aria-hidden="true">
                 <div class="media__overlay"></div>
                 <div class="media__content">
-                    <span class="logo-badge">NX</span>
+                    <a href="/" class="brand brand--on-dark">
+                        <span class="brand__name">NX036</span>
+                    </a>
                     <div class="media__quote">
-                        <p id="quote-text" data-i18n="register.quote">Únete a nosotros y disfruta de todas las
-                            funcionalidades.</p>
+                        <p id="quote-text" data-i18n="register.quote">Crea tu cuenta y descubre ofertas exclusivas solo para miembros.</p>
                     </div>
+                    <ul class="media__perks">
+                        <li data-i18n="register.perk.welcome">10% de descuento en tu primera compra</li>
+                        <li data-i18n="register.perk.tracking">Seguimiento de pedidos en tiempo real</li>
+                        <li data-i18n="register.perk.wishlist">Guarda productos favoritos</li>
+                    </ul>
                     <div class="media__dots" id="quote-dots">
                         <span class="is-active"></span><span></span><span></span><span></span>
                     </div>
                 </div>
             </div>
 
-            <div class="register-card__content">
+            <div class="login-card__content register-card__content">
+
+                <header class="content__header">
+                    <h1 data-i18n="register.title">Crea tu cuenta</h1>
+                    <p data-i18n="register.subtitle">Es gratis y solo te tomará un minuto.</p>
+                    <div class="lang-switch" role="group" aria-label="Selector de idioma">
+                        <button type="button" class="lang-switch__btn" data-lang="es">ES</button>
+                        <span aria-hidden="true" class="lang-switch__sep">|</span>
+                        <button type="button" class="lang-switch__btn" data-lang="en">EN</button>
+                        <span aria-hidden="true" class="lang-switch__sep">|</span>
+                        <button type="button" class="lang-switch__btn" data-lang="pt">PT</button>
+                    </div>
+                </header>
 
                 <form id="registerForm" class="form" novalidate>
                     <div class="form__alerts register-form__alerts" aria-live="polite" aria-atomic="true">
@@ -145,9 +176,24 @@
                     </button>
                 </form>
 
-                <p class="signin"><span data-i18n="register.haveAccount">¿Ya tienes cuenta?</span>
+                <p class="signup"><span data-i18n="register.haveAccount">¿Ya tienes cuenta?</span>
                     <a class="link" href="/login" data-i18n="register.loginLink">Inicia sesión</a>
                 </p>
+
+                <ul class="trust-strip">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+                        <span data-i18n="register.trust.payments">Pago seguro</span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <span data-i18n="register.trust.privacy">Datos protegidos</span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"></path><path d="M16 8h4l3 3v5h-7V8z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                        <span data-i18n="register.trust.shipping">Envío rápido</span>
+                    </li>
+                </ul>
             </div>
         </section>
     </main>
@@ -255,7 +301,15 @@
         const translations = {
             es: {
                 "register.pageTitle": "Crear cuenta",
-                "register.quote": "Sistemas inteligentes para una experiencia fluida.",
+                "register.title": "Crea tu cuenta",
+                "register.subtitle": "Es gratis y solo te tomará un minuto.",
+                "register.quote": "Crea tu cuenta y descubre ofertas exclusivas solo para miembros.",
+                "register.perk.welcome": "10% de descuento en tu primera compra",
+                "register.perk.tracking": "Seguimiento de pedidos en tiempo real",
+                "register.perk.wishlist": "Guarda productos favoritos",
+                "register.trust.payments": "Pago seguro",
+                "register.trust.privacy": "Datos protegidos",
+                "register.trust.shipping": "Envío rápido",
                 "register.nameLabel": "Nombre *",
                 "register.namePlaceholder": "Ingresa tu nombre",
                 "register.lastNameLabel": "Apellido *",
@@ -331,7 +385,15 @@
             },
             en: {
                 "register.pageTitle": "Create account",
-                "register.quote": "Intelligent systems for a seamless experience.",
+                "register.title": "Create your account",
+                "register.subtitle": "It's free and takes less than a minute.",
+                "register.quote": "Sign up and unlock exclusive deals just for members.",
+                "register.perk.welcome": "10% off on your first order",
+                "register.perk.tracking": "Real-time order tracking",
+                "register.perk.wishlist": "Save your favourite products",
+                "register.trust.payments": "Secure payments",
+                "register.trust.privacy": "Privacy first",
+                "register.trust.shipping": "Fast shipping",
                 "register.nameLabel": "First name *",
                 "register.namePlaceholder": "Enter your first name",
                 "register.lastNameLabel": "Last name *",

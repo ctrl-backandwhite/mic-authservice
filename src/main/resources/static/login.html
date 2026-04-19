@@ -3,22 +3,40 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#111827" />
     <title data-i18n="login.pageTitle">Iniciar sesión</title>
-    <link rel="stylesheet" href="/css/login.css?v=20260616" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="/css/login.css?v=20260419b" />
 </head>
 
 <body>
     <main class="login-page login">
+        <!-- Mobile logo header — only visible below md breakpoint -->
+        <header class="mobile-brand">
+            <a href="/" class="brand">
+                <span class="brand__name">NX036</span>
+            </a>
+        </header>
+
         <section class="login-card">
+            <!-- Desktop media panel -->
             <div class="login-card__media" aria-hidden="true">
                 <div class="media__overlay"></div>
                 <div class="media__content">
-                    <span class="logo-badge">NX</span>
+                    <a href="/" class="brand brand--on-dark">
+                        <span class="brand__name">NX036</span>
+                    </a>
                     <div class="media__quote">
-                        <p id="quote-text" data-i18n="login.quote">Sistemas inteligentes para una experiencia fluida.
-                        </p>
+                        <p id="quote-text" data-i18n="login.quote">Compra con confianza, envío rápido a todo el mundo.</p>
                     </div>
+                    <ul class="media__perks">
+                        <li data-i18n="login.perk.shipping">Envío gratis en pedidos +$100</li>
+                        <li data-i18n="login.perk.returns">Devolución gratuita 30 días</li>
+                        <li data-i18n="login.perk.secure">Pago 100% seguro</li>
+                    </ul>
                     <div class="media__dots" id="quote-dots">
                         <span class="is-active"></span><span></span><span></span><span></span>
                     </div>
@@ -27,13 +45,13 @@
 
             <div class="login-card__content">
                 <header class="content__header">
-                    <h1 data-i18n="login.title">¡Bienvenido!</h1>
-                    <p data-i18n="login.subtitle">Inicia sesión para continuar.</p>
+                    <h1 data-i18n="login.title">¡Bienvenido de vuelta!</h1>
+                    <p data-i18n="login.subtitle">Inicia sesión para seguir comprando.</p>
                     <div class="lang-switch" role="group" aria-label="Selector de idioma">
                         <button type="button" class="lang-switch__btn" data-lang="es">ES</button>
-                        <span aria-hidden="true">|</span>
+                        <span aria-hidden="true" class="lang-switch__sep">|</span>
                         <button type="button" class="lang-switch__btn" data-lang="en">EN</button>
-                        <span aria-hidden="true">|</span>
+                        <span aria-hidden="true" class="lang-switch__sep">|</span>
                         <button type="button" class="lang-switch__btn" data-lang="pt">PT</button>
                     </div>
                 </header>
@@ -88,17 +106,49 @@
                 </form>
 
                 <div class="divider">
-                    <span data-i18n="login.divider">Inicia sesión con</span>
+                    <span data-i18n="login.divider">O continúa con</span>
                 </div>
 
                 <div class="social">
-                    <a href="/oauth2/authorization/google" class="social__btn" aria-label="Sign in with Google">G</a>
-                    <button type="button" class="social__btn" disabled>X</button>
+                    <a href="/oauth2/authorization/google" class="social__btn" aria-label="Sign in with Google">
+                        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                            <path fill="#4285F4"
+                                d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.44c-.28 1.48-1.12 2.73-2.38 3.58v2.97h3.85c2.26-2.08 3.58-5.15 3.58-8.79z" />
+                            <path fill="#34A853"
+                                d="M12 24c3.24 0 5.95-1.08 7.94-2.92l-3.85-2.97c-1.07.72-2.44 1.15-4.09 1.15-3.14 0-5.8-2.12-6.75-4.97H1.28v3.07C3.27 21.3 7.33 24 12 24z" />
+                            <path fill="#FBBC05"
+                                d="M5.25 14.29c-.24-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.64H1.28A11.997 11.997 0 0 0 0 12c0 1.94.47 3.77 1.28 5.36l3.97-3.07z" />
+                            <path fill="#EA4335"
+                                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.27 2.7 1.28 6.64l3.97 3.07C6.2 6.87 8.86 4.75 12 4.75z" />
+                        </svg>
+                        <span>Google</span>
+                    </a>
+                    <button type="button" class="social__btn" disabled aria-label="Sign in with X (próximamente)">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                        <span>X</span>
+                    </button>
                 </div>
 
                 <p class="signup"><span data-i18n="login.noAccount">¿No tienes cuenta?</span>
                     <a class="link" href="/register.html" data-i18n="login.createAccount">Crear cuenta</a>
                 </p>
+
+                <ul class="trust-strip">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+                        <span data-i18n="login.trust.payments">Pago seguro</span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <span data-i18n="login.trust.privacy">Datos protegidos</span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"></path><path d="M16 8h4l3 3v5h-7V8z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                        <span data-i18n="login.trust.shipping">Envío rápido</span>
+                    </li>
+                </ul>
             </div>
         </section>
     </main>
@@ -107,16 +157,16 @@
             var translations = {
                 es: {
                     "login.pageTitle": "Iniciar sesión",
-                    "login.title": "¡Bienvenido!",
-                    "login.subtitle": "Inicia sesión para continuar.",
+                    "login.title": "¡Bienvenido de vuelta!",
+                    "login.subtitle": "Inicia sesión para seguir comprando.",
                     "login.usernameLabel": "Usuario",
-                    "login.usernamePlaceholder": "Ingresa tu usuario",
+                    "login.usernamePlaceholder": "tu@email.com",
                     "login.passwordLabel": "Contraseña",
                     "login.passwordPlaceholder": "Ingresa tu contraseña",
                     "login.remember": "Recuérdame",
                     "login.forgot": "¿Olvidaste tu contraseña?",
-                    "login.submit": "Iniciar Sesión",
-                    "login.divider": "Inicia sesión con",
+                    "login.submit": "Iniciar sesión",
+                    "login.divider": "O continúa con",
                     "login.noAccount": "¿No tienes cuenta?",
                     "login.createAccount": "Crear cuenta",
                     "login.toggleShow": "Mostrar",
@@ -127,25 +177,31 @@
                     "login.error.invalidCredentials": "Usuario o contraseña inválidos.",
                     "login.error.accountDisabled": "Tu cuenta no está activada. Revisa tu correo electrónico para activarla.",
                     "login.success.loggedOut": "Sesión cerrada correctamente.",
+                    "login.perk.shipping": "Envío gratis en pedidos +$100",
+                    "login.perk.returns": "Devolución gratuita en 30 días",
+                    "login.perk.secure": "Pago 100% seguro y protegido",
+                    "login.trust.payments": "Pago seguro",
+                    "login.trust.privacy": "Datos protegidos",
+                    "login.trust.shipping": "Envío rápido",
                     quotes: [
-                        "Sistemas inteligentes para una experiencia fluida.",
-                        "Flujos digitales optimizados para el mañana.",
-                        "Conexiones seguras en un entorno futurista.",
-                        "Tecnología avanzada con interacción sencilla."
+                        "Compra con confianza, envío rápido a todo el mundo.",
+                        "Miles de productos al mejor precio, todo en un solo lugar.",
+                        "Tu experiencia de compra, más rápida y segura.",
+                        "Ofertas exclusivas cuando inicias sesión."
                     ]
                 },
                 en: {
                     "login.pageTitle": "Sign in",
-                    "login.title": "Welcome!",
-                    "login.subtitle": "Sign in to continue.",
-                    "login.usernameLabel": "Username",
-                    "login.usernamePlaceholder": "Enter your username",
+                    "login.title": "Welcome back!",
+                    "login.subtitle": "Sign in to keep shopping.",
+                    "login.usernameLabel": "Email or username",
+                    "login.usernamePlaceholder": "you@email.com",
                     "login.passwordLabel": "Password",
                     "login.passwordPlaceholder": "Enter your password",
                     "login.remember": "Remember me",
                     "login.forgot": "Forgot your password?",
-                    "login.submit": "Sign In",
-                    "login.divider": "Sign in with",
+                    "login.submit": "Sign in",
+                    "login.divider": "Or continue with",
                     "login.noAccount": "Don't have an account?",
                     "login.createAccount": "Create account",
                     "login.toggleShow": "Show",
@@ -156,25 +212,31 @@
                     "login.error.invalidCredentials": "Invalid username or password.",
                     "login.error.accountDisabled": "Your account is not activated. Check your email to activate it.",
                     "login.success.loggedOut": "Session closed successfully.",
+                    "login.perk.shipping": "Free shipping on orders over $100",
+                    "login.perk.returns": "Free returns within 30 days",
+                    "login.perk.secure": "100% secure and protected checkout",
+                    "login.trust.payments": "Secure payments",
+                    "login.trust.privacy": "Privacy first",
+                    "login.trust.shipping": "Fast shipping",
                     quotes: [
-                        "Intelligent systems for a seamless experience.",
-                        "Optimized digital flows for tomorrow.",
-                        "Secure connections in a futuristic environment.",
-                        "Advanced technology with simple interaction."
+                        "Shop with confidence, worldwide fast shipping.",
+                        "Thousands of products at the best price, all in one place.",
+                        "A faster, safer checkout experience awaits.",
+                        "Unlock exclusive deals when you sign in."
                     ]
                 },
                 pt: {
                     "login.pageTitle": "Iniciar sessão",
-                    "login.title": "Bem-vindo!",
-                    "login.subtitle": "Inicia sessão para continuar.",
-                    "login.usernameLabel": "Utilizador",
-                    "login.usernamePlaceholder": "Introduz o teu utilizador",
+                    "login.title": "Bem-vindo de volta!",
+                    "login.subtitle": "Inicia sessão para continuar a comprar.",
+                    "login.usernameLabel": "Email ou utilizador",
+                    "login.usernamePlaceholder": "tu@email.com",
                     "login.passwordLabel": "Palavra-passe",
                     "login.passwordPlaceholder": "Introduz a tua palavra-passe",
                     "login.remember": "Lembrar-me",
                     "login.forgot": "Esqueceste a palavra-passe?",
-                    "login.submit": "Iniciar Sessão",
-                    "login.divider": "Inicia sessão com",
+                    "login.submit": "Iniciar sessão",
+                    "login.divider": "Ou continua com",
                     "login.noAccount": "Não tens conta?",
                     "login.createAccount": "Criar conta",
                     "login.toggleShow": "Mostrar",
@@ -185,11 +247,17 @@
                     "login.error.invalidCredentials": "Utilizador ou palavra-passe inválidos.",
                     "login.error.accountDisabled": "A tua conta não está ativada. Verifica o teu email para a ativar.",
                     "login.success.loggedOut": "Sessão encerrada com sucesso.",
+                    "login.perk.shipping": "Envio grátis em pedidos +$100",
+                    "login.perk.returns": "Devolução gratuita em 30 dias",
+                    "login.perk.secure": "Pagamento 100% seguro",
+                    "login.trust.payments": "Pagamento seguro",
+                    "login.trust.privacy": "Dados protegidos",
+                    "login.trust.shipping": "Envio rápido",
                     quotes: [
-                        "Sistemas inteligentes para uma experiência fluida.",
-                        "Fluxos digitais otimizados para o amanhã.",
-                        "Conexões seguras num ambiente futurista.",
-                        "Tecnologia avançada com interação simples."
+                        "Compra com confiança, envio rápido mundial.",
+                        "Milhares de produtos ao melhor preço, tudo num só lugar.",
+                        "Uma experiência de compra mais rápida e segura.",
+                        "Descobre ofertas exclusivas ao iniciares sessão."
                     ]
                 }
             };
