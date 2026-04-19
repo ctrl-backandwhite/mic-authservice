@@ -469,7 +469,10 @@
             }
         };
 
-        let currentLang = localStorage.getItem('lang') || 'es';
+        // Shared locale key with the storefront SPA ("nexa-locale"); legacy
+        // "lang" is still read as fallback and then migrated.
+        let currentLang = localStorage.getItem('nexa-locale') || localStorage.getItem('lang') || 'es';
+        localStorage.removeItem('lang');
         let quoteInterval;
         const passwordToggleRenderers = [];
 
@@ -541,7 +544,7 @@
         function setLanguage(lang) {
             currentLang = lang;
             document.documentElement.setAttribute('lang', lang);
-            localStorage.setItem('lang', lang);
+            localStorage.setItem('nexa-locale', lang);
             applyTranslations(lang);
             startQuotes(lang);
             refreshPasswordToggleAria();

@@ -262,7 +262,11 @@
                 }
             };
 
-            var currentLang = localStorage.getItem("lang") || "es";
+            // Shared locale key with the storefront SPA ("nexa-locale"); legacy
+            // "lang" is still read as fallback for existing browsers and then
+            // cleaned up once migrated.
+            var currentLang = localStorage.getItem("nexa-locale") || localStorage.getItem("lang") || "es";
+            localStorage.removeItem("lang");
             var quoteInterval;
 
             function applyTranslations(lang) {
@@ -321,7 +325,7 @@
             function setLanguage(lang) {
                 currentLang = lang;
                 document.documentElement.setAttribute("lang", lang);
-                localStorage.setItem("lang", lang);
+                localStorage.setItem("nexa-locale", lang);
                 applyTranslations(lang);
                 startQuotes(lang);
                 updatePasswordToggleText();
