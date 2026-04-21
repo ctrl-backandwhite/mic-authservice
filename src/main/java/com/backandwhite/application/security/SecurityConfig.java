@@ -92,6 +92,9 @@ public class SecurityConfig {
     @Value("${app.security.handler-url:http://localhost:4200}")
     private String handlerUrl;
 
+    @Value("${app.security.issuer:}")
+    private String issuer;
+
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
@@ -212,7 +215,11 @@ public class SecurityConfig {
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        AuthorizationServerSettings.Builder builder = AuthorizationServerSettings.builder();
+        if (issuer != null && !issuer.isBlank()) {
+            builder.issuer(issuer);
+        }
+        return builder.build();
     }
 
     @Bean
