@@ -57,6 +57,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import tools.jackson.databind.JacksonModule;
 import tools.jackson.databind.json.JsonMapper;
@@ -152,13 +154,44 @@ public class SecurityConfig {
                         oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .logout(logout -> logout.logoutUrl("/logout").addLogoutHandler(sessionRevokingLogoutHandler)
                         .invalidateHttpSession(true).clearAuthentication(true).deleteCookies("JSESSIONID")
-                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
+                        .logoutSuccessHandler(logoutSuccessHandler()))
                 .formLogin(form -> form.loginPage(LOGIN_PATH).successHandler(authenticationSuccessHandler())
                         .failureHandler(authenticationFailureHandler()).permitAll())
                 .oauth2Login(
                         oauth2 -> oauth2.loginPage(LOGIN_PATH).successHandler(googleOAuth2SuccessHandler()).permitAll())
                 .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    /**
+     * Logout success handler that serves two client types:
+     *
+     * <ul>
+     * <li><b>Form POST</b> (browser navigation from the SPA) — redirects the
+     * browser to the {@code redirect_uri} form field, defaulting to {@code "/"}
+     * (storefront home). Only relative paths starting with {@code "/"} are
+     * honoured, to prevent open-redirect abuse.</li>
+     * <li><b>JSON/XHR</b> — returns {@code 204 No Content} so the SPA can handle
+     * the post-logout flow without a redirect.</li>
+     * </ul>
+     */
+    @Bean
+    public LogoutSuccessHandler logoutSuccessHandler() {
+        SimpleUrlLogoutSuccessHandler redirectHandler = new SimpleUrlLogoutSuccessHandler();
+        redirectHandler.setDefaultTargetUrl("/");
+        redirectHandler.setTargetUrlParameter("redirect_uri");
+        LogoutSuccessHandler jsonHandler = new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT);
+        return (request, response, authentication) -> {
+            String accept = request.getHeader("Accept");
+            boolean wantsJson = accept != null && accept.contains(MediaType.APPLICATION_JSON_VALUE);
+            String redirectUri = request.getParameter("redirect_uri");
+            boolean hasRedirect = redirectUri != null && redirectUri.startsWith("/") && !redirectUri.startsWith("//");
+            if (hasRedirect || !wantsJson) {
+                redirectHandler.onLogoutSuccess(request, response, authentication);
+            } else {
+                jsonHandler.onLogoutSuccess(request, response, authentication);
+            }
+        };
     }
 
     @Bean
