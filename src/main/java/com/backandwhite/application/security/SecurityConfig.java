@@ -231,7 +231,13 @@ public class SecurityConfig {
         return RegisteredClient.withId(UUID.randomUUID().toString()).clientId("default-client")
                 .clientSecret(passwordEncoder.encode("secret"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS).scope("default").build();
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS).scope("default")
+                // Same token TTLs as the custom repo so the in-memory fallback
+                // doesn't silently drop to Spring's 5 min / 60 min defaults.
+                .tokenSettings(org.springframework.security.oauth2.server.authorization.settings.TokenSettings.builder()
+                        .accessTokenTimeToLive(java.time.Duration.ofMinutes(60))
+                        .refreshTokenTimeToLive(java.time.Duration.ofDays(7)).reuseRefreshTokens(true).build())
+                .build();
     }
 
     @Bean

@@ -2,12 +2,14 @@ package com.backandwhite.application.security;
 
 import com.backandwhite.domain.model.OauthClient;
 import com.backandwhite.domain.repository.OauthClientRepository;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
 /**
  * Custom repository that maps OAuth clients from the project's custom entities
@@ -80,6 +82,16 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
         // Configure client settings
         builder.clientSettings(
                 ClientSettings.builder().requireProofKey(true).requireAuthorizationConsent(false).build());
+
+        // Override Spring Authorization Server defaults (5 min access / 60 min
+        // refresh). With the default a long-running admin job (bulk CJ sync,
+        // discover) outlives the refresh token and gets bounced through OAuth
+        // mid-work. 60 min access + 7 d refresh keeps the session alive across
+        // typical admin sessions and lets the silent refresh in authFetch
+        // handle the rest. reuseRefreshTokens keeps the refresh token stable
+        // so the SPA doesn't have to re-save it after every silent refresh.
+        builder.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(60))
+                .refreshTokenTimeToLive(Duration.ofDays(7)).reuseRefreshTokens(true).build());
 
         return builder.build();
     }
