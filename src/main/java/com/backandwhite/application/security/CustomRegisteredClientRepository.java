@@ -86,11 +86,11 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
         // Override Spring Authorization Server defaults (5 min access / 60 min
         // refresh). With the default a long-running admin job (bulk CJ sync,
         // discover) outlives the refresh token and gets bounced through OAuth
-        // mid-work. 60 min access + 7 d refresh keeps the session alive across
-        // typical admin sessions and lets the silent refresh in authFetch
-        // handle the rest. reuseRefreshTokens keeps the refresh token stable
-        // so the SPA doesn't have to re-save it after every silent refresh.
-        builder.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofMinutes(60))
+        // mid-work. 24 h access + 7 d refresh lets admins work a full day
+        // without silent refresh churn while still keeping a weekly ceiling.
+        // reuseRefreshTokens keeps the refresh token stable so the SPA
+        // doesn't have to re-save it after every silent refresh.
+        builder.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(24))
                 .refreshTokenTimeToLive(Duration.ofDays(7)).reuseRefreshTokens(true).build());
 
         return builder.build();

@@ -235,7 +235,7 @@ public class SecurityConfig {
                 // Same token TTLs as the custom repo so the in-memory fallback
                 // doesn't silently drop to Spring's 5 min / 60 min defaults.
                 .tokenSettings(org.springframework.security.oauth2.server.authorization.settings.TokenSettings.builder()
-                        .accessTokenTimeToLive(java.time.Duration.ofMinutes(60))
+                        .accessTokenTimeToLive(java.time.Duration.ofHours(24))
                         .refreshTokenTimeToLive(java.time.Duration.ofDays(7)).reuseRefreshTokens(true).build())
                 .build();
     }
