@@ -47,12 +47,34 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
             client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
             scope: openid,profile,email
+          x:
+            # X (Twitter) OAuth 2.0 with PKCE. Create an app at
+            # https://developer.x.com → "User authentication settings" → set
+            # the callback URL to http://localhost:9000/login/oauth2/code/x
+            # and copy the OAuth 2.0 client id/secret into the env vars below.
+            client-id: ${X_CLIENT_ID:your-x-client-id}
+            client-secret: ${X_CLIENT_SECRET:your-x-client-secret}
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: tweet.read,users.read,offline.access
+            client-name: X
         provider:
           google:
             authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
             jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+            user-name-attribute: email
+          x:
+            authorization-uri: https://x.com/i/oauth2/authorize
+            token-uri: https://api.x.com/2/oauth2/token
+            # The plain v2 user info endpoint. The response wraps user data
+            # under {"data": {...}}; XOAuth2UserService fetches it directly,
+            # flattens the data object and injects a synthetic "email" so the
+            # downstream JWT customizer (which looks users up by email) can
+            # locate the row created during sign-in.
+            user-info-uri: https://api.x.com/2/users/me
             user-name-attribute: email
 
 app:

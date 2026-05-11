@@ -15,15 +15,21 @@ import java.io.IOException;
 import java.util.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 /**
- * Handles successful Google OAuth2 authentication. Auto-creates the user in the
- * database if the email does not already exist.
+ * Handles successful OAuth2 authentication for every configured provider
+ * (Google and X today). Auto-creates the user in the database if there is no
+ * match for the provider's identifier yet. X's response has no email, so we
+ * synthesise one from the username to keep the User schema unchanged.
  */
 @Log4j2
 public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+
+    private static final String PROVIDER_GOOGLE = "google";
+    private static final String PROVIDER_X = "x";
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -43,6 +49,21 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
             Authentication authentication) throws IOException, ServletException {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        String registrationId = (authentication instanceof OAuth2AuthenticationToken token)
+                ? token.getAuthorizedClientRegistrationId()
+                : PROVIDER_GOOGLE;
+
+        if (PROVIDER_X.equalsIgnoreCase(registrationId)) {
+            handleX(request, response, authentication, oAuth2User);
+            return;
+        }
+        handleGoogle(request, response, authentication, oAuth2User);
+    }
+
+    /* ── Google ───────────────────────────────────────────────────────────── */
+
+    private void handleGoogle(HttpServletRequest request, HttpServletResponse response, Authentication authentication,
+            OAuth2User oAuth2User) throws IOException, ServletException {
         String email = oAuth2User.getAttribute("email");
         String givenName = oAuth2User.getAttribute("given_name");
         String familyName = oAuth2User.getAttribute("family_name");
@@ -54,16 +75,12 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         }
 
         String lang = extractLang(request);
-
         try {
             User existingUser = userRepository.findUserByEmail(email.trim().toLowerCase());
-
             if (existingUser == null) {
                 User newUser = createGoogleUser(email, givenName, familyName);
                 log.info("::> [GOOGLE-OAUTH2] New user registered userId={} lang={}", newUser.getId(), lang);
-
                 sendWelcomeEmail(newUser, lang);
-
                 authEventPort.publishCustomerRegistered(new CustomerRegisteredRequest(newUser.getId().toString(),
                         newUser.getEmail(), newUser.getName(), newUser.getLastName()));
             } else {
@@ -72,9 +89,89 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         } catch (RuntimeException e) {
             log.error("::> [GOOGLE-OAUTH2] Registration failed reason={}", e.getMessage());
         }
-
         super.onAuthenticationSuccess(request, response, authentication);
     }
+
+    /* ── X (Twitter) ──────────────────────────────────────────────────────── */
+
+    private void handleX(HttpServletRequest request, HttpServletResponse response, Authentication authentication,
+            OAuth2User oAuth2User) throws IOException, ServletException {
+        // X's API v2 returns user data flattened by XOAuth2UserService:
+        // id (numeric string), username (handle without @), name (display name)
+        String xId = oAuth2User.getAttribute("id");
+        String username = oAuth2User.getAttribute("username");
+        String displayName = oAuth2User.getAttribute("name");
+
+        if (xId == null || xId.isBlank()) {
+            log.warn("::> [X-OAUTH2] Login failed: missing 'id' attribute");
+            response.sendRedirect("/login?error=x_no_id");
+            return;
+        }
+
+        // X does NOT expose user email under the default scope set. We mint a
+        // stable synthetic email keyed by the X numeric id so we can identify
+        // the same user across logins without adding a new DB column.
+        String syntheticEmail = ("x-" + xId + "@x.local").toLowerCase();
+        String name = parseFirstName(displayName, username);
+        String lastName = parseLastName(displayName);
+        String lang = extractLang(request);
+
+        try {
+            User existingUser = userRepository.findUserByEmail(syntheticEmail);
+            if (existingUser == null) {
+                User newUser = createXUser(syntheticEmail, username, name, lastName);
+                log.info("::> [X-OAUTH2] New user registered userId={} username={} lang={}", newUser.getId(), username,
+                        lang);
+                authEventPort.publishCustomerRegistered(new CustomerRegisteredRequest(newUser.getId().toString(),
+                        newUser.getEmail(), newUser.getName(), newUser.getLastName()));
+                // No welcome email — the synthetic address won't deliver.
+            } else {
+                log.info("::> [X-OAUTH2] Existing user login userId={} username={}", existingUser.getId(), username);
+            }
+        } catch (RuntimeException e) {
+            log.error("::> [X-OAUTH2] Registration failed reason={}", e.getMessage());
+        }
+        super.onAuthenticationSuccess(request, response, authentication);
+    }
+
+    private User createXUser(String syntheticEmail, String username, String firstName, String lastName) {
+        User user = new User();
+        user.setEmail(syntheticEmail);
+        user.setName(firstName != null && !firstName.isBlank() ? firstName : "X");
+        user.setLastName(lastName != null && !lastName.isBlank() ? lastName : "User");
+        user.setNickName(username != null && !username.isBlank() ? username : "x-" + UUID.randomUUID());
+        user.setPassword(UUID.randomUUID().toString().toUpperCase());
+        user.setEnabled(true);
+        user.setAccountNonExpired(true);
+        user.setAccountNonLocked(true);
+        user.setCredentialsNonExpired(true);
+
+        Role guestRole = findGuestRole();
+        if (guestRole != null) {
+            user.setRoles(new ArrayList<>(List.of(guestRole)));
+        }
+        return userRepository.save(user);
+    }
+
+    private String parseFirstName(String displayName, String fallback) {
+        if (displayName == null || displayName.isBlank()) {
+            return fallback != null ? fallback : "X";
+        }
+        return displayName.trim().split("\\s+")[0];
+    }
+
+    private String parseLastName(String displayName) {
+        if (displayName == null || displayName.isBlank()) {
+            return "";
+        }
+        String[] parts = displayName.trim().split("\\s+");
+        if (parts.length <= 1) {
+            return "";
+        }
+        return String.join(" ", java.util.Arrays.copyOfRange(parts, 1, parts.length));
+    }
+
+    /* ── Google user creation (unchanged) ─────────────────────────────────── */
 
     private User createGoogleUser(String email, String givenName, String familyName) {
         User user = new User();

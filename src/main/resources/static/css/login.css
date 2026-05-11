@@ -23,7 +23,9 @@
   --radius-lg: 20px;
   --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.05);
   --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
-  --media-grad: linear-gradient(135deg, #111827 0%, #1f2937 45%, #0f766e 100%);
+  /* Single dark-slate panel — matches the admin sidebar background.
+     No vibrant gradient to keep the storefront/admin aesthetic consistent. */
+  --media-grad: #111827;
   --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -124,80 +126,140 @@ body {
   }
 }
 
-.media__overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at top left, rgba(245, 158, 11, 0.18) 0%, transparent 45%),
-    radial-gradient(ellipse at bottom right, rgba(20, 184, 166, 0.18) 0%, transparent 50%);
-  pointer-events: none;
-}
+.media__overlay { display: none; }
 
 .media__content {
   position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  padding: 40px 36px 28px;
+  gap: 24px;
+}
+.media__content .brand--on-dark {
+  align-self: flex-start;
+}
+
+/* ── Welcome heading (centered) ── */
+.media__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
   align-items: center;
   text-align: center;
-  padding: 40px;
-  gap: 28px;
 }
-
-.media__quote {
-  margin-top: auto;
-  transition: opacity 0.25s ease;
-}
-.media__quote.fade-out { opacity: 0; }
-.media__quote p {
+.media__title {
   font-size: 22px;
-  line-height: 1.35;
-  font-weight: 500;
+  line-height: 1.25;
+  font-weight: 600;
   margin: 0;
+  color: #fff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.media__subtitle {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 320px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.media__perks {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+/* ── Legacy <ul class="media__perks"> kept hidden for backward compat ── */
+.media__perks { display: none; }
+
+/* ── Perk slider — wrapped in a translucent container, pushed near the bottom ── */
+.media__perk-slider {
+  margin: auto 0 0;
+  padding: 24px 20px 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 18px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
 }
-.media__perks li {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.85);
+.media__perk-track {
+  position: relative;
+  width: 100%;
+  height: 132px;
+}
+.media__perk-slide {
+  position: absolute;
+  inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  text-align: center;
+  gap: 12px;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.85);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  pointer-events: none;
 }
-.media__perks li::before {
-  content: "";
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
+.media__perk-slide.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.media__perk-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
   flex-shrink: 0;
 }
-
-.media__dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
+.media__perk-icon svg {
+  width: 30px;
+  height: 30px;
 }
-.media__dots span {
-  width: 24px;
+
+/* Pagination dots */
+.media__perk-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+.media__perk-dots button {
+  width: 18px;
   height: 3px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.25);
-  transition: background 0.25s ease, opacity 0.25s ease;
+  background: rgba(255, 255, 255, 0.2);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.25s ease, width 0.25s ease;
 }
-.media__dots span.is-active { background: #fff; }
-.media__dots span.fade-out { opacity: 0.4; }
+.media__perk-dots button.is-active {
+  background: #fff;
+  width: 24px;
+}
+
+/* ── Footer note ── */
+.media__footer {
+  margin: auto 0 0;
+  padding-top: 16px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.01em;
+}
+
+/* Legacy classes kept invisible so the JS quote rotator and old templates
+   don't error out at runtime. Safe to remove once translations stabilize. */
+.media__quote, .media__dots, .media__promo, .media__showcase, .media__social { display: none; }
 
 /* ──────────────────────────── Content (form) ──────────────────────────── */
 
@@ -226,13 +288,16 @@ body {
 .content__header h1 {
   font-size: 22px;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   margin: 0 0 4px;
   color: var(--text);
 }
 .content__header p {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   margin: 0 0 12px;
 }
 @media (min-width: 900px) {
