@@ -26,9 +26,10 @@ class PermissionEntityTest {
 
         @Test
         @DisplayName("reflexive: a.equals(a) is true")
+        @SuppressWarnings("java:S5838") // equals contract: reflexive call must use .equals() directly
         void reflexive() {
             PermissionEntity a = buildDefault();
-            assertThat(a.equals(a)).isTrue();
+            assertThat(a.equals(a)).as("equals must be reflexive").isTrue();
         }
 
         @Test
@@ -109,7 +110,7 @@ class PermissionEntityTest {
         void consistent() {
             PermissionEntity a = buildDefault();
             PermissionEntity b = buildDefault();
-            assertThat(a.hashCode()).isEqualTo(b.hashCode());
+            assertThat(a).hasSameHashCodeAs(b);
         }
 
         @Test

@@ -58,12 +58,16 @@ class SecurityConfigWebTest {
 
     @Test
     @WithMockUser
-    void logout_authenticated_returnsNoContent() throws Exception {
-        mockMvc.perform(post("/logout")).andExpect(status().isNoContent());
+    void logout_authenticated_acceptJson_returnsNoContent() throws Exception {
+        // Post-logout handler returns 204 when the caller requests JSON, and
+        // otherwise falls back to the default browser redirect flow.
+        mockMvc.perform(post("/logout").header("Accept", "application/json")).andExpect(status().isNoContent());
     }
 
     @Test
-    void logout_unauthenticated_redirectsToLogin() throws Exception {
-        mockMvc.perform(post("/logout")).andExpect(status().isNoContent());
+    void logout_unauthenticated_redirectsToHome() throws Exception {
+        // Without an Accept: application/json header the post-logout handler
+        // delegates to SimpleUrlLogoutSuccessHandler, which 302-redirects to "/".
+        mockMvc.perform(post("/logout")).andExpect(status().is3xxRedirection());
     }
 }

@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -139,5 +141,106 @@ class GoogleOAuth2SuccessHandlerTest {
         handler.onAuthenticationSuccess(request, response, oAuth2Authentication("error@gmail.com", "Ana", "Lopez"));
 
         verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void onAuthenticationSuccess_newUser_roleRepoThrows_stillCreatesUser() throws Exception {
+        GoogleOAuth2SuccessHandler handler = buildHandler();
+        when(userRepository.findUserByEmail("ana@gmail.com")).thenReturn(null);
+        when(roleRepository.findAll()).thenThrow(new RuntimeException("ROLE table down"));
+        User savedUser = User.builder().id(11L).email("ana@gmail.com").name("Ana").lastName("Lopez").build();
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        handler.onAuthenticationSuccess(request, response, oAuth2Authentication("ana@gmail.com", "Ana", "Lopez"));
+
+        // User was still saved even though role lookup blew up.
+        verify(userRepository).save(any(User.class));
+        verify(authEventPort).publishCustomerRegistered(any(CustomerRegisteredRequest.class));
+    }
+
+    @Test
+    void onAuthenticationSuccess_newUser_welcomeEmailFails_doesNotPropagate() throws Exception {
+        GoogleOAuth2SuccessHandler handler = buildHandler();
+        when(userRepository.findUserByEmail("ana@gmail.com")).thenReturn(null);
+        Role guestRole = Role.builder().id(1L).uniqueName("ROLE_GUEST").name("Guest").build();
+        when(roleRepository.findAll()).thenReturn(List.of(guestRole));
+        User savedUser = User.builder().id(12L).email("ana@gmail.com").name("Ana").lastName("Lopez").build();
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+        doThrow(new RuntimeException("SMTP failure")).when(notificationEventPort)
+                .sendNotificationEvent(any(EmailNotificationRequest.class));
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        handler.onAuthenticationSuccess(request, response, oAuth2Authentication("ana@gmail.com", "Ana", "Lopez"));
+
+        // Customer-registered event still emitted despite the email failure.
+        verify(authEventPort).publishCustomerRegistered(any(CustomerRegisteredRequest.class));
+    }
+
+    @Test
+    void onAuthenticationSuccess_newUser_acceptLanguageEnglish_setsEnLang() throws Exception {
+        GoogleOAuth2SuccessHandler handler = buildHandler();
+        when(userRepository.findUserByEmail("ana@gmail.com")).thenReturn(null);
+        Role guestRole = Role.builder().id(1L).uniqueName("ROLE_GUEST").build();
+        when(roleRepository.findAll()).thenReturn(List.of(guestRole));
+        User savedUser = User.builder().id(13L).email("ana@gmail.com").name("Ana").lastName("Lopez").build();
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Accept-Language", "en-US,en;q=0.9");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        handler.onAuthenticationSuccess(request, response, oAuth2Authentication("ana@gmail.com", "Ana", "Lopez"));
+
+        org.mockito.ArgumentCaptor<EmailNotificationRequest> captor = org.mockito.ArgumentCaptor
+                .forClass(EmailNotificationRequest.class);
+        verify(notificationEventPort).sendNotificationEvent(captor.capture());
+        org.assertj.core.api.Assertions.assertThat(captor.getValue().variables()).containsEntry("lang", "en");
+    }
+
+    @ParameterizedTest(name = "Accept-Language={0} -> lang={1}")
+    @CsvSource({"'pt-BR,pt;q=0.9',pt", "'es-ES,es;q=0.9',es", "'   ',es", "ja-JP,es"})
+    void onAuthenticationSuccess_newUser_acceptLanguageMapsToLang(String acceptLanguage, String expectedLang)
+            throws Exception {
+        GoogleOAuth2SuccessHandler handler = buildHandler();
+        when(userRepository.findUserByEmail("ana@gmail.com")).thenReturn(null);
+        when(roleRepository.findAll()).thenReturn(List.of());
+        User savedUser = User.builder().id(14L).email("ana@gmail.com").name("Ana").lastName("Lopez").build();
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Accept-Language", acceptLanguage);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        handler.onAuthenticationSuccess(request, response, oAuth2Authentication("ana@gmail.com", "Ana", "Lopez"));
+
+        org.mockito.ArgumentCaptor<EmailNotificationRequest> captor = org.mockito.ArgumentCaptor
+                .forClass(EmailNotificationRequest.class);
+        verify(notificationEventPort).sendNotificationEvent(captor.capture());
+        org.assertj.core.api.Assertions.assertThat(captor.getValue().variables()).containsEntry("lang", expectedLang);
+    }
+
+    @Test
+    void onAuthenticationSuccess_newUser_nullGivenName_usesDefaults() throws Exception {
+        GoogleOAuth2SuccessHandler handler = buildHandler();
+        when(userRepository.findUserByEmail("nameless@gmail.com")).thenReturn(null);
+        when(roleRepository.findAll()).thenReturn(List.of());
+        User savedUser = User.builder().id(18L).email("nameless@gmail.com").name("Google").lastName("User").build();
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        handler.onAuthenticationSuccess(request, response, oAuth2Authentication("nameless@gmail.com", null, null));
+
+        org.mockito.ArgumentCaptor<User> captor = org.mockito.ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(captor.capture());
+        User created = captor.getValue();
+        org.assertj.core.api.Assertions.assertThat(created.getName()).isEqualTo("Google");
+        org.assertj.core.api.Assertions.assertThat(created.getLastName()).isEqualTo("User");
     }
 }

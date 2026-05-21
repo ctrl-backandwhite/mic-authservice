@@ -3,35 +3,49 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#111827" />
     <title data-i18n="resetSuccess.pageTitle">Contraseña restablecida</title>
-
-    <link rel="stylesheet" href="/css/login.css?v=20260616" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="/css/login.css?v=20260511i" />
 </head>
 
-<body class="status-page">
-    <div class="status-card">
-        <div class="status-card__header status-card__header--success">
-            <div class="logo-badge">NX</div>
-            <div class="icon-circle">
-                <svg viewBox="0 0 24 24">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
+<body>
+    <main class="login-page login">
+        <header class="mobile-brand">
+            <a href="/" class="brand"><span class="brand__name">NX036</span></a>
+        </header>
+
+        <section class="login-card">
+            <div class="login-card__media" aria-hidden="true">
+                <div class="media__content">
+                    <a href="/" class="brand brand--on-dark"><span class="brand__name">NX036</span></a>
+                    <div class="media__intro">
+                        <h2 class="media__title" data-i18n="login.welcome.title">Bienvenido a NX036</h2>
+                        <p class="media__subtitle" data-i18n="login.welcome.subtitle">Tu tienda de confianza para descubrir productos seleccionados con cuidado.</p>
+                    </div>
+                    <p class="media__footer" data-i18n="login.welcome.footer">© NX036 · Tu privacidad es nuestra prioridad</p>
+                </div>
             </div>
-        </div>
-        <div class="status-card__body">
-            <h1 data-i18n="resetSuccess.title">¡Contraseña restablecida!</h1>
-            <p data-i18n="resetSuccess.message">Tu contraseña ha sido actualizada exitosamente. Ya puedes iniciar sesión
-                con tu nueva contraseña.</p>
-            <div class="progress-bar">
-                <div class="progress-bar__fill progress-bar__fill--success"></div>
+
+            <div class="login-card__content">
+                <div style="text-align:center;padding:24px 0;display:flex;flex-direction:column;align-items:center;gap:14px;">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <h1 data-i18n="resetSuccess.title" style="font-size:22px;font-weight:600;margin:0;color:var(--text);">¡Contraseña restablecida!</h1>
+                    <p data-i18n="resetSuccess.message" style="margin:0;color:var(--text-muted);font-size:13px;line-height:1.6;max-width:360px;">
+                        Tu contraseña ha sido actualizada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.
+                    </p>
+                    <p id="countdown-text" style="margin:4px 0 0;color:var(--text-soft);font-size:12px;">Redirigiendo al login en <span id="seconds">3</span> segundos...</p>
+                    <a class="btn btn--primary" href="/login" data-i18n="resetSuccess.goToLogin" style="text-decoration:none;margin-top:8px;min-width:200px;">Ir al login ahora</a>
+                </div>
             </div>
-            <p class="countdown countdown--success" id="countdown-text">Redirigiendo al login en <span
-                    id="seconds">3</span> segundos...
-            </p>
-            <a class="btn--status" href="/login.html" data-i18n="resetSuccess.goToLogin">Ir al login ahora</a>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script>
         (function () {
@@ -41,37 +55,54 @@
                     "resetSuccess.title": "¡Contraseña restablecida!",
                     "resetSuccess.message": "Tu contraseña ha sido actualizada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.",
                     "resetSuccess.countdown": "Redirigiendo al login en {s} segundos...",
-                    "resetSuccess.goToLogin": "Ir al login ahora"
+                    "resetSuccess.goToLogin": "Ir al login ahora",
+                    "login.welcome.title": "Bienvenido a NX036",
+                    "login.welcome.subtitle": "Tu tienda de confianza para descubrir productos seleccionados con cuidado.",
+                    "login.welcome.footer": "© NX036 · Tu privacidad es nuestra prioridad"
                 },
                 en: {
                     "resetSuccess.pageTitle": "Password reset",
                     "resetSuccess.title": "Password reset!",
                     "resetSuccess.message": "Your password has been updated successfully. You can now sign in with your new password.",
                     "resetSuccess.countdown": "Redirecting to login in {s} seconds...",
-                    "resetSuccess.goToLogin": "Go to login now"
+                    "resetSuccess.goToLogin": "Go to login now",
+                    "login.welcome.title": "Welcome to NX036",
+                    "login.welcome.subtitle": "Your trusted shop for carefully curated products.",
+                    "login.welcome.footer": "© NX036 · Your privacy is our priority"
+                },
+                pt: {
+                    "resetSuccess.pageTitle": "Palavra-passe redefinida",
+                    "resetSuccess.title": "Palavra-passe redefinida!",
+                    "resetSuccess.message": "A tua palavra-passe foi atualizada com sucesso. Já podes iniciar sessão com a nova palavra-passe.",
+                    "resetSuccess.countdown": "A redirecionar para o login em {s} segundos...",
+                    "resetSuccess.goToLogin": "Ir para o login agora",
+                    "login.welcome.title": "Bem-vindo à NX036",
+                    "login.welcome.subtitle": "A tua loja de confiança para descobrir produtos selecionados com cuidado.",
+                    "login.welcome.footer": "© NX036 · A tua privacidade é a nossa prioridade"
                 }
             };
 
-            var currentLang = localStorage.getItem('lang') || 'es';
+            var currentLang = localStorage.getItem("nexa-locale") || localStorage.getItem("lang") || "es";
+            localStorage.removeItem("lang");
             var dict = translations[currentLang] || translations.es;
 
-            document.documentElement.setAttribute('lang', currentLang);
-            document.querySelectorAll('[data-i18n]').forEach(function (el) {
-                var key = el.getAttribute('data-i18n');
+            document.documentElement.setAttribute("lang", currentLang);
+            document.querySelectorAll("[data-i18n]").forEach(function (el) {
+                var key = el.getAttribute("data-i18n");
                 if (dict[key]) el.textContent = dict[key];
             });
 
             var t = 3;
-            var countdownEl = document.getElementById('countdown-text');
+            var countdownEl = document.getElementById("countdown-text");
             function updateCountdown() {
-                var tmpl = dict['resetSuccess.countdown'] || 'Redirigiendo al login en {s} segundos...';
-                countdownEl.innerHTML = tmpl.replace('{s}', '<span id="seconds">' + t + '</span>');
+                var tmpl = dict["resetSuccess.countdown"] || "Redirigiendo al login en {s} segundos...";
+                countdownEl.innerHTML = tmpl.replace("{s}", '<span id="seconds">' + t + "</span>");
             }
             updateCountdown();
             var interval = setInterval(function () {
                 t--;
                 updateCountdown();
-                if (t <= 0) { clearInterval(interval); window.location.href = '/login.html'; }
+                if (t <= 0) { clearInterval(interval); window.location.href = "/login"; }
             }, 1000);
         })();
     </script>

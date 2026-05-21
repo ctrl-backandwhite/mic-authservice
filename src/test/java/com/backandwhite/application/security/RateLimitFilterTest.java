@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpStatus;
 
 class RateLimitFilterTest {
@@ -36,15 +38,17 @@ class RateLimitFilterTest {
         verify(filterChain).doFilter(request, response);
     }
 
-    @Test
-    void doFilterInternal_registerEndpoint_allowsWithinLimit() throws Exception {
+    @ParameterizedTest(name = "uri={0}")
+    @CsvSource({"/api/v1/auth/register,10.0.0.1", "/login,10.0.0.200", "/api/v1/auth/forgot-password,10.0.0.201",
+            "/api/v1/auth/reset-password,10.0.0.202"})
+    void doFilterInternal_rateLimitedEndpoint_allowsWithinLimit(String uri, String remoteAddr) throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain filterChain = mock(FilterChain.class);
 
-        when(request.getRequestURI()).thenReturn("/api/v1/auth/register");
+        when(request.getRequestURI()).thenReturn(uri);
         when(request.getMethod()).thenReturn("POST");
-        when(request.getRemoteAddr()).thenReturn("10.0.0.1");
+        when(request.getRemoteAddr()).thenReturn(remoteAddr);
 
         rateLimitFilter.doFilterInternal(request, response, filterChain);
 
@@ -99,14 +103,15 @@ class RateLimitFilterTest {
     }
 
     @Test
-    void doFilterInternal_loginEndpoint_rateLimited() throws Exception {
+    void doFilterInternal_blankXForwardedFor_fallsBackToRemoteAddr() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain filterChain = mock(FilterChain.class);
 
-        when(request.getRequestURI()).thenReturn("/login");
+        when(request.getRequestURI()).thenReturn("/api/v1/auth/register");
         when(request.getMethod()).thenReturn("POST");
-        when(request.getRemoteAddr()).thenReturn("10.0.0.200");
+        when(request.getHeader("X-Forwarded-For")).thenReturn("   ");
+        when(request.getRemoteAddr()).thenReturn("10.0.0.55");
 
         rateLimitFilter.doFilterInternal(request, response, filterChain);
 
@@ -114,17 +119,28 @@ class RateLimitFilterTest {
     }
 
     @Test
-    void doFilterInternal_forgotPasswordEndpoint_rateLimited() throws Exception {
+    void doFilterInternal_evictsExpiredTimestamps() throws Exception {
+        // Inject a stale timestamp into the filter's internal map so the
+        // eviction loop in isRateLimited has something to drain.
+        java.util.Map<String, java.util.Deque<Long>> counts = (java.util.Map<String, java.util.Deque<Long>>) org.springframework.test.util.ReflectionTestUtils
+                .getField(rateLimitFilter, "requestCounts");
+        java.util.Deque<Long> stale = new java.util.concurrent.ConcurrentLinkedDeque<>();
+        // Window for /register is 15 minutes -> insert timestamp 1 hour ago.
+        stale.add(System.currentTimeMillis() - 60L * 60L * 1000L);
+        counts.put("10.0.0.77:register", stale);
+
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain filterChain = mock(FilterChain.class);
 
-        when(request.getRequestURI()).thenReturn("/api/v1/auth/forgot-password");
+        when(request.getRequestURI()).thenReturn("/api/v1/auth/register");
         when(request.getMethod()).thenReturn("POST");
-        when(request.getRemoteAddr()).thenReturn("10.0.0.201");
+        when(request.getRemoteAddr()).thenReturn("10.0.0.77");
 
         rateLimitFilter.doFilterInternal(request, response, filterChain);
 
         verify(filterChain).doFilter(request, response);
+        // Stale entry should be drained leaving exactly one new timestamp.
+        org.assertj.core.api.Assertions.assertThat(counts.get("10.0.0.77:register")).hasSize(1);
     }
 }

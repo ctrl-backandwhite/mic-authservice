@@ -38,6 +38,7 @@ public class AuthNotificationHelper {
         // Extract request data on the calling thread before Tomcat recycles the request
         Map<String, String> deviceInfo = (request != null) ? extractDeviceInfo(request) : Map.of();
         String lang = (request != null) ? extractLang(request) : "es";
+        String localizedSubject = localizeSubject(templateName, lang, subject);
         executor.execute(() -> {
             try {
                 String normalized = username.trim().toLowerCase();
@@ -55,7 +56,7 @@ public class AuthNotificationHelper {
                 variables.putAll(deviceInfo);
 
                 notificationEventPort.sendNotificationEvent(
-                        new EmailNotificationRequest(user.getEmail(), subject, templateName, variables));
+                        new EmailNotificationRequest(user.getEmail(), localizedSubject, templateName, variables));
                 log.info("::> [AUTH-NOTIFICATION] Sent template={} userId={} lang={}", templateName, user.getId(),
                         lang);
             } catch (RuntimeException e) {
@@ -64,7 +65,40 @@ public class AuthNotificationHelper {
         });
     }
 
+    private String localizeSubject(String templateName, String lang, String fallback) {
+        if (templateName == null)
+            return fallback;
+        switch (templateName) {
+            case "login-success" :
+                if ("en".equals(lang))
+                    return "New sign-in to your NX036 account";
+                if ("pt".equals(lang))
+                    return "Novo início de sessão na tua conta NX036";
+                return "Nuevo inicio de sesión en tu cuenta NX036";
+            case "logout-success" :
+                if ("en".equals(lang))
+                    return "You signed out of NX036";
+                if ("pt".equals(lang))
+                    return "Sessão encerrada na NX036";
+                return "Has cerrado sesión en NX036";
+            default :
+                return fallback;
+        }
+    }
+
     private String extractLang(HttpServletRequest request) {
+        // Prefer the explicit `lang` form field/query param set by the SPA so the
+        // user-selected locale (nexa-locale) wins over the browser preference.
+        String param = request.getParameter("lang");
+        if (param != null && !param.isBlank()) {
+            String normalized = param.trim().toLowerCase();
+            if (normalized.startsWith("en"))
+                return "en";
+            if (normalized.startsWith("pt"))
+                return "pt";
+            if (normalized.startsWith("es"))
+                return "es";
+        }
         String acceptLanguage = request.getHeader("Accept-Language");
         if (acceptLanguage != null && !acceptLanguage.isBlank()) {
             String primary = acceptLanguage.split(",")[0].trim().split(";")[0].trim().toLowerCase();

@@ -47,6 +47,14 @@ public class GroupUseCaseImpl implements GroupUseCase {
     @Cacheable(value = "group", key = "#id")
     public Group getById(Long id) {
         log.debug("::> Getting group with id {}", id);
+        return getByIdInternal(id);
+    }
+
+    /**
+     * Internal lookup used by other use-case methods. Bypasses {@code @Cacheable}
+     * AOP (Sonar S6809) — self-invocation would skip the proxy anyway.
+     */
+    private Group getByIdInternal(Long id) {
         Group model = groupRepository.getById(id);
         if (Objects.isNull(model)) {
             throw ENTITY_NOT_FOUND.toEntityNotFound("Group", id);
@@ -60,7 +68,7 @@ public class GroupUseCaseImpl implements GroupUseCase {
     @CacheEvict(value = "group_all", allEntries = true)
     public Group update(Group model, Long id) {
         log.debug("::> Updating group {}", model);
-        Group existing = this.getById(id);
+        Group existing = getByIdInternal(id);
         groupUpdateMapper.updateFromModel(model, existing);
         groupCommandHandler.validate(existing);
         return groupRepository.update(existing);
@@ -70,7 +78,7 @@ public class GroupUseCaseImpl implements GroupUseCase {
     @Transactional
     @CacheEvict(value = {"group_all", "group"}, allEntries = true)
     public void delete(Long id) {
-        this.getById(id);
+        getByIdInternal(id);
         log.debug("::> Deleting group with id {}", id);
         groupRepository.delete(id);
     }

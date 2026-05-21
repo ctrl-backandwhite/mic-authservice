@@ -1,5 +1,6 @@
 package com.backandwhite.application.security;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -91,7 +92,7 @@ class CustomAuthenticationSuccessHandlerTest {
     }
 
     @Test
-    void onAuthenticationSuccess_whenNotificationThrows_doesNotPropagateException() throws Exception {
+    void onAuthenticationSuccess_whenNotificationThrows_doesNotPropagateException() {
         CustomAuthenticationSuccessHandler handler = buildHandler();
 
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -99,7 +100,9 @@ class CustomAuthenticationSuccessHandlerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("user@test.com");
 
-        // Should not throw — notification runs async
-        handler.onAuthenticationSuccess(request, response, authentication);
+        // Notification runs async; the handler must not propagate any exception
+        // back to the security filter chain.
+        assertThatCode(() -> handler.onAuthenticationSuccess(request, response, authentication))
+                .doesNotThrowAnyException();
     }
 }

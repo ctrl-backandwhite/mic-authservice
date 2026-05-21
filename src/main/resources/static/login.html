@@ -88,6 +88,7 @@
                 </header>
 
                 <form method="post" action="/login" class="form" id="login-form">
+                    <input type="hidden" name="lang" id="login-lang" value="es" />
                     <div class="form__alerts" aria-live="polite" aria-atomic="true">
                         <p class="alert alert--error" id="form-error" hidden></p>
                         <p class="alert alert--success" id="form-success" hidden></p>
@@ -373,6 +374,8 @@
                 startQuotes(lang);
                 updatePasswordToggleText();
                 renderAlert();
+                var langField = document.getElementById("login-lang");
+                if (langField) langField.value = lang;
                 document.querySelectorAll(".lang-switch__btn").forEach(function (btn) {
                     btn.classList.toggle("is-active", btn.getAttribute("data-lang") === lang);
                 });

@@ -14,6 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -148,13 +150,15 @@ class AuthNotificationHelperTest {
         assertThat(captor.getValue().variables()).containsEntry("ipAddress", "198.51.100.10");
     }
 
-    @Test
-    void sendAuthNotification_withRequest_localIpResolvesToLocalNetwork() {
+    @ParameterizedTest(name = "ip={0} -> location={1}")
+    @CsvSource({"192.168.1.100,Local network", "203.0.113.50,Unknown", "127.0.0.1,Local network",
+            "0:0:0:0:0:0:0:1,Local network", "10.0.0.5,Local network", "172.16.0.1,Local network"})
+    void sendAuthNotification_withRequest_ipResolvesToLocation(String remoteAddr, String expectedLocation) {
         User user = User.builder().name("Ana").email("ana@test.com").build();
         when(userRepository.findUserByEmail("ana@test.com")).thenReturn(user);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRemoteAddr("192.168.1.100");
+        request.setRemoteAddr(remoteAddr);
         request.addHeader("User-Agent", "TestAgent");
 
         helper.sendAuthNotification("ana@test.com", "Login Alert", "login-alert", request);
@@ -163,25 +167,7 @@ class AuthNotificationHelperTest {
         await().atMost(Duration.ofSeconds(1))
                 .untilAsserted(() -> verify(notificationEventPort).sendNotificationEvent(captor.capture()));
 
-        assertThat(captor.getValue().variables()).containsEntry("location", "Local network");
-    }
-
-    @Test
-    void sendAuthNotification_withRequest_publicIpResolvesToUnknown() {
-        User user = User.builder().name("Ana").email("ana@test.com").build();
-        when(userRepository.findUserByEmail("ana@test.com")).thenReturn(user);
-
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRemoteAddr("203.0.113.50");
-        request.addHeader("User-Agent", "TestAgent");
-
-        helper.sendAuthNotification("ana@test.com", "Login Alert", "login-alert", request);
-
-        ArgumentCaptor<EmailNotificationRequest> captor = ArgumentCaptor.forClass(EmailNotificationRequest.class);
-        await().atMost(Duration.ofSeconds(1))
-                .untilAsserted(() -> verify(notificationEventPort).sendNotificationEvent(captor.capture()));
-
-        assertThat(captor.getValue().variables()).containsEntry("location", "Unknown");
+        assertThat(captor.getValue().variables()).containsEntry("location", expectedLocation);
     }
 
     @Test
@@ -245,12 +231,12 @@ class AuthNotificationHelperTest {
     }
 
     @Test
-    void sendAuthNotification_withRequest_loopbackIpIsLocalNetwork() {
+    void sendAuthNotification_withRequest_acceptLanguageEnglish_setsEn() {
         User user = User.builder().name("Ana").email("ana@test.com").build();
         when(userRepository.findUserByEmail("ana@test.com")).thenReturn(user);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRemoteAddr("127.0.0.1");
+        request.addHeader("Accept-Language", "en-US,en;q=0.9");
         request.addHeader("User-Agent", "TestAgent");
 
         helper.sendAuthNotification("ana@test.com", "Login Alert", "login-alert", request);
@@ -259,16 +245,16 @@ class AuthNotificationHelperTest {
         await().atMost(Duration.ofSeconds(1))
                 .untilAsserted(() -> verify(notificationEventPort).sendNotificationEvent(captor.capture()));
 
-        assertThat(captor.getValue().variables()).containsEntry("location", "Local network");
+        assertThat(captor.getValue().variables()).containsEntry("lang", "en");
     }
 
     @Test
-    void sendAuthNotification_withRequest_ipv6LoopbackIsLocalNetwork() {
+    void sendAuthNotification_withRequest_acceptLanguagePortuguese_setsPt() {
         User user = User.builder().name("Ana").email("ana@test.com").build();
         when(userRepository.findUserByEmail("ana@test.com")).thenReturn(user);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRemoteAddr("0:0:0:0:0:0:0:1");
+        request.addHeader("Accept-Language", "pt-BR,pt;q=0.8,en;q=0.5");
         request.addHeader("User-Agent", "TestAgent");
 
         helper.sendAuthNotification("ana@test.com", "Login Alert", "login-alert", request);
@@ -277,16 +263,16 @@ class AuthNotificationHelperTest {
         await().atMost(Duration.ofSeconds(1))
                 .untilAsserted(() -> verify(notificationEventPort).sendNotificationEvent(captor.capture()));
 
-        assertThat(captor.getValue().variables()).containsEntry("location", "Local network");
+        assertThat(captor.getValue().variables()).containsEntry("lang", "pt");
     }
 
     @Test
-    void sendAuthNotification_withRequest_tenNetworkIsLocalNetwork() {
+    void sendAuthNotification_withRequest_acceptLanguageExplicitEs_setsEs() {
         User user = User.builder().name("Ana").email("ana@test.com").build();
         when(userRepository.findUserByEmail("ana@test.com")).thenReturn(user);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRemoteAddr("10.0.0.5");
+        request.addHeader("Accept-Language", "es-ES,es;q=0.9");
         request.addHeader("User-Agent", "TestAgent");
 
         helper.sendAuthNotification("ana@test.com", "Login Alert", "login-alert", request);
@@ -295,16 +281,16 @@ class AuthNotificationHelperTest {
         await().atMost(Duration.ofSeconds(1))
                 .untilAsserted(() -> verify(notificationEventPort).sendNotificationEvent(captor.capture()));
 
-        assertThat(captor.getValue().variables()).containsEntry("location", "Local network");
+        assertThat(captor.getValue().variables()).containsEntry("lang", "es");
     }
 
     @Test
-    void sendAuthNotification_withRequest_172NetworkIsLocalNetwork() {
+    void sendAuthNotification_withRequest_acceptLanguageBlank_defaultsToEs() {
         User user = User.builder().name("Ana").email("ana@test.com").build();
         when(userRepository.findUserByEmail("ana@test.com")).thenReturn(user);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRemoteAddr("172.16.0.1");
+        request.addHeader("Accept-Language", "   ");
         request.addHeader("User-Agent", "TestAgent");
 
         helper.sendAuthNotification("ana@test.com", "Login Alert", "login-alert", request);
@@ -313,7 +299,75 @@ class AuthNotificationHelperTest {
         await().atMost(Duration.ofSeconds(1))
                 .untilAsserted(() -> verify(notificationEventPort).sendNotificationEvent(captor.capture()));
 
-        assertThat(captor.getValue().variables()).containsEntry("location", "Local network");
+        assertThat(captor.getValue().variables()).containsEntry("lang", "es");
+    }
+
+    @Test
+    void sendAuthNotification_withRequest_acceptLanguageUnsupported_defaultsToEs() {
+        User user = User.builder().name("Ana").email("ana@test.com").build();
+        when(userRepository.findUserByEmail("ana@test.com")).thenReturn(user);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Accept-Language", "fr-FR,fr;q=0.9");
+        request.addHeader("User-Agent", "TestAgent");
+
+        helper.sendAuthNotification("ana@test.com", "Login Alert", "login-alert", request);
+
+        ArgumentCaptor<EmailNotificationRequest> captor = ArgumentCaptor.forClass(EmailNotificationRequest.class);
+        await().atMost(Duration.ofSeconds(1))
+                .untilAsserted(() -> verify(notificationEventPort).sendNotificationEvent(captor.capture()));
+
+        assertThat(captor.getValue().variables()).containsEntry("lang", "es");
+    }
+
+    @Test
+    void sendAuthNotification_withRequest_unknownIpResolvesToUnknown() {
+        User user = User.builder().name("Ana").email("ana@test.com").build();
+        when(userRepository.findUserByEmail("ana@test.com")).thenReturn(user);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-Forwarded-For", "unknown");
+        request.setRemoteAddr("203.0.113.99");
+        request.addHeader("User-Agent", "TestAgent");
+
+        helper.sendAuthNotification("ana@test.com", "Login Alert", "login-alert", request);
+
+        ArgumentCaptor<EmailNotificationRequest> captor = ArgumentCaptor.forClass(EmailNotificationRequest.class);
+        await().atMost(Duration.ofSeconds(1))
+                .untilAsserted(() -> verify(notificationEventPort).sendNotificationEvent(captor.capture()));
+
+        // X-Forwarded-For=unknown is skipped; remote-addr 203.0.113.99 used.
+        assertThat(captor.getValue().variables()).containsEntry("ipAddress", "203.0.113.99");
+    }
+
+    @Test
+    void sendAuthNotification_withRequest_blankUserAgent_skipsBrowserParsing() {
+        User user = User.builder().name("Ana").email("ana@test.com").build();
+        when(userRepository.findUserByEmail("ana@test.com")).thenReturn(user);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("User-Agent", "   ");
+        request.setRemoteAddr("10.0.0.1");
+
+        helper.sendAuthNotification("ana@test.com", "Login Alert", "login-alert", request);
+
+        ArgumentCaptor<EmailNotificationRequest> captor = ArgumentCaptor.forClass(EmailNotificationRequest.class);
+        await().atMost(Duration.ofSeconds(1))
+                .untilAsserted(() -> verify(notificationEventPort).sendNotificationEvent(captor.capture()));
+
+        assertThat(captor.getValue().variables()).doesNotContainKey("browser");
+    }
+
+    @Test
+    void sendAuthNotification_userFoundByNickName_sendsEmail() {
+        User user = User.builder().name("Ana").email("ana@test.com").build();
+        when(userRepository.findUserByEmail("anickname")).thenReturn(null);
+        when(userRepository.findUserByNickName("anickname")).thenReturn(user);
+
+        helper.sendAuthNotification("anickname", "Login Alert", "login-alert");
+
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(
+                () -> verify(notificationEventPort).sendNotificationEvent(any(EmailNotificationRequest.class)));
     }
 
     @Nested

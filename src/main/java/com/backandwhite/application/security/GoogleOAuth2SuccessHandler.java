@@ -36,12 +36,15 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
     private final NotificationEventPort notificationEventPort;
     private final AuthEventPort authEventPort;
 
+    private final AuthNotificationHelper authNotificationHelper;
+
     public GoogleOAuth2SuccessHandler(UserRepository userRepository, RoleRepository roleRepository,
             NotificationEventPort notificationEventPort, AuthEventPort authEventPort) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.notificationEventPort = notificationEventPort;
         this.authEventPort = authEventPort;
+        this.authNotificationHelper = new AuthNotificationHelper(notificationEventPort, userRepository);
     }
 
     @Override
@@ -81,11 +84,19 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
                 User newUser = createGoogleUser(email, givenName, familyName);
                 log.info("::> [GOOGLE-OAUTH2] New user registered userId={} lang={}", newUser.getId(), lang);
                 sendWelcomeEmail(newUser, lang);
-                authEventPort.publishCustomerRegistered(new CustomerRegisteredRequest(newUser.getId().toString(),
+                // Publish the email as the userId so the userdetailservice's
+                // Kafka consumer ends up keyed by the same identifier the SPA
+                // uses when hitting /profile/me (JWT sub = email for both
+                // form-login and social-login). Using the numeric id would
+                // create a duplicate user_profiles row that the storefront
+                // never reads.
+                authEventPort.publishCustomerRegistered(new CustomerRegisteredRequest(newUser.getEmail(),
                         newUser.getEmail(), newUser.getName(), newUser.getLastName()));
             } else {
                 log.info("::> [GOOGLE-OAUTH2] Existing user login userId={}", existingUser.getId());
             }
+            authNotificationHelper.sendAuthNotification(email, "New sign-in to your NX036 account", "login-success",
+                    request);
         } catch (RuntimeException e) {
             log.error("::> [GOOGLE-OAUTH2] Registration failed reason={}", e.getMessage());
         }
@@ -122,7 +133,13 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
                 User newUser = createXUser(syntheticEmail, username, name, lastName);
                 log.info("::> [X-OAUTH2] New user registered userId={} username={} lang={}", newUser.getId(), username,
                         lang);
-                authEventPort.publishCustomerRegistered(new CustomerRegisteredRequest(newUser.getId().toString(),
+                // Publish the email as the userId so the userdetailservice's
+                // Kafka consumer ends up keyed by the same identifier the SPA
+                // uses when hitting /profile/me (JWT sub = email for both
+                // form-login and social-login). Using the numeric id would
+                // create a duplicate user_profiles row that the storefront
+                // never reads.
+                authEventPort.publishCustomerRegistered(new CustomerRegisteredRequest(newUser.getEmail(),
                         newUser.getEmail(), newUser.getName(), newUser.getLastName()));
                 // No welcome email — the synthetic address won't deliver.
             } else {
@@ -146,9 +163,9 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
 
-        Role guestRole = findGuestRole();
-        if (guestRole != null) {
-            user.setRoles(new ArrayList<>(List.of(guestRole)));
+        List<Role> roles = findDefaultRoles();
+        if (!roles.isEmpty()) {
+            user.setRoles(new ArrayList<>(roles));
         }
         return userRepository.save(user);
     }
@@ -185,9 +202,9 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
 
-        Role guestRole = findGuestRole();
-        if (guestRole != null) {
-            user.setRoles(new ArrayList<>(List.of(guestRole)));
+        List<Role> roles = findDefaultRoles();
+        if (!roles.isEmpty()) {
+            user.setRoles(new ArrayList<>(roles));
         }
 
         return userRepository.save(user);
@@ -200,6 +217,29 @@ public class GoogleOAuth2SuccessHandler extends SavedRequestAwareAuthenticationS
         } catch (RuntimeException e) {
             log.warn("::> [GOOGLE-OAUTH2] Could not fetch GUEST role", e);
             return null;
+        }
+    }
+
+    /**
+     * Loads ROLE_USER + ROLE_GUEST so social-login accounts (Google, X) can hit the
+     * same /api/v1/* endpoints that form-login users can, while still carrying the
+     * broader GUEST grant for public-facing checks. Endpoints gated with
+     * {@code @NxUser} need ROLE_USER; assigning only ROLE_GUEST blocked saving
+     * payment methods, addresses, etc. for new signups.
+     */
+    private List<Role> findDefaultRoles() {
+        try {
+            List<Role> all = roleRepository.findAll();
+            List<Role> picked = new ArrayList<>();
+            for (Role r : all) {
+                if ("ROLE_USER".equals(r.getUniqueName()) || "ROLE_GUEST".equals(r.getUniqueName())) {
+                    picked.add(r);
+                }
+            }
+            return picked;
+        } catch (RuntimeException e) {
+            log.warn("::> [OAUTH2] Could not fetch default roles", e);
+            return new ArrayList<>();
         }
     }
 

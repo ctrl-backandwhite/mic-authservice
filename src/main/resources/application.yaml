@@ -22,3 +22,8 @@ spring:
     type: caffeine
     caffeine:
       spec: maximumSize=500,expireAfterAccess=600s
+  kafka:
+    properties:
+      schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8081}
+      auto.register.schemas: ${SCHEMA_REGISTRY_AUTO_REGISTER:true}
+      use.latest.version: false

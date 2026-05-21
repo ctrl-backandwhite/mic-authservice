@@ -34,7 +34,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                 return null;
             }
             return mapToRegisteredClient(oauthClient);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException _) {
             return null;
         }
     }

@@ -81,4 +81,23 @@ class GroupDtoMapperTest {
         assertThat(result.get(0).getId()).isEqualTo(1L);
         assertThat(result.get(1).getId()).isEqualTo(2L);
     }
+
+    @Test
+    void mapGroupPermissionIds_nullReturnsEmptyList() {
+        assertThat(mapper.mapGroupPermissionIds(null)).isEmpty();
+    }
+
+    @Test
+    void mapGroupPermissionIds_emptyReturnsEmptyList() {
+        assertThat(mapper.mapGroupPermissionIds(Collections.emptyList())).isEmpty();
+    }
+
+    @Test
+    void mapGroupPermissionIds_withIdsReturnPermissions() {
+        var result = mapper.mapGroupPermissionIds(List.of(10L, 20L));
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(10L);
+        assertThat(result.get(1).getId()).isEqualTo(20L);
+    }
 }

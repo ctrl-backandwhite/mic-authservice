@@ -89,4 +89,39 @@ class CustomRegisteredClientRepositoryTest {
     void save_throwsUnsupportedOperation() {
         assertThrows(UnsupportedOperationException.class, () -> repository.save(null));
     }
+
+    @Test
+    void findByClientId_clientWithNullRedirectsAndScopes_mapsSafely() {
+        // Spring's RegisteredClient.build() requires at least one grant type, so we
+        // can't null *all* collections, but we can verify the null-redirectUris and
+        // null-scopes branches.
+        OauthClient client = OauthClient.builder().id(2L).clientId("minimal-client").clientSecret("secret")
+                .grantTypes(List.of(GrantType.builder().value("client_credentials").build())).redirectUris(null)
+                .scopes(null).build();
+
+        when(oauthClientRepository.findByClientId("minimal-client")).thenReturn(client);
+
+        RegisteredClient result = repository.findByClientId("minimal-client");
+
+        assertThat(result).isNotNull();
+        assertThat(result.getClientId()).isEqualTo("minimal-client");
+        assertThat(result.getRedirectUris()).isEmpty();
+        assertThat(result.getScopes()).isEmpty();
+    }
+
+    @Test
+    void findByClientId_unknownGrantType_isIgnored() {
+        OauthClient client = OauthClient.builder().id(3L).clientId("weird-grant").clientSecret("s")
+                .grantTypes(List.of(GrantType.builder().value("password").build(),
+                        GrantType.builder().value("REFRESH_TOKEN").build()))
+                .redirectUris(List.of(RedirectUri.builder().value("https://example.com/cb").build()))
+                .scopes(List.of(Scope.builder().uniqueName("read").build())).build();
+
+        when(oauthClientRepository.findByClientId("weird-grant")).thenReturn(client);
+
+        RegisteredClient result = repository.findByClientId("weird-grant");
+
+        assertThat(result).isNotNull();
+        assertThat(result.getAuthorizationGrantTypes()).extracting(g -> g.getValue()).contains("refresh_token");
+    }
 }

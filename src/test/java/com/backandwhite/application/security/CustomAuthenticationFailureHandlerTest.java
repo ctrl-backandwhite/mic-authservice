@@ -1,6 +1,5 @@
 package com.backandwhite.application.security;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -31,7 +30,7 @@ class CustomAuthenticationFailureHandlerTest {
 
         handler.onAuthenticationFailure(request, response, exception);
 
-        verify(redirectStrategy).sendRedirect(eq(request), eq(response), eq("/login?error=disabled"));
+        verify(redirectStrategy).sendRedirect(request, response, "/login?error=disabled");
     }
 
     @Test
@@ -48,6 +47,6 @@ class CustomAuthenticationFailureHandlerTest {
 
         handler.onAuthenticationFailure(request, response, exception);
 
-        verify(redirectStrategy).sendRedirect(eq(request), eq(response), eq("/login?error"));
+        verify(redirectStrategy).sendRedirect(request, response, "/login?error");
     }
 }

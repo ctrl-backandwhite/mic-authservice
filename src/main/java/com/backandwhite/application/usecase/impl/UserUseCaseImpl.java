@@ -61,14 +61,22 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Transactional
     @CacheEvict(value = "user_all", allEntries = true)
     public User save(User model) {
-        return save(model, "es");
+        return saveInternal(model, "es");
     }
 
     @Override
     @Transactional
     @CacheEvict(value = "user_all", allEntries = true)
     public User save(User model, String lang) {
+        return saveInternal(model, lang);
+    }
 
+    /**
+     * Internal save used by both public overloads. Bypasses {@code @Transactional}
+     * AOP (Sonar S6809) — the calling public method already opened the transaction;
+     * self-invocation would skip the proxy anyway.
+     */
+    private User saveInternal(User model, String lang) {
         User existingUser = userRepository.findUserByEmail(model.getEmail());
         if (Objects.nonNull(existingUser)) {
             log.warn("::> [USER] Registration failed: email already exists");
@@ -100,7 +108,9 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
 
         sendActivationEmail(savedUser, activationToken, lang);
 
-        authEventPort.publishCustomerRegistered(new CustomerRegisteredRequest(savedUser.getId().toString(),
+        // Key by email so userdetailservice consumes with the same userId
+        // the SPA uses on /profile/me (JWT sub = email).
+        authEventPort.publishCustomerRegistered(new CustomerRegisteredRequest(savedUser.getEmail(),
                 savedUser.getEmail(), savedUser.getName(), savedUser.getLastName()));
 
         log.info("::> [USER] Registration completed userId={} lang={}", savedUser.getId(), lang);
@@ -142,6 +152,14 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Cacheable(value = "user", key = "#id")
     public User getById(Long id) {
         log.debug("::> Getting user with id {}", id);
+        return getByIdInternal(id);
+    }
+
+    /**
+     * Internal lookup used by other use-case methods. Bypasses {@code @Cacheable}
+     * AOP (Sonar S6809) — self-invocation would skip the proxy anyway.
+     */
+    private User getByIdInternal(Long id) {
         User model = userRepository.getById(id);
         if (Objects.isNull(model)) {
             throw ENTITY_NOT_FOUND.toEntityNotFound("User", id);
@@ -154,7 +172,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @CachePut(value = "user", key = "#id")
     @CacheEvict(value = "user_all", allEntries = true)
     public User update(User model, Long id) {
-        return update(model, id, "es");
+        return updateInternal(model, id, "es");
     }
 
     @Override
@@ -162,8 +180,17 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @CachePut(value = "user", key = "#id")
     @CacheEvict(value = "user_all", allEntries = true)
     public User update(User model, Long id, String lang) {
+        return updateInternal(model, id, lang);
+    }
+
+    /**
+     * Internal update used by both public overloads. Bypasses
+     * {@code @Transactional} AOP (Sonar S6809) — the calling public method already
+     * opened the transaction.
+     */
+    private User updateInternal(User model, Long id, String lang) {
         log.debug("::> Updating user with id {}", id);
-        User existing = this.getById(id);
+        User existing = getByIdInternal(id);
         userUpdateMapper.updateFromModel(model, existing);
         userCommandHandler.validate(existing);
         User updated = userRepository.update(existing);
@@ -186,7 +213,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @Transactional
     @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public void delete(Long id) {
-        this.getById(id);
+        getByIdInternal(id);
         log.debug("::> Deleting user with id {}", id);
         userRepository.delete(id);
     }
@@ -204,7 +231,7 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
     @CacheEvict(value = {"user_all", "user"}, allEntries = true)
     public User toggleEnabled(Long id) {
         log.debug("::> Toggling enabled for user with id {}", id);
-        User existing = this.getById(id);
+        User existing = getByIdInternal(id);
         existing.setEnabled(!Boolean.TRUE.equals(existing.getEnabled()));
         return userRepository.update(existing);
     }
@@ -282,8 +309,17 @@ public class UserUseCaseImpl implements UserUseCase, UserDetailsService {
         variables.put("lang", lang);
 
         notificationEventPort.sendNotificationEvent(new EmailNotificationRequest(user.getEmail(),
-                "Recover your password in Nexa", "password-reset", variables));
+                resolvePasswordResetSubject(lang), "password-reset", variables));
         log.info("::> [NOTIFICATION] Sent template=password-reset userId={} lang={}", user.getId(), lang);
+    }
+
+    private String resolvePasswordResetSubject(String lang) {
+        String key = lang == null ? "es" : lang.toLowerCase();
+        if (key.startsWith("en"))
+            return "Reset your NX036 password";
+        if (key.startsWith("pt"))
+            return "Redefine a tua palavra-passe NX036";
+        return "Restablece tu contraseña de NX036";
     }
 
     @Override

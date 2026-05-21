@@ -50,7 +50,7 @@ class KafkaNotificationEventAdapterTest {
         adapter.sendNotificationEvent(request);
 
         verify(notificationEventMapper).toEmailNotificationEvent(request);
-        verify(kafkaTemplate).send(eq(AppConstants.KAFKA_TOPIC_NOTIFICATION_EMAIL), eq("user@test.com"), eq(event));
+        verify(kafkaTemplate).send(AppConstants.KAFKA_TOPIC_NOTIFICATION_EMAIL, "user@test.com", event);
     }
 
     @SuppressWarnings("unchecked")
@@ -75,7 +75,7 @@ class KafkaNotificationEventAdapterTest {
         when(sendResult.getRecordMetadata()).thenReturn(metadata);
         future.complete(sendResult);
 
-        verify(kafkaTemplate).send(eq(AppConstants.KAFKA_TOPIC_NOTIFICATION_EMAIL), eq("user@test.com"), eq(event));
+        verify(kafkaTemplate).send(AppConstants.KAFKA_TOPIC_NOTIFICATION_EMAIL, "user@test.com", event);
     }
 
     @SuppressWarnings("unchecked")
@@ -96,6 +96,6 @@ class KafkaNotificationEventAdapterTest {
 
         future.completeExceptionally(new RuntimeException("Kafka is down"));
 
-        verify(kafkaTemplate).send(eq(AppConstants.KAFKA_TOPIC_NOTIFICATION_EMAIL), eq("user@test.com"), eq(event));
+        verify(kafkaTemplate).send(AppConstants.KAFKA_TOPIC_NOTIFICATION_EMAIL, "user@test.com", event);
     }
 }

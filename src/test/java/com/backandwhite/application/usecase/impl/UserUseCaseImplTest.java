@@ -686,4 +686,111 @@ class UserUseCaseImplTest {
 
         verify(userSessionRepository).revokeSession("sess-1");
     }
+
+    @Test
+    void confirmSessionRevoke_oAuth2AuthorizationNotFound_skipsRemove() {
+        // Exercises auth==null branch in revokeOAuth2Authorization (line 529).
+        User foundUser = user().withSessionRevokeCode("654321")
+                .withSessionRevokeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES)).withSessionToRevoke("sess-1");
+        UserSession session = UserSession.builder().sessionId("sess-1").authorizationId("auth-vanished").build();
+        when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
+        when(userSessionRepository.findBySessionId("sess-1")).thenReturn(session);
+        when(authorizationService.findById("auth-vanished")).thenReturn(null);
+
+        userUseCase.confirmSessionRevoke(UserProvider.USER_EMAIL, "654321");
+
+        verify(userSessionRepository).revokeSession("sess-1");
+        verify(authorizationService, never()).remove(any(OAuth2Authorization.class));
+    }
+
+    @Test
+    void activateUser_nullExpiry_activatesUser() {
+        // Exercises the (expiry == null) branch at line 222.
+        User foundUser = user().withEnabled(false).withActivationToken("tok-no-exp").withActivationTokenExpiry(null);
+        when(userRepository.findByActivationToken("tok-no-exp")).thenReturn(foundUser);
+
+        userUseCase.activateUser("tok-no-exp", "es");
+
+        assertThat(foundUser.getEnabled()).isTrue();
+        verify(userRepository).update(foundUser);
+    }
+
+    @Test
+    void resetPassword_nullExpiry_resetsPassword() {
+        // Exercises the (passwordResetTokenExpiry == null) branch at line 299.
+        User foundUser = user().withPasswordResetToken("reset-no-exp").withPasswordResetTokenExpiry(null);
+        when(userRepository.findByPasswordResetToken("reset-no-exp")).thenReturn(foundUser);
+        when(passwordEncoder.encode("NewPass1")).thenReturn("encoded-new");
+
+        userUseCase.resetPassword("reset-no-exp", "NewPass1");
+
+        assertThat(foundUser.getPassword()).isEqualTo("encoded-new");
+        verify(userRepository).update(foundUser);
+    }
+
+    @Test
+    void confirmPasswordChange_storedPasswordWithoutBcryptPrefix_keepsExistingPassword() {
+        // Exercises applyStoredPassword branch where token is non-null but doesn't
+        // start with $2a$ (line 400).
+        User foundUser = user().withPasswordChangeCode("123456")
+                .withPasswordChangeCodeExpiry(Instant.now().plus(1, ChronoUnit.MINUTES))
+                .withPasswordResetToken("not-a-bcrypt-hash");
+        when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
+
+        userUseCase.confirmPasswordChange(UserProvider.USER_EMAIL, "123456");
+
+        assertThat(foundUser.getPassword()).isEqualTo(UserProvider.USER_PASSWORD);
+        // Token preserved because it didn't pass the $2a$ check.
+        assertThat(foundUser.getPasswordResetToken()).isEqualTo("not-a-bcrypt-hash");
+    }
+
+    @Test
+    void confirmPasswordChange_nullCodeExpiry_treatedAsNotExpired() {
+        // Exercises validateCodeExpiry branch where expiry == null (line 380).
+        User foundUser = user().withPasswordChangeCode("123456").withPasswordChangeCodeExpiry(null)
+                .withPasswordResetToken(null);
+        when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
+
+        userUseCase.confirmPasswordChange(UserProvider.USER_EMAIL, "123456");
+
+        verify(userRepository).update(foundUser);
+        assertThat(foundUser.getPasswordChangeCode()).isNull();
+    }
+
+    @Test
+    void confirmPasswordChange_nullStoredCode_throwsException() {
+        // Exercises validateVerificationCode branch where storedCode == null
+        // (line 374, first half of the OR).
+        User foundUser = user().withPasswordChangeCode(null);
+        when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
+
+        assertThrows(ArgumentException.class,
+                () -> userUseCase.confirmPasswordChange(UserProvider.USER_EMAIL, "123456"));
+    }
+
+    @Test
+    void requestPasswordChange_codeCollision_retriesUntilUnique() {
+        // Exercises the do/while loop at line 413 by returning a non-null user
+        // for the first generated code (collision) then null on retry.
+        User foundUser = user();
+        when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(foundUser);
+        when(passwordEncoder.matches("secret", foundUser.getPassword())).thenReturn(true);
+        when(passwordEncoder.encode("NewPass1")).thenReturn("$2a$encoded");
+        // First call returns a colliding user, subsequent calls return null.
+        when(userRepository.findByPasswordChangeCode(anyString())).thenReturn(foundUser).thenReturn(null);
+
+        userUseCase.requestPasswordChange(UserProvider.USER_EMAIL, "secret", "NewPass1", "NewPass1", "es");
+
+        assertThat(foundUser.getPasswordChangeCode()).isNotNull();
+        verify(userRepository, org.mockito.Mockito.atLeast(2)).findByPasswordChangeCode(anyString());
+    }
+
+    @Test
+    void loadUserByUsername_userWithNullRoles_returnsUser() {
+        // Exercises (roles != null) ternary at line 444 with the null branch.
+        User model = user().withRoles(null);
+        when(userRepository.findUserByEmail(UserProvider.USER_EMAIL)).thenReturn(model);
+
+        assertSame(model, userUseCase.loadUserByUsername(UserProvider.USER_EMAIL));
+    }
 }

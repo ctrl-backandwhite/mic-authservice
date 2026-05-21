@@ -157,17 +157,14 @@ body {
   font-weight: 600;
   margin: 0;
   color: #fff;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 .media__subtitle {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.6);
   max-width: 320px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 /* ── Legacy <ul class="media__perks"> kept hidden for backward compat ── */
@@ -288,16 +285,13 @@ body {
 .content__header h1 {
   font-size: 22px;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   margin: 0 0 4px;
   color: var(--text);
 }
 .content__header p {
   color: var(--text-muted);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 13px;
   margin: 0 0 12px;
 }
 @media (min-width: 900px) {
@@ -376,10 +370,10 @@ body {
 .field input[type="email"],
 .field input[type="password"] {
   width: 100%;
-  height: 44px;
-  padding: 0 14px;
+  height: 36px;
+  padding: 0 12px;
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);
@@ -395,17 +389,17 @@ body {
 }
 
 .field__password { position: relative; }
-.field__password input { padding-right: 44px; }
+.field__password input { padding-right: 38px; }
 .field__toggle {
   position: absolute;
   top: 50%;
-  right: 8px;
+  right: 6px;
   transform: translateY(-50%);
   appearance: none;
   background: none;
   border: 0;
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   cursor: pointer;
   color: var(--text-soft);
   display: inline-flex;
@@ -480,11 +474,11 @@ body {
   appearance: none;
   cursor: pointer;
   border: 0;
-  border-radius: 12px;
+  border-radius: 10px;
   font: inherit;
   font-weight: 500;
-  height: 48px;
-  padding: 0 20px;
+  height: 38px;
+  padding: 0 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -494,7 +488,7 @@ body {
 .btn--primary {
   background: var(--primary);
   color: #fff;
-  font-size: 15px;
+  font-size: 13px;
   letter-spacing: 0.01em;
   box-shadow: var(--shadow-sm);
 }
@@ -532,18 +526,18 @@ body {
 .social__btn {
   appearance: none;
   cursor: pointer;
-  height: 44px;
-  padding: 0 14px;
+  height: 36px;
+  padding: 0 12px;
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   font: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   text-decoration: none;
   transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
@@ -593,6 +587,175 @@ body {
 @media (min-width: 900px) {
   .trust-strip { display: none; }
 }
+
+/* ──────────────────────────── Password rules (reset page) ──────────────────────────── */
+
+.password-rules {
+  list-style: none;
+  padding: 0;
+  margin: -4px 0 8px;
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.password-rules li {
+  position: relative;
+  padding-left: 22px;
+  transition: color 0.2s ease;
+}
+.password-rules li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-strong);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+.password-rules li::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: calc(50% - 1px);
+  width: 5px;
+  height: 9px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: translateY(-50%) rotate(45deg) scale(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+.password-rules li.valid {
+  color: var(--success);
+}
+.password-rules li.valid::before {
+  border-color: var(--success);
+  background: var(--success);
+}
+.password-rules li.valid::after {
+  transform: translateY(-65%) rotate(45deg) scale(1);
+}
+
+/* ──────────────────────────── Status pages (activation/reset success/error) ──────────────────────────── */
+
+.status-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg);
+}
+.status-card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.status-card__header {
+  background: var(--primary);
+  color: #fff;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.status-card__header--success { background: var(--primary); }
+.status-card__header--error { background: #7f1d1d; }
+.status-card__header .logo-badge {
+  font-size: 14px;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+}
+.status-card .icon-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.status-card .icon-circle svg {
+  width: 32px;
+  height: 32px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.status-card__body {
+  padding: 28px 28px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.status-card__body h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+.status-card__body p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 360px;
+}
+.status-card .progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 6px 0 2px;
+}
+.status-card .progress-bar__fill {
+  height: 100%;
+  width: 100%;
+  background: var(--success);
+  animation: status-progress 3s linear forwards;
+}
+.status-card .progress-bar__fill--success { background: var(--success); }
+.status-card .progress-bar__fill--error { background: var(--danger); }
+@keyframes status-progress {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+.status-card .countdown {
+  font-size: 12px;
+  color: var(--text-soft);
+  margin: 0;
+}
+.btn--status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0 18px;
+  margin-top: 8px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+.btn--status:hover { background: var(--primary-hover); }
 
 /* ──────────────────────────── Accessibility ──────────────────────────── */
 

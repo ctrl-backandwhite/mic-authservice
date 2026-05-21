@@ -103,8 +103,17 @@ public class AuthController {
     }
 
     /**
-     * Delete a specific cookie with multiple configurations
+     * Delete a specific cookie with three configuration variants. To reliably
+     * remove a cookie the browser requires a matching (secure, httpOnly, path)
+     * tuple to the one that created it; we don't know which one the original issuer
+     * used, so we emit all combinations to guarantee deletion.
+     *
+     * <p>
+     * Sonar S2092 / S3330: the non-secure / no-httpOnly variants are INTENTIONAL —
+     * they are zero-value, immediately-expiring overwrites of already-existing
+     * cookies, never new sessions. Suppressed with rationale.
      */
+    @SuppressWarnings({"java:S2092", "java:S3330"})
     private void deleteCookie(String name, HttpServletResponse response) {
         // Configuration 1: Secure cookie with path /
         Cookie cookie1 = new Cookie(name, "");

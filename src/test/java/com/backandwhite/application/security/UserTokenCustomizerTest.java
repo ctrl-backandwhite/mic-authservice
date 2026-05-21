@@ -197,6 +197,214 @@ class UserTokenCustomizerTest {
         assertThat(expected).isNotBlank();
     }
 
+    @org.junit.jupiter.api.AfterEach
+    void cleanRequestContext() {
+        org.springframework.web.context.request.RequestContextHolder.resetRequestAttributes();
+    }
+
+    @Test
+    void tokenCustomizer_authorizationCode_withRequestContext_capturesUserAgentAndIp() {
+        OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
+
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
+        when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
+
+        org.springframework.mock.web.MockHttpServletRequest request = new org.springframework.mock.web.MockHttpServletRequest();
+        request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/120.0");
+        request.addHeader("X-Forwarded-For", "203.0.113.10, 10.0.0.1");
+        org.springframework.web.context.request.RequestContextHolder
+                .setRequestAttributes(new org.springframework.web.context.request.ServletRequestAttributes(request));
+
+        JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.AUTHORIZATION_CODE);
+        when(context.getPrincipal().getName()).thenReturn("test@test.com");
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+        OAuth2Authorization auth = mock(OAuth2Authorization.class);
+        when(auth.getId()).thenReturn("auth-456");
+        when(context.getAuthorization()).thenReturn(auth);
+
+        bean.customize(context);
+
+        ArgumentCaptor<UserSession> captor = ArgumentCaptor.forClass(UserSession.class);
+        verify(userSessionRepository).save(captor.capture());
+        UserSession saved = captor.getValue();
+        assertThat(saved.getIpAddress()).isEqualTo("203.0.113.10");
+        assertThat(saved.getUserAgent()).contains("Chrome/120.0");
+        assertThat(saved.getDeviceInfo()).isEqualTo("Chrome · Windows");
+    }
+
+    @Test
+    void tokenCustomizer_authorizationCode_xffMissing_usesRemoteAddr() {
+        OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
+
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
+        when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
+
+        org.springframework.mock.web.MockHttpServletRequest request = new org.springframework.mock.web.MockHttpServletRequest();
+        request.setRemoteAddr("198.51.100.20");
+        request.addHeader("User-Agent", "curl/7.68.0");
+        org.springframework.web.context.request.RequestContextHolder
+                .setRequestAttributes(new org.springframework.web.context.request.ServletRequestAttributes(request));
+
+        JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.AUTHORIZATION_CODE);
+        when(context.getPrincipal().getName()).thenReturn("test@test.com");
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+        bean.customize(context);
+
+        ArgumentCaptor<UserSession> captor = ArgumentCaptor.forClass(UserSession.class);
+        verify(userSessionRepository).save(captor.capture());
+        UserSession saved = captor.getValue();
+        assertThat(saved.getIpAddress()).isEqualTo("198.51.100.20");
+        // User-Agent doesn't match any browser/OS pattern -> "Browser · Device"
+        assertThat(saved.getDeviceInfo()).isEqualTo("Browser · Device");
+    }
+
+    @Test
+    void tokenCustomizer_authorizationCode_xffBlank_usesRemoteAddr() {
+        OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
+
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
+        when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
+
+        org.springframework.mock.web.MockHttpServletRequest request = new org.springframework.mock.web.MockHttpServletRequest();
+        request.addHeader("X-Forwarded-For", "   ");
+        request.setRemoteAddr("10.0.0.99");
+        request.addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU OS 17_0) Safari/604.1");
+        org.springframework.web.context.request.RequestContextHolder
+                .setRequestAttributes(new org.springframework.web.context.request.ServletRequestAttributes(request));
+
+        JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.AUTHORIZATION_CODE);
+        when(context.getPrincipal().getName()).thenReturn("test@test.com");
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+        bean.customize(context);
+
+        ArgumentCaptor<UserSession> captor = ArgumentCaptor.forClass(UserSession.class);
+        verify(userSessionRepository).save(captor.capture());
+        UserSession saved = captor.getValue();
+        assertThat(saved.getIpAddress()).isEqualTo("10.0.0.99");
+        assertThat(saved.getDeviceInfo()).isEqualTo("Safari · iPhone");
+    }
+
+    @Test
+    void tokenCustomizer_authorizationCode_blankUserAgent_returnsUnknownDeviceInfo() {
+        OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
+
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
+        when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
+
+        org.springframework.mock.web.MockHttpServletRequest request = new org.springframework.mock.web.MockHttpServletRequest();
+        request.setRemoteAddr("10.0.0.1");
+        request.addHeader("User-Agent", "   ");
+        org.springframework.web.context.request.RequestContextHolder
+                .setRequestAttributes(new org.springframework.web.context.request.ServletRequestAttributes(request));
+
+        JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.AUTHORIZATION_CODE);
+        when(context.getPrincipal().getName()).thenReturn("test@test.com");
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+        bean.customize(context);
+
+        ArgumentCaptor<UserSession> captor = ArgumentCaptor.forClass(UserSession.class);
+        verify(userSessionRepository).save(captor.capture());
+        assertThat(captor.getValue().getDeviceInfo()).isEqualTo("Unknown browser");
+    }
+
+    @Test
+    void tokenCustomizer_authorizationCode_repoThrows_loggedNotPropagated() {
+        OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
+
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
+        when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
+
+        JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.AUTHORIZATION_CODE);
+        when(context.getPrincipal().getName()).thenReturn("test@test.com");
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        org.mockito.Mockito.doThrow(new RuntimeException("DB down")).when(userSessionRepository)
+                .save(any(UserSession.class));
+
+        // Must not throw
+        bean.customize(context);
+
+        verify(userSessionRepository).save(any(UserSession.class));
+    }
+
+    @Test
+    void tokenCustomizer_refreshToken_noPriorSid_doesNotUpdate() {
+        OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
+
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
+        when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
+
+        JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.REFRESH_TOKEN);
+        when(context.getPrincipal().getName()).thenReturn("test@test.com");
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+        // No authorization at all -> auth==null -> sessionId stays null
+        when(context.getAuthorization()).thenReturn(null);
+
+        bean.customize(context);
+
+        verify(userSessionRepository, never()).updateLastActiveAt(anyString());
+        verify(userSessionRepository, never()).save(any());
+    }
+
+    @Test
+    void tokenCustomizer_refreshToken_authorizationWithoutAccessToken_doesNotUpdate() {
+        OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
+
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
+        when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
+
+        JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.REFRESH_TOKEN);
+        when(context.getPrincipal().getName()).thenReturn("test@test.com");
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+        OAuth2Authorization auth = mock(OAuth2Authorization.class);
+        when(auth.getAccessToken()).thenReturn(null);
+        when(context.getAuthorization()).thenReturn(auth);
+
+        bean.customize(context);
+
+        verify(userSessionRepository, never()).updateLastActiveAt(anyString());
+    }
+
+    @Test
+    void tokenCustomizer_clientCredentials_noSessionTracking() {
+        // CLIENT_CREDENTIALS hits neither AUTHORIZATION_CODE nor REFRESH_TOKEN
+        // branches.
+        OAuth2TokenCustomizer<JwtEncodingContext> bean = customizer.tokenCustomizer();
+
+        User user = User.builder().id(1L).email("test@test.com").name("Test").lastName("User").enabled(true)
+                .groups(Collections.emptyList()).build();
+        when(userRepository.findUserByEmail("test@test.com")).thenReturn(user);
+
+        JwtEncodingContext context = mockContext("access_token", AuthorizationGrantType.CLIENT_CREDENTIALS);
+        when(context.getPrincipal().getName()).thenReturn("test@test.com");
+        when(context.getPrincipal().getAuthorities())
+                .thenReturn((java.util.Collection) List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+        bean.customize(context);
+
+        verify(userSessionRepository, never()).save(any());
+        verify(userSessionRepository, never()).updateLastActiveAt(anyString());
+    }
+
     private JwtEncodingContext mockContext(String tokenType, AuthorizationGrantType grantType) {
         JwtEncodingContext context = mock(JwtEncodingContext.class);
         JwsHeader.Builder jwsBuilder = mock(JwsHeader.Builder.class);

@@ -56,8 +56,7 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     public ResponseEntity<UserDtoOut> create(
             @Validated({Default.class, CreateValidation.class}) @RequestBody UserDtoIn dto,
             @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
-        User entity = useCase.save(mapper.toDomain(dto), lang);
-        return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.CREATED);
+        return saveAndRespond(dto, lang);
     }
 
     @NxPublic
@@ -65,6 +64,12 @@ public class UserController implements BaseApi<UserDtoIn, UserDtoOut, Long> {
     public ResponseEntity<UserDtoOut> register(
             @Validated({Default.class, CreateValidation.class}) @RequestBody UserDtoIn dto,
             @RequestHeader(value = "Accept-Language", defaultValue = "es") String lang) {
+        // Public registration endpoint: same persistence path as `create`,
+        // exposed without auth (annotated `@NxPublic`).
+        return saveAndRespond(dto, lang);
+    }
+
+    private ResponseEntity<UserDtoOut> saveAndRespond(UserDtoIn dto, String lang) {
         User entity = useCase.save(mapper.toDomain(dto), lang);
         return new ResponseEntity<>(mapper.toDtoOut(entity), HttpStatus.CREATED);
     }

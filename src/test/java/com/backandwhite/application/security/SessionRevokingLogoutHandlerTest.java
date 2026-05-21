@@ -96,4 +96,17 @@ class SessionRevokingLogoutHandlerTest {
 
         verifyNoInteractions(userSessionRepository);
     }
+
+    @Test
+    void logout_withBlankSessionId_doesNotRevoke() {
+        String token = "valid.jwt.token";
+        Jwt jwt = Jwt.withTokenValue(token).header("alg", "HS256").claim("sid", "   ").build();
+
+        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);
+        when(jwtDecoder.decode(token)).thenReturn(jwt);
+
+        handler.logout(request, response, authentication);
+
+        verifyNoInteractions(userSessionRepository);
+    }
 }

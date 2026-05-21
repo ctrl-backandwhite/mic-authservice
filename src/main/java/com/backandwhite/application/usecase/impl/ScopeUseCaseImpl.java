@@ -44,6 +44,14 @@ public class ScopeUseCaseImpl implements ScopeUseCase {
     @Cacheable(value = "scope", key = "#id")
     public Scope getById(Long id) {
         log.debug("::> Getting scope with id {}", id);
+        return getByIdInternal(id);
+    }
+
+    /**
+     * Internal lookup used by other use-case methods. Bypasses {@code @Cacheable}
+     * AOP (Sonar S6809) — self-invocation would skip the proxy anyway.
+     */
+    private Scope getByIdInternal(Long id) {
         Scope model = scopeRepository.getById(id);
         if (Objects.isNull(model)) {
             throw ENTITY_NOT_FOUND.toEntityNotFound("Scope", id);
@@ -57,7 +65,7 @@ public class ScopeUseCaseImpl implements ScopeUseCase {
     @CacheEvict(value = "scope_all", allEntries = true)
     public Scope update(Scope model, Long id) {
         log.debug("::> Updating scope {}", model);
-        Scope existing = this.getById(id);
+        Scope existing = getByIdInternal(id);
         scopeUpdateMapper.updateFromModel(model, existing);
         return scopeRepository.update(existing);
     }

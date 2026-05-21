@@ -44,6 +44,14 @@ public class PermissionUseCaseImpl implements PermissionUseCase {
     @Cacheable(value = "permission", key = "#id")
     public Permission getById(Long id) {
         log.debug("::> Getting permission with id {}", id);
+        return getByIdInternal(id);
+    }
+
+    /**
+     * Internal lookup used by other use-case methods. Bypasses {@code @Cacheable}
+     * AOP (Sonar S6809) — self-invocation would skip the proxy anyway.
+     */
+    private Permission getByIdInternal(Long id) {
         Permission model = permissionRepository.getById(id);
         if (Objects.isNull(model)) {
             throw ENTITY_NOT_FOUND.toEntityNotFound("Permission", id);
@@ -57,7 +65,7 @@ public class PermissionUseCaseImpl implements PermissionUseCase {
     @CacheEvict(value = "permission_all", allEntries = true)
     public Permission update(Permission model, Long id) {
         log.debug("::> Updating permission {}", model);
-        Permission existing = this.getById(id);
+        Permission existing = getByIdInternal(id);
         permissionUpdateMapper.updateFromModel(model, existing);
         return permissionRepository.update(existing);
     }
@@ -66,7 +74,7 @@ public class PermissionUseCaseImpl implements PermissionUseCase {
     @Transactional
     @CacheEvict(value = {"permission_all", "permission"}, allEntries = true)
     public void delete(Long id) {
-        this.getById(id);
+        getByIdInternal(id);
         log.debug("::> Deleting permission with id {}", id);
         permissionRepository.delete(id);
     }

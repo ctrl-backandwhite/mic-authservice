@@ -36,7 +36,12 @@ public class User implements UserDetails {
     private Instant sessionRevokeCodeExpiry;
     private String sessionToRevoke;
     private List<Role> roles;
-    private List<Group> groups;
+    // Group is a non-Serializable domain model; groups are loaded for in-memory
+    // authorization checks and never round-trip through Java serialization
+    // (Spring Security session storage uses Jackson, not native serialization).
+    // Marked transient (Sonar S1948) since the field would otherwise force the
+    // type to Serializable for no real benefit.
+    private transient List<Group> groups;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;

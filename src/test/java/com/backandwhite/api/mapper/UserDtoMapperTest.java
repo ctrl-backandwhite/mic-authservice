@@ -115,4 +115,24 @@ class UserDtoMapperTest {
         assertThat(result.get(0).getId()).isEqualTo(1L);
         assertThat(result.get(1).getId()).isEqualTo(2L);
     }
+
+    @Test
+    void normalizeEmail_null_returnsNull() {
+        assertThat(mapper.normalizeEmail(null)).isNull();
+    }
+
+    @Test
+    void normalizeEmail_mixedCase_returnsTrimmedLowercase() {
+        assertThat(mapper.normalizeEmail("  USER@TEST.COM  ")).isEqualTo("user@test.com");
+    }
+
+    @Test
+    void normalizeNickName_null_returnsNull() {
+        assertThat(mapper.normalizeNickName(null)).isNull();
+    }
+
+    @Test
+    void normalizeNickName_mixedCase_returnsTrimmedLowercase() {
+        assertThat(mapper.normalizeNickName("  AnaXX  ")).isEqualTo("anaxx");
+    }
 }

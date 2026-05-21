@@ -131,4 +131,36 @@ class SessionValidationInterceptorTest {
         assertThat(result).isTrue();
         verifyNoInteractions(sessionJpaRepository);
     }
+
+    @Test
+    void preHandle_blankSessionClaim_allowsRequest() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        String token = "valid.jwt.token";
+        Jwt jwt = Jwt.withTokenValue(token).header("alg", "HS256").claim("sid", "   ").build();
+
+        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);
+        when(jwtDecoder.decode(token)).thenReturn(jwt);
+
+        boolean result = interceptor.preHandle(request, response, new Object());
+
+        assertThat(result).isTrue();
+        verifyNoInteractions(sessionJpaRepository);
+    }
+
+    @Test
+    void preHandle_sessionNotFoundInDb_allowsRequest() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        String token = "valid.jwt.token";
+        Jwt jwt = Jwt.withTokenValue(token).header("alg", "HS256").claim("sid", "session-missing").build();
+
+        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);
+        when(jwtDecoder.decode(token)).thenReturn(jwt);
+        when(sessionJpaRepository.findBySessionId("session-missing")).thenReturn(null);
+
+        boolean result = interceptor.preHandle(request, response, new Object());
+
+        assertThat(result).isTrue();
+    }
 }

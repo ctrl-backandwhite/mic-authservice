@@ -30,8 +30,7 @@ class PublicClientRefreshTokenAuthenticationConverterTest {
 
         Authentication result = converter.convert(request);
 
-        assertThat(result).isNotNull();
-        assertThat(result).isInstanceOf(OAuth2ClientAuthenticationToken.class);
+        assertThat(result).isNotNull().isInstanceOf(OAuth2ClientAuthenticationToken.class);
     }
 
     @Test

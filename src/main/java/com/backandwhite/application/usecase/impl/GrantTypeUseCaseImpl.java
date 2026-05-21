@@ -44,6 +44,14 @@ public class GrantTypeUseCaseImpl implements GrantTypeUseCase {
     @Cacheable(value = "grantType", key = "#id")
     public GrantType getById(Long id) {
         log.debug("::> Getting granttype with id {}", id);
+        return getByIdInternal(id);
+    }
+
+    /**
+     * Internal lookup used by other use-case methods. Bypasses {@code @Cacheable}
+     * AOP (Sonar S6809) — self-invocation would skip the proxy anyway.
+     */
+    private GrantType getByIdInternal(Long id) {
         GrantType model = grantTypeRepository.getById(id);
         if (Objects.isNull(model)) {
             throw ENTITY_NOT_FOUND.toEntityNotFound("GrantType", id);
@@ -57,7 +65,7 @@ public class GrantTypeUseCaseImpl implements GrantTypeUseCase {
     @CacheEvict(value = "grantType_all", allEntries = true)
     public GrantType update(GrantType model, Long id) {
         log.debug("::> Updating granttype {}", model);
-        GrantType existing = this.getById(id);
+        GrantType existing = getByIdInternal(id);
         grantTypeUpdateMapper.updateFromModel(model, existing);
         return grantTypeRepository.update(existing);
     }
@@ -66,7 +74,7 @@ public class GrantTypeUseCaseImpl implements GrantTypeUseCase {
     @Transactional
     @CacheEvict(value = {"grantType_all", "grantType"}, allEntries = true)
     public void delete(Long id) {
-        this.getById(id);
+        getByIdInternal(id);
         log.debug("::> Deleting granttype with id {}", id);
         grantTypeRepository.delete(id);
     }

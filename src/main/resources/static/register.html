@@ -25,22 +25,52 @@
         <section class="login-card register-card">
             <!-- Desktop media panel -->
             <div class="login-card__media" aria-hidden="true">
-                <div class="media__overlay"></div>
                 <div class="media__content">
                     <a href="/" class="brand brand--on-dark">
                         <span class="brand__name">NX036</span>
                     </a>
-                    <div class="media__quote">
-                        <p id="quote-text" data-i18n="register.quote">Crea tu cuenta y descubre ofertas exclusivas solo para miembros.</p>
+
+                    <div class="media__intro">
+                        <h2 class="media__title" data-i18n="login.welcome.title">Bienvenido a NX036</h2>
+                        <p class="media__subtitle" data-i18n="login.welcome.subtitle">Tu tienda de confianza para descubrir productos seleccionados con cuidado.</p>
                     </div>
-                    <ul class="media__perks">
-                        <li data-i18n="register.perk.welcome">10% de descuento en tu primera compra</li>
-                        <li data-i18n="register.perk.tracking">Seguimiento de pedidos en tiempo real</li>
-                        <li data-i18n="register.perk.wishlist">Guarda productos favoritos</li>
-                    </ul>
-                    <div class="media__dots" id="quote-dots">
-                        <span class="is-active"></span><span></span><span></span><span></span>
+
+                    <div class="media__perk-slider" id="perkSlider">
+                        <div class="media__perk-track" id="perkTrack">
+                            <div class="media__perk-slide is-active">
+                                <span class="media__perk-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                                </span>
+                                <span data-i18n="login.perk.shipping">Envío gratis +$120</span>
+                            </div>
+                            <div class="media__perk-slide">
+                                <span class="media__perk-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3.5-7.1"/><polyline points="21 3 21 9 15 9"/></svg>
+                                </span>
+                                <span data-i18n="login.perk.returns">30 días para devolver</span>
+                            </div>
+                            <div class="media__perk-slide">
+                                <span class="media__perk-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                                </span>
+                                <span data-i18n="login.perk.secure">Pago 100% seguro</span>
+                            </div>
+                            <div class="media__perk-slide">
+                                <span class="media__perk-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M4 10v11"/><path d="M20 10v11"/><path d="M8 14v3"/><path d="M12 14v3"/><path d="M16 14v3"/></svg>
+                                </span>
+                                <span data-i18n="login.perk.support">Atención al cliente 24/7</span>
+                            </div>
+                        </div>
+                        <div class="media__perk-dots" id="perkDots" role="tablist">
+                            <button type="button" class="is-active" data-perk-index="0" aria-label="Slide 1"></button>
+                            <button type="button" data-perk-index="1" aria-label="Slide 2"></button>
+                            <button type="button" data-perk-index="2" aria-label="Slide 3"></button>
+                            <button type="button" data-perk-index="3" aria-label="Slide 4"></button>
+                        </div>
                     </div>
+
+                    <p class="media__footer" data-i18n="login.welcome.footer">© NX036 · Tu privacidad es nuestra prioridad</p>
                 </div>
             </div>
 
@@ -307,6 +337,13 @@
                 "register.perk.welcome": "10% de descuento en tu primera compra",
                 "register.perk.tracking": "Seguimiento de pedidos en tiempo real",
                 "register.perk.wishlist": "Guarda productos favoritos",
+                "login.welcome.title": "Bienvenido a NX036",
+                "login.welcome.subtitle": "Tu tienda de confianza para descubrir productos seleccionados con cuidado.",
+                "login.welcome.footer": "© NX036 · Tu privacidad es nuestra prioridad",
+                "login.perk.shipping": "Envío gratis desde $120",
+                "login.perk.returns": "30 días para devolver",
+                "login.perk.secure": "Pago 100% seguro",
+                "login.perk.support": "Atención al cliente 24/7",
                 "register.trust.payments": "Pago seguro",
                 "register.trust.privacy": "Datos protegidos",
                 "register.trust.shipping": "Envío rápido",
@@ -391,6 +428,13 @@
                 "register.perk.welcome": "10% off on your first order",
                 "register.perk.tracking": "Real-time order tracking",
                 "register.perk.wishlist": "Save your favourite products",
+                "login.welcome.title": "Welcome to NX036",
+                "login.welcome.subtitle": "Your trusted shop for carefully curated products.",
+                "login.welcome.footer": "© NX036 · Your privacy is our priority",
+                "login.perk.shipping": "Free shipping over $120",
+                "login.perk.returns": "30-day returns",
+                "login.perk.secure": "100% secure checkout",
+                "login.perk.support": "24/7 customer support",
                 "register.trust.payments": "Secure payments",
                 "register.trust.privacy": "Privacy first",
                 "register.trust.shipping": "Fast shipping",
@@ -510,36 +554,36 @@
             });
         }
 
-        function startQuotes(lang) {
-            const dict = translations[lang] || translations.es;
-            const quotes = dict.quotes || [];
-            let index = 0;
-            const el = document.getElementById("quote-text");
-            const quoteBox = document.querySelector(".media__quote");
-            const dots = document.querySelectorAll("#quote-dots span");
+        function startQuotes(_lang) { /* replaced by perk slider below */ }
 
-            if (!el || !quotes.length) return;
-            el.textContent = quotes[0];
-
-            if (quoteInterval) clearInterval(quoteInterval);
-            quoteInterval = setInterval(() => {
-                if (quoteBox) quoteBox.classList.add("fade-out");
-                if (dots.length) {
-                    dots.forEach(dot => dot.classList.add("fade-out"));
-                }
-                setTimeout(() => {
-                    index = (index + 1) % quotes.length;
-                    el.textContent = quotes[index];
-                    if (dots.length) {
-                        dots.forEach((dot, i) => {
-                            dot.classList.toggle("is-active", i === index % dots.length);
-                            dot.classList.remove("fade-out");
-                        });
-                    }
-                    if (quoteBox) quoteBox.classList.remove("fade-out");
-                }, 200);
-            }, 3000);
-        }
+        // ── Perks slider — mirrors login.html ──
+        (function initPerkSlider() {
+            const slides = Array.from(document.querySelectorAll(".media__perk-slide"));
+            const dots = Array.from(document.querySelectorAll("#perkDots [data-perk-index]"));
+            if (slides.length === 0) return;
+            let idx = 0;
+            let interval = null;
+            function show(i) {
+                idx = (i + slides.length) % slides.length;
+                slides.forEach((s, n) => s.classList.toggle("is-active", n === idx));
+                dots.forEach((d, n) => d.classList.toggle("is-active", n === idx));
+            }
+            function start() { interval = setInterval(() => show(idx + 1), 4000); }
+            function stop() { if (interval) { clearInterval(interval); interval = null; } }
+            dots.forEach(d => {
+                d.addEventListener("click", () => {
+                    stop();
+                    show(parseInt(d.getAttribute("data-perk-index"), 10) || 0);
+                    start();
+                });
+            });
+            const sliderEl = document.getElementById("perkSlider");
+            if (sliderEl) {
+                sliderEl.addEventListener("mouseenter", stop);
+                sliderEl.addEventListener("mouseleave", start);
+            }
+            start();
+        })();
 
         function setLanguage(lang) {
             currentLang = lang;

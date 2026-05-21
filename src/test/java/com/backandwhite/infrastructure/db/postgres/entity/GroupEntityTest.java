@@ -26,9 +26,10 @@ class GroupEntityTest {
 
         @Test
         @DisplayName("reflexive: a.equals(a) is true")
+        @SuppressWarnings("java:S5838") // equals contract: reflexive call must use .equals() directly
         void reflexive() {
             GroupEntity a = buildDefault();
-            assertThat(a.equals(a)).isTrue();
+            assertThat(a.equals(a)).as("equals must be reflexive").isTrue();
         }
 
         @Test
@@ -109,7 +110,7 @@ class GroupEntityTest {
         void consistent() {
             GroupEntity a = buildDefault();
             GroupEntity b = buildDefault();
-            assertThat(a.hashCode()).isEqualTo(b.hashCode());
+            assertThat(a).hasSameHashCodeAs(b);
         }
 
         @Test

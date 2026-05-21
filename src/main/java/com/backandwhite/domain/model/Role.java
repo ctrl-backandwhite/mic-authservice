@@ -19,8 +19,12 @@ public class Role implements GrantedAuthority {
     private String uniqueName;
     private String description;
     private Boolean enabled;
+    // Permission is a non-Serializable domain model; this list is only populated
+    // when materializing role authorities for the security context, not for
+    // session replication. Marked transient (Sonar S1948) since it is rebuilt on
+    // load and never round-trips through Java serialization.
     @Builder.Default
-    private List<Permission> permissions = new ArrayList<>();
+    private transient List<Permission> permissions = new ArrayList<>();
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;

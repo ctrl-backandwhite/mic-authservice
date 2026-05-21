@@ -44,6 +44,14 @@ public class RedirectUriUseCaseImpl implements RedirectUriUseCase {
     @Cacheable(value = "redirectUri", key = "#id")
     public RedirectUri getById(Long id) {
         log.debug("::> Getting redirecturi with id {}", id);
+        return getByIdInternal(id);
+    }
+
+    /**
+     * Internal lookup used by other use-case methods. Bypasses {@code @Cacheable}
+     * AOP (Sonar S6809) — self-invocation would skip the proxy anyway.
+     */
+    private RedirectUri getByIdInternal(Long id) {
         RedirectUri model = redirectUriRepository.getById(id);
         if (Objects.isNull(model)) {
             throw ENTITY_NOT_FOUND.toEntityNotFound("RedirectUri", id);
@@ -57,7 +65,7 @@ public class RedirectUriUseCaseImpl implements RedirectUriUseCase {
     @CacheEvict(value = "redirectUri_all", allEntries = true)
     public RedirectUri update(RedirectUri model, Long id) {
         log.debug("::> Updating redirecturi {}", model);
-        RedirectUri existing = this.getById(id);
+        RedirectUri existing = getByIdInternal(id);
         redirectUriUpdateMapper.updateFromModel(model, existing);
         return redirectUriRepository.update(existing);
     }
@@ -66,7 +74,7 @@ public class RedirectUriUseCaseImpl implements RedirectUriUseCase {
     @Transactional
     @CacheEvict(value = {"redirectUri_all", "redirectUri"}, allEntries = true)
     public void delete(Long id) {
-        this.getById(id);
+        getByIdInternal(id);
         log.debug("::> Deleting redirecturi with id {}", id);
         redirectUriRepository.delete(id);
     }

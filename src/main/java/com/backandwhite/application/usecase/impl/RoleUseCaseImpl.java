@@ -44,6 +44,14 @@ public class RoleUseCaseImpl implements RoleUseCase {
     @Cacheable(value = "role", key = "#id")
     public Role getById(Long id) {
         log.debug("::> Getting role with id {}", id);
+        return getByIdInternal(id);
+    }
+
+    /**
+     * Internal lookup used by other use-case methods. Bypasses {@code @Cacheable}
+     * AOP (Sonar S6809) — self-invocation would skip the proxy anyway.
+     */
+    private Role getByIdInternal(Long id) {
         Role model = roleRepository.getById(id);
         if (Objects.isNull(model)) {
             throw ENTITY_NOT_FOUND.toEntityNotFound("Role", id);
@@ -57,7 +65,7 @@ public class RoleUseCaseImpl implements RoleUseCase {
     @CacheEvict(value = "role_all", allEntries = true)
     public Role update(Role model, Long id) {
         log.debug("::> Updating role {}", model);
-        Role existing = this.getById(id);
+        Role existing = getByIdInternal(id);
         roleUpdateMapper.updateFromModel(model, existing);
         return roleRepository.update(existing);
     }
@@ -66,7 +74,7 @@ public class RoleUseCaseImpl implements RoleUseCase {
     @Transactional
     @CacheEvict(value = {"role_all", "role"}, allEntries = true)
     public void delete(Long id) {
-        this.getById(id);
+        getByIdInternal(id);
         log.debug("::> Deleting role with id {}", id);
         roleRepository.delete(id);
     }

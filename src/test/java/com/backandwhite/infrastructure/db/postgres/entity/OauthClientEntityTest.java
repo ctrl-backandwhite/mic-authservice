@@ -25,9 +25,10 @@ class OauthClientEntityTest {
 
         @Test
         @DisplayName("reflexive: x.equals(x) is true")
+        @SuppressWarnings("java:S5838") // equals contract: reflexive call must use .equals() directly
         void reflexive() {
             OauthClientEntity entity = buildDefault();
-            assertThat(entity.equals(entity)).isTrue();
+            assertThat(entity.equals(entity)).as("equals must be reflexive").isTrue();
         }
 
         @Test
@@ -65,16 +66,18 @@ class OauthClientEntityTest {
 
         @Test
         @DisplayName("null returns false")
+        @SuppressWarnings("java:S5838") // equals contract: null check must call .equals(null) directly
         void nullComparison() {
             OauthClientEntity entity = buildDefault();
-            assertThat(entity.equals(null)).isFalse();
+            assertThat(entity.equals(null)).as("equals(null) must be false").isFalse();
         }
 
         @Test
         @DisplayName("different class returns false")
+        @SuppressWarnings("java:S5838") // equals contract: cross-type check must call .equals(other) directly
         void differentClass() {
             OauthClientEntity entity = buildDefault();
-            assertThat(entity.equals("string")).isFalse();
+            assertThat(entity.equals("string")).as("equals across types must be false").isFalse();
         }
     }
 
@@ -87,7 +90,7 @@ class OauthClientEntityTest {
         void consistent() {
             OauthClientEntity a = buildDefault();
             OauthClientEntity b = buildDefault();
-            assertThat(a.hashCode()).isEqualTo(b.hashCode());
+            assertThat(a).hasSameHashCodeAs(b);
         }
 
         @Test

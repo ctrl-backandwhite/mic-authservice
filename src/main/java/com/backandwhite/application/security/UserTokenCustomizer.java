@@ -50,8 +50,17 @@ public class UserTokenCustomizer {
                 User user = userRepository.findUserByEmail(principal.getName());
                 log.info("User information: {}", user);
                 context.getClaims().claim(TOKEN_TYPE, "access token");
-                List<String> roles = context.getPrincipal().getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority).filter(auth -> !auth.equals("FACTOR_PASSWORD")).toList();
+                // Source of truth for the user's roles is the DB row. Form-login
+                // principals already expose them via getAuthorities(), but social
+                // logins (Google, X) carry only OIDC scopes (SCOPE_openid, ...)
+                // which the resource servers reject with 403. Reading user.getRoles()
+                // unifies both flows so endpoints annotated with @NxUser/@NxAdmin
+                // grant access regardless of how the session was created.
+                List<String> roles = getRoleNames(user);
+                if (roles.isEmpty()) {
+                    roles = context.getPrincipal().getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                            .filter(auth -> !auth.equals("FACTOR_PASSWORD")).toList();
+                }
                 List<String> groups = getGetGroups(user.getGroups());
                 context.getClaims().claim("id", user.getId());
                 context.getClaims().claim("email", user.getEmail());
@@ -114,7 +123,7 @@ public class UserTokenCustomizer {
         try {
             ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             return attrs != null ? attrs.getRequest() : null;
-        } catch (RuntimeException e) {
+        } catch (RuntimeException _) {
             return null;
         }
     }
@@ -157,5 +166,20 @@ public class UserTokenCustomizer {
             return groups.stream().map(Group::getUniqueName).toList();
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * Reads role names from the User entity and returns them as JWT-ready strings
+     * (e.g. ROLE_USER, ROLE_GUEST, ROLE_ADMIN). Returns an empty list when the user
+     * has no roles configured so the caller can fall back to whatever the
+     * authentication principal exposes (helpful for legacy machine accounts that
+     * never went through the storefront signup flow).
+     */
+    private List<String> getRoleNames(User user) {
+        if (user == null || user.getRoles() == null || user.getRoles().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return user.getRoles().stream().map(com.backandwhite.domain.model.Role::getUniqueName).filter(Objects::nonNull)
+                .toList();
     }
 }
