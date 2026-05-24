@@ -75,6 +75,15 @@
             </div>
 
             <div class="login-card__content">
+                <!-- Volver a la tienda — Spring guarda la URL original
+                     en la sesión OAuth, pero el usuario también merece un
+                     escape directo desde el formulario. Apunta a "/" para
+                     no romper el flujo del Authorization Server (cualquier
+                     ruta autenticada lo traerá de vuelta a /login si hace
+                     falta). -->
+                <a href="/" class="back-to-store" data-i18n="login.backToStore" aria-label="Volver a la tienda">
+                    ← <span data-i18n="login.backToStore">Volver a la tienda</span>
+                </a>
                 <header class="content__header">
                     <h1 data-i18n="login.title">¡Bienvenido de vuelta!</h1>
                     <p data-i18n="login.subtitle">Inicia sesión para seguir comprando.</p>
