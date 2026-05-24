@@ -172,3 +172,11 @@ databaseChangeLog:
                                     path: db.changelog-1.22.sql
                                     relativeToChangelogFile: true
                                     splitStatements: false
+        - changeSet:
+                  id: "24"
+                  author: NX036-ALFA
+                  changes:
+                          - sqlFile:
+                                    path: db.changelog-1.23.sql
+                                    relativeToChangelogFile: true
+                                    splitStatements: false
